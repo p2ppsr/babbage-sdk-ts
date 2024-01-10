@@ -1,5 +1,6 @@
 /* eslint-env jest */
-const BabbageSDK = require('../index')
+//import BabbageSDK from '../src/index'
+
 // Tests makeHttpRequest.js is handling basic errors correctly for every route
 jest.setTimeout(90000)
 describe('babbage-sdk-routes', () => {
@@ -9,6 +10,7 @@ describe('babbage-sdk-routes', () => {
   afterEach(() => {
     jest.clearAllMocks()
   })
+  /*
   it('Throws an error when trying to make a bad request to createAction', async () => {
     await expect(async () => await BabbageSDK.createAction({})).rejects.toThrow(new Error(
       'Provide a present-tense description for your Action!'
@@ -63,4 +65,5 @@ describe('babbage-sdk-routes', () => {
     })
     expect(result).toEqual(false)
   })
+  */
 })

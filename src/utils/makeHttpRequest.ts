@@ -1,12 +1,16 @@
+import isomorphicFetch from 'isomorphic-fetch'
+
 const fetch =
   typeof window !== 'object'
-    ? require('isomorphic-fetch')
+    ? isomorphicFetch
     : window.fetch
-// Wrapper function around the fetch API
-module.exports = async (
-  routeURL,
-  requestInput = {}
-) => {
+
+export default async function makeHttpRequest<R>(
+  routeURL: string,
+  requestInput: RequestInit = {}
+) : Promise<R>
+{
+
   // If we're in a node environment, we need to inject the Orign header
   if (typeof window !== 'object') {
     requestInput.headers = {
@@ -14,6 +18,7 @@ module.exports = async (
       Origin: 'http://localhost'
     }
   }
+
   const response = await fetch(
     routeURL,
     requestInput
@@ -24,10 +29,11 @@ module.exports = async (
     // Success
     return await response.arrayBuffer()
   }
+  
   const parsedJSON = await response.json()
   if (parsedJSON.status === 'error') {
     const e = new Error(parsedJSON.description)
-    e.code = parsedJSON.code || 'ERR_BAD_REQUEST'
+    e["code"] = parsedJSON.code || 'ERR_BAD_REQUEST'
     Object.keys(parsedJSON).forEach(key => {
       if (key !== 'description' && key !== 'code' && key !== 'status') {
         e[key] = parsedJSON[key]
@@ -35,5 +41,7 @@ module.exports = async (
     })
     throw e
   }
-  return parsedJSON.result
+
+  return parsedJSON.result as R
+
 }

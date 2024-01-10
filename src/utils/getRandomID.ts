@@ -1,9 +1,10 @@
-// // Credit: https://stackoverflow.com/questions/105034/how-do-i-create-a-guid-uuid
-module.exports = () => { // Public Domain/MIT
+// Credit: https://stackoverflow.com/questions/105034/how-do-i-create-a-guid-uuid
+export default function getRandomID() : string {
+  // Public Domain/MIT
   let d = new Date().getTime()// Timestamp
   let d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now() * 1000)) || 0// Time in microseconds since page-load or 0 if unsupported
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-    let r = Math.random() * 16// random number between 0 and 16
+    let r = Math.random() * 16 // random number between 0 and 16
     if (d > 0) { // Use timestamp until depleted
       r = (d + r) % 16 | 0
       d = Math.floor(d / 16)
