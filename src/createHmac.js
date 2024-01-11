@@ -47,7 +47,7 @@ module.exports = async ({
         if (e.data.type !== 'CWI' || !e.isTrusted || e.data.id !== id || e.data.isInvocation) return
         if (e.data.status === 'error') {
           const err = new Error(e.data.description)
-          err.code = e.data.code
+          err["code"] = e.data["code"]
           reject(err)
         } else {
           resolve(e.data.result)
@@ -69,7 +69,7 @@ module.exports = async ({
       }, '*')
     })
   } else if (connection.substrate === 'window-api') {
-    return window.CWI.createHmac({
+    return window["CWI"].createHmac({
       data,
       protocolID,
       keyID,
@@ -79,7 +79,7 @@ module.exports = async ({
     })
   } else {
     const e = new Error(`Unknown Babbage substrate: ${connection.substrate}`)
-    e.code = 'ERR_UNKNOWN_SUBSTRATE'
+    e["code"] = 'ERR_UNKNOWN_SUBSTRATE'
     throw e
   }
 }

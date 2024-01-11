@@ -33,7 +33,7 @@ export default async function makeHttpRequest<R>(
   const parsedJSON = await response.json()
   if (parsedJSON.status === 'error') {
     const e = new Error(parsedJSON.description)
-    e["code"] = parsedJSON.code || 'ERR_BAD_REQUEST'
+    e["code"] = parsedJSON["code"] || 'ERR_BAD_REQUEST'
     Object.keys(parsedJSON).forEach(key => {
       if (key !== 'description' && key !== 'code' && key !== 'status') {
         e[key] = parsedJSON[key]

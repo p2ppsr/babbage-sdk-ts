@@ -75,6 +75,84 @@ export class Communicator {
   static getCached() : Communicator | undefined {
     return Communicator.cached
   }
+
+  async dispatch<P extends object>(args: {
+    name: string,
+    params: P,
+    isGet?: boolean,
+    bodyParamKey?: string,
+    bodyJsonParams?: boolean
+    contentType?: string,
+    nameHttp?: string,
+    isNinja?: boolean,
+  }): Promise<unknown> {
+    switch (this.substrate) {
+      case 'cicada-api': {
+        let q = ''
+        for (const [k, v] of Object.entries(args.params)) {
+          if (k === args.bodyParamKey) continue
+          q += !q ? '?' : '&'
+          q += `${k}=${encodeURIComponent(v)}`
+        }
+        q = `http://localhost:3301/v1/${args.nameHttp || args.name}${q}`
+        const httpResult =
+          !args.bodyParamKey
+          ? await makeHttpRequest(
+            q,
+            {
+              method: args.isGet ? 'get' : 'post',
+              headers: {
+                'Content-Type': !args.contentType ? 'application/json' : args.contentType
+              },
+              body: !args.bodyJsonParams ? '' : JSON.stringify(args.params)
+            }
+          )
+          : await makeHttpRequest(
+            q,
+            {
+              method: args.isGet ? 'get' : 'post',
+              headers: {
+                'Content-Type': 'application/octet-stream'
+              },
+              body: args.params[args.bodyParamKey]
+            }
+          )
+        return httpResult
+      } break;
+      case 'babbage-xdm': {
+        return new Promise((resolve, reject) => {
+          const id = Buffer.from(getRandomID()).toString('base64')
+          window.addEventListener('message', async e => {
+            if (e.data.type !== 'CWI' || !e.isTrusted || e.data.id !== id || e.data.isInvocation) return
+            if (e.data.status === 'error') {
+              const err = new Error(e.data.description)
+              err["code"] = e.data["code"]
+              reject(err)
+            } else {
+              resolve(e.data.result)
+            }
+          })
+          window.parent.postMessage({
+            type: 'CWI',
+            isInvocation: true,
+            id,
+            call: `${args.isNinja ? 'ninja.' : ''}${args.name}`,
+            params: args.params
+          }, '*')
+        })
+      } break;
+      case 'window-api': {
+        return args.isNinja
+          ? window["CWI"].ninja[args.name](args.params)
+          : window["CWI"][args.name](args.params)
+      } break;
+      default: {
+        const e = new Error(`Unknown Babbage substrate: ${this.substrate}`)
+        e["code"] = 'ERR_UNKNOWN_SUBSTRATE'
+        throw e
+      } break;
+    }
+  }
 }
 
 export default async function connectToSubstrate() : Promise<Communicator> {
