@@ -1,6 +1,5 @@
+import { ProtocolID } from './types'
 import connectToSubstrate from './utils/connectToSubstrate'
-
-export type ProtocolID = string | [ 0 | 1 | 2, string]
 
 /**
  * Encrypts data with a key belonging to the user.
@@ -27,36 +26,17 @@ async function encrypt(args: {
   privileged?: boolean,
   returnType?: "Uint8Array" | "string"
 }) : Promise<string | Uint8Array> {
-
-  const {
-    plaintext,
-    protocolID,
-    keyID
-  } = args
-
-  let {
-    description,
-    counterparty,
-    privileged,
-    returnType
-  } = args
-
-  description ||= ''
-  counterparty ||= 'self'
-  privileged ||= false
-  returnType ||= 'Uint8Array'
-
   const connection = await connectToSubstrate()
   const r = await connection.dispatch({
     name: 'encrypt',
     params: {
-      plaintext,
-      protocolID,
-      keyID,
-      description,
-      counterparty,
-      privileged,
-      returnType
+      plaintext: args.plaintext,
+      protocolID: args.protocolID,
+      keyID: args.keyID,
+      description: args.description || '',
+      counterparty: args.counterparty || 'self',
+      privileged: args.privileged || false,
+      returnType: args.returnType || 'Uint8Array'
     },
     bodyParamKey: 'plaintext',
     contentType: 'application/octet-stream'

@@ -1,5 +1,6 @@
+import { ProtocolID } from './types'
 import connectToSubstrate from './utils/connectToSubstrate'
-import { ProtocolID } from './encrypt'
+
 /**
  * Decrypts data with a key belonging to the user.
  * The same protocolID, keyID, counterparty and privileged parameters that were used during encryption
@@ -34,36 +35,17 @@ async function decrypt(args: {
   privileged?: boolean,
   returnType?: "Uint8Array" | "string"
 }) : Promise<string | Uint8Array> {
-
-  const {
-    ciphertext,
-    protocolID,
-    keyID
-  } = args
-
-  let {
-    description,
-    counterparty,
-    privileged,
-    returnType
-  } = args
-
-  description ||= ''
-  counterparty ||= 'self'
-  privileged ||= false
-  returnType ||= 'Uint8Array'
-
   const connection = await connectToSubstrate()
   const r = await connection.dispatch({
     name: 'decrypt',
     params: {
-      ciphertext,
-      protocolID,
-      keyID,
-      description,
-      counterparty,
-      privileged,
-      returnType
+      ciphertext: args.ciphertext,
+      protocolID: args.protocolID,
+      keyID: args.keyID,
+      description: args.description || '',
+      counterparty: args.counterparty || 'self',
+      privileged: args.privileged || false,
+      returnType: args.returnType || 'Uint8Array'
     },
     bodyParamKey: 'ciphertext',
     contentType: 'application/octet-stream'
