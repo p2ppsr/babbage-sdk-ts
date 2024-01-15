@@ -1,12 +1,12 @@
 {
-  "name": "@babbage/sdk",
-  "version": "0.4.34",
-  "description": "Build Babbage Apps with JavaScript",
+  "name": "@babbage/sdk-ts",
+  "version": "0.1.0",
+  "description": "Build Babbage Apps with TypeScript",
   "main": "./out/src/index.js",
   "types": "./out/src/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/p2ppsr/babbage-sdk.git"
+    "url": "git+ssh://git@github.com/p2ppsr/babbage-sdk-ts.git"
   },
   "author": "Peer-to-peer Privacy Systems Research, LLC",
   "license": "Open BSV License",
@@ -14,7 +14,6 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "lint": "standard --fix .",
     "build:tsc": "tsc --build",
     "build:readme": "npx ts2md",
     "build:start": "webpack serve --config webpack.dev.js",
