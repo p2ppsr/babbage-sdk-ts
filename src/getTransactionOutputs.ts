@@ -6,7 +6,8 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * @param {Object} args All parameters are given in an object
  * @param {string} [args.basket] If provided, indicates which basket the outputs should be selected from.
  * @param {boolean} [args.tracked] If provided, only outputs with the corresponding tracked value will be returned (true/false).
- * @param {boolean} [args.includeEnvelope] If provided, returns a structure with the SPV envelopes for the UTXOS that have not been spent.
+ * @param {boolean} [args.includeEnvelope] If true, returns a structure with the SPV envelopes for the UTXOS that have not been spent.
+ * @param {boolean} [args.includeCustomInstructions] If true, returns the customInstructions property with each output.
  * @param {boolean} [args.spendable] If given as true or false, only outputs that have or have not (respectively) been spent will be returned. If not given, both spent and unspent outputs will be returned.
  * @param {string} [args.type] If provided, only outputs of the specified type will be returned. If not provided, outputs of all types will be returned.
  * @param {number} [args.limit] Provide a limit on the number of outputs that will be returned.
