@@ -4,7 +4,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  *
  * @returns {Promise<void>} Resolves after group permissions are completed by the user.
 */
-async function requestGroupPermission() : Promise<void> {
+export async function requestGroupPermission() : Promise<void> {
   const connection = await connectToSubstrate()
   await connection.dispatch({
     name: 'requestGroupPermission',
@@ -12,5 +12,4 @@ async function requestGroupPermission() : Promise<void> {
   })
 }
 
-export { requestGroupPermission }
 export default requestGroupPermission

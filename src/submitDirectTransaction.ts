@@ -12,7 +12,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * @param {string} [obj.derivationPrefix] A derivation prefix used for all outputs. If provided, derivation prefixes on all outputs are optional.
  * @returns {Promise<SubmitDirectTransactionResult>} Object containing reference number, status=success, and human-readable note acknowledging the transaction
  */
-async function submitDirectTransaction(args: {
+export async function submitDirectTransaction(args: {
   protocol?: string,
   transaction: SubmitDirectTransaction,
   senderIdentityKey: string,
@@ -39,5 +39,4 @@ async function submitDirectTransaction(args: {
   return r as SubmitDirectTransactionResult
 }
 
-export { submitDirectTransaction }
 export default submitDirectTransaction

@@ -24,7 +24,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  *
  * @returns {Promise<CounterpartyKeyLinkageResult | SpecificKeyLinkageResult>} The revealed linkage payload, as described in [BRC-72](https://brc.dev/72).
  */
-async function revealKeyLinkage(args: {
+export async function revealKeyLinkage(args: {
   mode: "counterparty" | "specific",
   counterparty: string,
   verifier: string,
@@ -71,7 +71,7 @@ async function revealKeyLinkage(args: {
  *
  * @returns {Promise<CounterpartyKeyLinkageResult>} The revealed linkage payload, as described in [BRC-72](https://brc.dev/72).
  */
-async function revealKeyLinkageCounterparty(args: {
+export async function revealKeyLinkageCounterparty(args: {
   counterparty: string,
   verifier: string,
   protocolID: ProtocolID,
@@ -112,7 +112,7 @@ async function revealKeyLinkageCounterparty(args: {
  *
  * @returns {Promise<SpecificKeyLinkageResult>} The revealed linkage payload, as described in [BRC-72](https://brc.dev/72).
  */
-async function revealKeyLinkageSpecific(args: {
+export async function revealKeyLinkageSpecific(args: {
   counterparty: string,
   verifier: string,
   protocolID: ProtocolID,
@@ -134,5 +134,4 @@ async function revealKeyLinkageSpecific(args: {
   return r as SpecificKeyLinkageResult
 }
 
-export { revealKeyLinkage, revealKeyLinkageCounterparty, revealKeyLinkageSpecific }
 export default revealKeyLinkage

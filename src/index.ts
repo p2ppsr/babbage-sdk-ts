@@ -1,24 +1,45 @@
 import { createAction } from './createAction'
+export { createAction }
 import { createHmac } from './createHmac'
+export { createHmac }
 import { createCertificate } from './createCertificate'
+export { createCertificate }
 import { createSignature } from './createSignature'
+export { createSignature }
 import { encrypt, encryptAsArray, encryptAsString } from './encrypt'
+export { encrypt, encryptAsArray, encryptAsString }
 import { decrypt, decryptAsArray, decryptAsString } from './decrypt'
+export { decrypt, decryptAsArray, decryptAsString }
 import { getCertificates } from './getCertificates'
+export { getCertificates }
 import { getNetwork } from './getNetwork'
+export { getNetwork }
 import { getPublicKey } from './getPublicKey'
+export { getPublicKey }
 import { getTransactionOutputs } from './getTransactionOutputs'
+export { getTransactionOutputs }
 import { getVersion } from './getVersion'
+export { getVersion }
 import { isAuthenticated } from './isAuthenticated'
+export { isAuthenticated }
 import { listActions } from './listActions'
+export { listActions }
 import { proveCertificate } from './proveCertificate'
+export { proveCertificate }
 import { requestGroupPermission } from './requestGroupPermission'
+export { requestGroupPermission }
 import { revealKeyLinkage, revealKeyLinkageCounterparty, revealKeyLinkageSpecific } from './revealKeyLinkage'
+export { revealKeyLinkage, revealKeyLinkageCounterparty, revealKeyLinkageSpecific }
 import { submitDirectTransaction } from './submitDirectTransaction'
+export { submitDirectTransaction }
 import { unbasketOutput } from './unbasketOutput'
+export { unbasketOutput }
 import { verifyHmac } from './verifyHmac'
+export { verifyHmac }
 import { verifySignature } from './verifySignature'
+export { verifySignature }
 import { waitForAuthentication } from './waitForAuthentication'
+export { waitForAuthentication }
 
 export * from './types'
 

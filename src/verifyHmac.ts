@@ -14,7 +14,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  *
  * @returns {Promise<Boolean>} Whether the HMAC has been erified.
  */
-async function verifyHmac(args: {
+export async function verifyHmac(args: {
   data: Uint8Array | string,
   hmac: Uint8Array | string,
   protocolID: ProtocolID,
@@ -51,5 +51,4 @@ async function verifyHmac(args: {
   return r as boolean
 }
 
-export { verifyHmac }
 export default verifyHmac

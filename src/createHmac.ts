@@ -13,7 +13,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  *
  * @returns {Promise<Uint8Array>} The SHA-256 HMAC of the data.
  */
-async function createHmac(args: {
+export async function createHmac(args: {
   data: Uint8Array | string,
   protocolID: ProtocolID,
   keyID: string,
@@ -40,5 +40,4 @@ async function createHmac(args: {
   return r as Uint8Array
 }
 
-export { createHmac }
 export default createHmac

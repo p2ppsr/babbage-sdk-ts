@@ -10,7 +10,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * and whose values are arrays of fields to request from certificates of the given type.
  * @returns {Promise<CreateCertificateResult[]>} An object containing the found certificates
  */
-async function getCertificates(args: {
+export async function getCertificates(args: {
   certifiers: string[],
   types: Record<string, string[]>
 })
@@ -29,5 +29,4 @@ async function getCertificates(args: {
   return r as CreateCertificateResult[]
 }
 
-export { getCertificates }
 export default getCertificates

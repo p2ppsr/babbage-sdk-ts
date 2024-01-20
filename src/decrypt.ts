@@ -26,7 +26,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  *
  * @returns {Promise<string|Uint8Array>} The decrypted plaintext.
  */
-async function decrypt(args: {
+export async function decrypt(args: {
   ciphertext: string | Uint8Array,
   protocolID: ProtocolID,
   keyID: string,
@@ -76,7 +76,7 @@ async function decrypt(args: {
  *
  * @returns {Promise<string>} The decrypted plaintext.
  */
-async function decryptAsString(args: {
+export async function decryptAsString(args: {
   ciphertext: string | Uint8Array,
   protocolID: ProtocolID,
   keyID: string,
@@ -113,7 +113,7 @@ async function decryptAsString(args: {
  *
  * @returns {Promise<Uint8Array>} The decrypted plaintext.
  */
-async function decryptAsArray(args: {
+export async function decryptAsArray(args: {
   ciphertext: string | Uint8Array,
   protocolID: ProtocolID,
   keyID: string,
@@ -127,5 +127,4 @@ async function decryptAsArray(args: {
   }) as Promise<Uint8Array>
 }
 
-export { decrypt, decryptAsString, decryptAsArray }
 export default decrypt

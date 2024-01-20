@@ -9,7 +9,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * @param {Number} [args.offset=0] Provide an offset into the list of outputs.
  * @returns {Promise<ListActionsResult>} A set of outputs that match the criteria
  */
-async function listActions(args: {
+export async function listActions(args: {
   label: string,
   limit?: number, // = 25,
   offset?: number // = 0
@@ -31,5 +31,4 @@ async function listActions(args: {
   return r as ListActionsResult
 }
 
-export { listActions }
 export default listActions

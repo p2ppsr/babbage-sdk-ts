@@ -16,7 +16,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  *
 * @returns {Promise<string>} The user's public key
  */
-async function getPublicKey(args: {
+export async function getPublicKey(args: {
   protocolID: ProtocolID,
   keyID: string,
   privileged?: boolean, // = false,
@@ -44,5 +44,4 @@ async function getPublicKey(args: {
   return r as string
 }
 
-export { getPublicKey }
 export default getPublicKey

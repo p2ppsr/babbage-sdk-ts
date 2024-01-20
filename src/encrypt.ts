@@ -17,7 +17,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  *
  * @returns {Promise<string|Uint8Array>} The encrypted ciphertext.
  */
-async function encrypt(args: {
+export async function encrypt(args: {
   plaintext: string | Uint8Array,
   protocolID: ProtocolID,
   keyID: string,
@@ -59,7 +59,7 @@ async function encrypt(args: {
  *
  * @returns {Promise<string>} The encrypted ciphertext.
  */
-async function encryptAsString(args: {
+export async function encryptAsString(args: {
   plaintext: string | Uint8Array,
   protocolID: string,
   keyID: string,
@@ -88,7 +88,7 @@ async function encryptAsString(args: {
  *
  * @returns {Promise<Uint8Array>} The encrypted ciphertext.
  */
-async function encryptAsArray(args: {
+export async function encryptAsArray(args: {
   plaintext: string | Uint8Array,
   protocolID: string,
   keyID: string,
@@ -102,5 +102,4 @@ async function encryptAsArray(args: {
   }) as Promise<Uint8Array>
 }
 
-export { encrypt, encryptAsString, encryptAsArray }
 export default encrypt

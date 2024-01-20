@@ -12,7 +12,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * @param {number} [args.vout] The output index in the transaction.
  * @param {String} [args.basket] The name of the basket from which to remove the output.
  */
-async function unbasketOutput(args: {
+export async function unbasketOutput(args: {
   txid: string,
   vout: number,
   basket: string
@@ -30,5 +30,4 @@ async function unbasketOutput(args: {
   })
 }
 
-export { unbasketOutput }
 export default unbasketOutput

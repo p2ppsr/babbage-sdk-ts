@@ -10,7 +10,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * @param {boolean} args.dangerouslyDisableMapi Optional. Disables returning mAPI responses with created transaction, dramatically improving performance while removing the ability of recipients to check for double-spends by checking mAPI signatures.
  * @returns {Promise<CreateActionResult>} An Action object containing "txid", "rawTx" "mapiResponses" and "inputs".
  */
-async function createAction(args: {
+export async function createAction(args: {
   inputs: Record<string, CreateActionInput>,
   outputs: CreateActionOutput[],
   lockTime?: number,
@@ -34,5 +34,4 @@ async function createAction(args: {
   return r as CreateActionResult
 }
 
-export { createAction }
 export default createAction

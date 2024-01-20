@@ -15,7 +15,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  *
  * @returns {Promise<Uint8Array>} The ECDSA message signature.
  */
-async function createSignature(args: {
+export async function createSignature(args: {
   data: Uint8Array | string,
   protocolID: ProtocolID,
   keyID: string,
@@ -42,5 +42,4 @@ async function createSignature(args: {
   return r as Uint8Array
 }
 
-export { createSignature }
 export default createSignature

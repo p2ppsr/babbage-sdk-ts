@@ -1187,12 +1187,19 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ---
 ### Functions
 
-| |
-| --- |
-| [connectToSubstrate](#function-connecttosubstrate) |
-| [getRandomID](#function-getrandomid) |
-| [makeHttpRequest](#function-makehttprequest) |
-| [promiseWithTimeout](#function-promisewithtimeout) |
+| | | |
+| --- | --- | --- |
+| [connectToSubstrate](#function-connecttosubstrate) | [getCertificates](#function-getcertificates) | [requestGroupPermission](#function-requestgrouppermission) |
+| [createAction](#function-createaction) | [getNetwork](#function-getnetwork) | [revealKeyLinkage](#function-revealkeylinkage) |
+| [createCertificate](#function-createcertificate) | [getPublicKey](#function-getpublickey) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
+| [createHmac](#function-createhmac) | [getRandomID](#function-getrandomid) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
+| [createSignature](#function-createsignature) | [getTransactionOutputs](#function-gettransactionoutputs) | [submitDirectTransaction](#function-submitdirecttransaction) |
+| [decrypt](#function-decrypt) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
+| [decryptAsArray](#function-decryptasarray) | [isAuthenticated](#function-isauthenticated) | [verifyHmac](#function-verifyhmac) |
+| [decryptAsString](#function-decryptasstring) | [listActions](#function-listactions) | [verifySignature](#function-verifysignature) |
+| [encrypt](#function-encrypt) | [makeHttpRequest](#function-makehttprequest) | [waitForAuthentication](#function-waitforauthentication) |
+| [encryptAsArray](#function-encryptasarray) | [promiseWithTimeout](#function-promisewithtimeout) |  |
+| [encryptAsString](#function-encryptasstring) | [proveCertificate](#function-provecertificate) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -1247,6 +1254,856 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ```ts
 export default async function connectToSubstrate(): Promise<Communicator> 
 ```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: createAction
+
+Creates and broadcasts a BitCoin transaction with the provided inputs and outputs.
+
+```ts
+export async function createAction(args: {
+    inputs: Record<string, CreateActionInput>;
+    outputs: CreateActionOutput[];
+    lockTime?: number;
+    description: string;
+    dangerouslyDisableMapi?: boolean;
+}): Promise<CreateActionResult> 
+```
+
+<details>
+
+<summary>Function createAction Details</summary>
+
+Returns
+
+An Action object containing "txid", "rawTx" "mapiResponses" and "inputs".
+
+Argument Details
+
++ **args**
+  + All parameters for this function are provided in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: createHmac
+
+Creates a SHA-256 HMAC with a key belonging to the user.
+
+```ts
+export async function createHmac(args: {
+    data: Uint8Array | string;
+    protocolID: ProtocolID;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+}): Promise<Uint8Array> 
+```
+
+<details>
+
+<summary>Function createHmac Details</summary>
+
+Returns
+
+The SHA-256 HMAC of the data.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: createCertificate
+
+Creates a signed certificate
+
+```ts
+export async function createCertificate(args: {
+    certificateType: string;
+    fieldObject: Record<string, string>;
+    certifierUrl: string;
+    certifierPublicKey: string;
+}): Promise<CreateCertificateResult> 
+```
+
+<details>
+
+<summary>Function createCertificate Details</summary>
+
+Returns
+
+A signed certificate
+
+Argument Details
+
++ **args**
+  + All parameters for this function are provided in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: createSignature
+
+Creates a digital signature with a key belonging to the user. The SHA-256 hash of the data is used with ECDSA.
+
+To allow other users to externally verify the signature, use getPublicKey with the same protocolID, keyID and privileged parameters. The signature should be valid under that public key.
+
+```ts
+export async function createSignature(args: {
+    data: Uint8Array | string;
+    protocolID: ProtocolID;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+}): Promise<Uint8Array> 
+```
+
+<details>
+
+<summary>Function createSignature Details</summary>
+
+Returns
+
+The ECDSA message signature.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: encrypt
+
+Encrypts data with a key belonging to the user.
+If a counterparty is provided, also allows the counterparty to decrypt the data.
+The same protocolID, keyID, counterparty and privileged parameters must be used when decrypting.
+
+```ts
+export async function encrypt(args: {
+    plaintext: string | Uint8Array;
+    protocolID: ProtocolID;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+    returnType?: "Uint8Array" | "string";
+}): Promise<string | Uint8Array> 
+```
+
+<details>
+
+<summary>Function encrypt Details</summary>
+
+Returns
+
+The encrypted ciphertext.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: encryptAsString
+
+Encrypts data with a key belonging to the user.
+If a counterparty is provided, also allows the counterparty to decrypt the data.
+The same protocolID, keyID, counterparty and privileged parameters must be used when decrypting.
+
+```ts
+export async function encryptAsString(args: {
+    plaintext: string | Uint8Array;
+    protocolID: string;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+}): Promise<string> 
+```
+
+<details>
+
+<summary>Function encryptAsString Details</summary>
+
+Returns
+
+The encrypted ciphertext.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: encryptAsArray
+
+Encrypts data with a key belonging to the user.
+If a counterparty is provided, also allows the counterparty to decrypt the data.
+The same protocolID, keyID, counterparty and privileged parameters must be used when decrypting.
+
+```ts
+export async function encryptAsArray(args: {
+    plaintext: string | Uint8Array;
+    protocolID: string;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+}): Promise<Uint8Array> 
+```
+
+<details>
+
+<summary>Function encryptAsArray Details</summary>
+
+Returns
+
+The encrypted ciphertext.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: decrypt
+
+Decrypts data with a key belonging to the user.
+The same protocolID, keyID, counterparty and privileged parameters that were used during encryption
+must be used to successfully decrypt.
+
+```ts
+export async function decrypt(args: {
+    ciphertext: string | Uint8Array;
+    protocolID: ProtocolID;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+    returnType?: "Uint8Array" | "string";
+}): Promise<string | Uint8Array> 
+```
+
+<details>
+
+<summary>Function decrypt Details</summary>
+
+Returns
+
+The decrypted plaintext.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: decryptAsString
+
+Decrypts data with a key belonging to the user.
+The same protocolID, keyID, counterparty and privileged parameters that were used during encryption
+must be used to successfully decrypt.
+
+```ts
+export async function decryptAsString(args: {
+    ciphertext: string | Uint8Array;
+    protocolID: ProtocolID;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+}): Promise<string> 
+```
+
+<details>
+
+<summary>Function decryptAsString Details</summary>
+
+Returns
+
+The decrypted plaintext.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: decryptAsArray
+
+Decrypts data with a key belonging to the user.
+The same protocolID, keyID, counterparty and privileged parameters that were used during encryption
+must be used to successfully decrypt.
+
+```ts
+export async function decryptAsArray(args: {
+    ciphertext: string | Uint8Array;
+    protocolID: ProtocolID;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+}): Promise<Uint8Array> 
+```
+
+<details>
+
+<summary>Function decryptAsArray Details</summary>
+
+Returns
+
+The decrypted plaintext.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: getCertificates
+
+Returns found certificates
+
+```ts
+export async function getCertificates(args: {
+    certifiers: string[];
+    types: Record<string, string[]>;
+}): Promise<CreateCertificateResult[]> 
+```
+
+<details>
+
+<summary>Function getCertificates Details</summary>
+
+Returns
+
+An object containing the found certificates
+
+Argument Details
+
++ **obj**
+  + All parameters for this function are provided in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: getNetwork
+
+Returns the current network (main or test)
+
+```ts
+export async function getNetwork(): Promise<string> 
+```
+
+<details>
+
+<summary>Function getNetwork Details</summary>
+
+Returns
+
+The current network (e.g. "main")
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: getPublicKey
+
+Returns the public key. If identityKey is specified, returns the current user's identity key. If a counterparty is specified, derives a public key for the counterparty.
+
+```ts
+export async function getPublicKey(args: {
+    protocolID: ProtocolID;
+    keyID: string;
+    privileged?: boolean;
+    identityKey?: boolean;
+    reason?: string;
+    counterparty?: string;
+    forSelf?: boolean;
+}): Promise<string> 
+```
+
+<details>
+
+<summary>Function getPublicKey Details</summary>
+
+Returns
+
+The user's public key
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: getTransactionOutputs
+
+Returns a set of transaction outputs that Dojo has tracked
+
+```ts
+export async function getTransactionOutputs(args: {
+    basket?: string;
+    tracked?: boolean;
+    includeEnvelope?: boolean;
+    includeCustomInstructions?: boolean;
+    spendable?: boolean;
+    type?: string;
+    limit?: number;
+    offset?: number;
+}): Promise<GetTransactionOutputResult[]> 
+```
+
+<details>
+
+<summary>Function getTransactionOutputs Details</summary>
+
+Returns
+
+A set of outputs that match the criteria
+
+Argument Details
+
++ **args**
+  + All parameters are given in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: getVersion
+
+Returns the current version of the kernal
+
+```ts
+export async function getVersion(): Promise<string> 
+```
+
+<details>
+
+<summary>Function getVersion Details</summary>
+
+Returns
+
+The current kernel version (e.g. "0.3.49")
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: isAuthenticated
+
+Checks if a user is currently authenticated.
+
+```ts
+export async function isAuthenticated(): Promise<boolean> 
+```
+
+<details>
+
+<summary>Function isAuthenticated Details</summary>
+
+Returns
+
+Returns whether a user is currently authenticated.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: listActions
+
+Returns a list of Actions with a given label
+
+```ts
+export async function listActions(args: {
+    label: string;
+    limit?: number;
+    offset?: number;
+}): Promise<ListActionsResult> 
+```
+
+<details>
+
+<summary>Function listActions Details</summary>
+
+Returns
+
+A set of outputs that match the criteria
+
+Argument Details
+
++ **args**
+  + All parameters are given in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: proveCertificate
+
+Creates certificate proof specifically for verifier
+
+```ts
+export async function proveCertificate(args: {
+    certificate: CertificateApi;
+    fieldsToReveal: string[];
+    verifierPublicIdentityKey: string;
+}): Promise<ProveCertificateResult> 
+```
+
+<details>
+
+<summary>Function proveCertificate Details</summary>
+
+Returns
+
+A certificate for presentation to the verifier for field examination
+
+Argument Details
+
++ **args**
+  + All parameters for this function are provided in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: requestGroupPermission
+
+Requests group permissions for an application.
+
+```ts
+export async function requestGroupPermission(): Promise<void> 
+```
+
+<details>
+
+<summary>Function requestGroupPermission Details</summary>
+
+Returns
+
+Resolves after group permissions are completed by the user.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: revealKeyLinkage
+
+Reveals the linkage between a key held by this user and a key held by another user.
+In one mode, reveals all keys associated with a counterparty,
+in the other mode reveals only the linkage of a specific interaction.
+
+Encrypts the linkage value so that only the specified verifier can access it.
+Refer to [BRC-72](https://brc.dev/72) for full details.
+
+```ts
+export async function revealKeyLinkage(args: {
+    mode: "counterparty" | "specific";
+    counterparty: string;
+    verifier: string;
+    protocolID: ProtocolID;
+    keyID: string;
+    description: string;
+    privileged?: boolean;
+}): Promise<CounterpartyKeyLinkageResult | SpecificKeyLinkageResult> 
+```
+
+<details>
+
+<summary>Function revealKeyLinkage Details</summary>
+
+Returns
+
+The revealed linkage payload, as described in [BRC-72](https://brc.dev/72).
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: revealKeyLinkageCounterparty
+
+Reveals the linkage between a key held by this user and a key held by another user.
+Reveals all keys associated with a counterparty,
+
+Encrypts the linkage value so that only the specified verifier can access it.
+Refer to [BRC-72](https://brc.dev/72) for full details.
+
+```ts
+export async function revealKeyLinkageCounterparty(args: {
+    counterparty: string;
+    verifier: string;
+    protocolID: ProtocolID;
+    description: string;
+    privileged?: boolean;
+}): Promise<CounterpartyKeyLinkageResult> 
+```
+
+<details>
+
+<summary>Function revealKeyLinkageCounterparty Details</summary>
+
+Returns
+
+The revealed linkage payload, as described in [BRC-72](https://brc.dev/72).
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: revealKeyLinkageSpecific
+
+Reveals the linkage between a key held by this user and a key held by another user.
+Reveals only the linkage of a specific interaction.
+
+Encrypts the linkage value so that only the specified verifier can access it.
+Refer to [BRC-72](https://brc.dev/72) for full details.
+
+```ts
+export async function revealKeyLinkageSpecific(args: {
+    counterparty: string;
+    verifier: string;
+    protocolID: ProtocolID;
+    keyID: string;
+    description: string;
+    privileged?: boolean;
+}): Promise<SpecificKeyLinkageResult> 
+```
+
+<details>
+
+<summary>Function revealKeyLinkageSpecific Details</summary>
+
+Returns
+
+The revealed linkage payload, as described in [BRC-72](https://brc.dev/72).
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: submitDirectTransaction
+
+Submits a transaction directly to a ninja
+
+```ts
+export async function submitDirectTransaction(args: {
+    protocol?: string;
+    transaction: SubmitDirectTransaction;
+    senderIdentityKey: string;
+    note: string;
+    amount: number;
+    derivationPrefix: string;
+}): Promise<SubmitDirectTransactionResult> 
+```
+
+<details>
+
+<summary>Function submitDirectTransaction Details</summary>
+
+Returns
+
+Object containing reference number, status=success, and human-readable note acknowledging the transaction
+
+Argument Details
+
++ **obj**
+  + All parameters for this function are provided in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: unbasketOutput
+
+Removes the uniquely identified output's basket assignment.
+
+The output will no longer belong to any basket.
+
+This is typically only useful for outputs that are no longer usefull.
+
+```ts
+export async function unbasketOutput(args: {
+    txid: string;
+    vout: number;
+    basket: string;
+}): Promise<void> 
+```
+
+<details>
+
+<summary>Function unbasketOutput Details</summary>
+
+Argument Details
+
++ **args**
+  + All parameters are given in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: verifyHmac
+
+Verifies that a SHA-256 HMAC was created with a key that belongs to the user.
+
+```ts
+export async function verifyHmac(args: {
+    data: Uint8Array | string;
+    hmac: Uint8Array | string;
+    protocolID: ProtocolID;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+}): Promise<boolean> 
+```
+
+<details>
+
+<summary>Function verifyHmac Details</summary>
+
+Returns
+
+Whether the HMAC has been erified.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: verifySignature
+
+Verifies that a digital signature was created with a key belonging to the user.
+
+```ts
+export async function verifySignature(args: {
+    data: Uint8Array | string;
+    signature: Uint8Array | string;
+    protocolID: ProtocolID;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+    reason?: string;
+}): Promise<boolean> 
+```
+
+<details>
+
+<summary>Function verifySignature Details</summary>
+
+Returns
+
+An whether the signature was successfully verified.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: waitForAuthentication
+
+Waits for a user to be authenticated.
+
+```ts
+export async function waitForAuthentication(): Promise<boolean> 
+```
+
+<details>
+
+<summary>Function waitForAuthentication Details</summary>
+
+Returns
+
+Always returns true
+
+</details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 

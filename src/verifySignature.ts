@@ -15,7 +15,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  *
  * @returns {Promise<boolean>} An whether the signature was successfully verified.
  */
-async function verifySignature(args: {
+export async function verifySignature(args: {
   data: Uint8Array | string,
   signature: Uint8Array | string,
   protocolID: ProtocolID,
@@ -54,5 +54,4 @@ async function verifySignature(args: {
   return r as boolean
 }
 
-export { verifySignature }
 export default verifySignature

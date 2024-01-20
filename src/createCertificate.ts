@@ -10,7 +10,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * @param {string} args.certifierPublicKey The public identity key of the certifier signing the certificate
  * @returns {Promise<CreateCertificateResult>} A signed certificate
  */
-async function createCertificate(args: {
+export async function createCertificate(args: {
   certificateType: string,
   fieldObject: Record<string, string>,
   certifierUrl: string,
@@ -32,5 +32,4 @@ async function createCertificate(args: {
   return r as CreateCertificateResult
 }
 
-export { createCertificate }
 export default createCertificate

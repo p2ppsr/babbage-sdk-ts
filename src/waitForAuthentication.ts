@@ -4,7 +4,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  *
  * @returns {Promise<true>} Always returns true
 */
-async function waitForAuthentication() : Promise<boolean> {
+export async function waitForAuthentication() : Promise<boolean> {
   const connection = await connectToSubstrate()
   const r = await connection.dispatch({
     name: 'waitForAuthentication',
@@ -13,5 +13,4 @@ async function waitForAuthentication() : Promise<boolean> {
   return r as boolean
 }
 
-export { waitForAuthentication }
 export default waitForAuthentication

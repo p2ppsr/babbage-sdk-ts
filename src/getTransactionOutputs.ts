@@ -14,7 +14,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * @param {number} [args.offset] Provide an offset into the list of outputs.
  * @returns {Promise<Array<TransactionOutputDescriptor>>} A set of outputs that match the criteria
  */
-async function getTransactionOutputs(args: {
+export async function getTransactionOutputs(args: {
   basket?: string,
   tracked?: boolean,
   includeEnvelope?: boolean, // = false,
@@ -45,5 +45,4 @@ async function getTransactionOutputs(args: {
   return r as GetTransactionOutputResult[]
 }
 
-export { getTransactionOutputs }
 export default getTransactionOutputs

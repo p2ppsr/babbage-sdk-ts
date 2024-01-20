@@ -9,7 +9,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * @param {string} args.verifierPublicIdentityKey The public identity key of the verifier
  * @returns {Promise<ProveCertificateResult>} A certificate for presentation to the verifier for field examination
  */
-async function proveCertificate(args: {
+export async function proveCertificate(args: {
   certificate: CertificateApi,
   fieldsToReveal: string[],
   verifierPublicIdentityKey: string
@@ -29,5 +29,4 @@ async function proveCertificate(args: {
   return r as ProveCertificateResult
 }
 
-export { proveCertificate }
 export default proveCertificate
