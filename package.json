@@ -14,14 +14,15 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "build:tsc": "tsc --build",
+    "build": "tsc --build",
     "build:readme": "npx ts2md",
-    "build:start": "webpack serve --config webpack.dev.js",
-    "build:prod": "webpack --config webpack.prod.js",
     "doc": "npm run build:tsc",
-    "start": "npm run build:tsc && npm run build:start",
-    "build": "npm run build:tsc && npm run build:prod",
-    "prepublishOnly": "npm run build"
+    "_build:tsc": "tsc --build",
+    "_start": "npm run build:tsc && npm run build:start",
+    "_build": "npm run build:tsc && npm run build:prod",
+    "_build:start": "webpack serve --config webpack.dev.js",
+    "_build:prod": "webpack --config webpack.prod.js",
+    "_prepublishOnly": "npm run build"
   },
   "bugs": {
     "url": "https://github.com/p2ppsr/babbage-sdk/issues"
