@@ -288,6 +288,28 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ---
 #### Interface: EnvelopeApi
 
+Simplest case of an envelope is a `rawTx` and merkle `proof` that ties the transaction to a known block header.
+This will be the case for any sufficiently old transaction.
+
+If the transaction has been mined but for some reason the block headers may not be known, an array of `headers` linking
+known headers to the one needed by the `proof` may be provided. They must be in height order and need to overlap
+a known header.
+
+If the transaction has not been minded yet but it has been submitted to one or more miners then the mapi responses
+received, proving that specific miners have received the transaction for processing, are included in the
+mapiResponses array.
+Note that the miner reputations must be checked to give weight to these responses.
+
+Additionally, when the transaction hasn't been mined or a `proof` is unavailable and mapi responses proving miner
+acceptance are unavailable, then all the transactions providing inputs can be submitted in an inputs object.
+
+The keys of the inputs object are the transaction hashes (txids) of each of the input transactions.
+The value of each inputs object property is another envelope object.
+
+References:
+Section 2 of https://projectbabbage.com/assets/simplified-payments.pdf
+https://gist.github.com/ty-everett/44b6a0e7f3d6c48439f9ff26068f8d8b
+
 ```ts
 export interface EnvelopeApi extends EnvelopeEvidenceApi {
     headers?: string[];
@@ -693,7 +715,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 export interface ListActionsTransaction {
     txid: string;
     amount: number;
-    status: string;
+    status: TransactionStatusApi;
     senderPaymail: string;
     recipientPaymail: string;
     isOutgoing: boolean;
@@ -768,7 +790,7 @@ senderPaymail: string
 The current state of the transaction. Common statuses are `completed` and `unproven`.
 
 ```ts
-status: string
+status: TransactionStatusApi
 ```
 
 ##### Property txid
@@ -1126,6 +1148,7 @@ export interface SubmitDirectTransactionOutput {
     derivationSuffix?: string;
     customInstructions?: string;
     senderIdentityKey?: string;
+    tags?: string[];
 }
 ```
 
@@ -2110,6 +2133,15 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ---
 ### Types
 
+| |
+| --- |
+| [ProtocolID](#type-protocolid) |
+| [TransactionStatusApi](#type-transactionstatusapi) |
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+
 #### Type: ProtocolID
 
 ```ts
@@ -2117,6 +2149,15 @@ export type ProtocolID = string | [
     0 | 1 | 2,
     string
 ]
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Type: TransactionStatusApi
+
+```ts
+export type TransactionStatusApi = "completed" | "failed" | "unprocessed" | "sending" | "unproven" | "unsigned"
 ```
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
