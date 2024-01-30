@@ -52,6 +52,7 @@ export async function getTransactionOutputs(args: {
       offset: args.offset || 0
     },
     bodyJsonParams: true,
+    isGet: false,
     isNinja: true
   })
   return r as GetTransactionOutputResult[]
