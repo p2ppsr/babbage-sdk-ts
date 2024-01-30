@@ -12,8 +12,8 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * @returns {Promise<CreateActionResult>} An Action object containing "txid", "rawTx" "mapiResponses" and "inputs".
  */
 export async function createAction(args: {
-  inputs: Record<string, CreateActionInput>,
-  outputs: CreateActionOutput[],
+  inputs?: Record<string, CreateActionInput>,
+  outputs?: CreateActionOutput[],
   lockTime?: number,
   description: string,
   labels?: string[],
