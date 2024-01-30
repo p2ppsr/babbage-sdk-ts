@@ -1212,17 +1212,17 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [connectToSubstrate](#function-connecttosubstrate) | [getCertificates](#function-getcertificates) | [requestGroupPermission](#function-requestgrouppermission) |
-| [createAction](#function-createaction) | [getNetwork](#function-getnetwork) | [revealKeyLinkage](#function-revealkeylinkage) |
-| [createCertificate](#function-createcertificate) | [getPublicKey](#function-getpublickey) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
-| [createHmac](#function-createhmac) | [getRandomID](#function-getrandomid) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
-| [createSignature](#function-createsignature) | [getTransactionOutputs](#function-gettransactionoutputs) | [submitDirectTransaction](#function-submitdirecttransaction) |
-| [decrypt](#function-decrypt) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
-| [decryptAsArray](#function-decryptasarray) | [isAuthenticated](#function-isauthenticated) | [verifyHmac](#function-verifyhmac) |
-| [decryptAsString](#function-decryptasstring) | [listActions](#function-listactions) | [verifySignature](#function-verifysignature) |
+| [connectToSubstrate](#function-connecttosubstrate) | [encryptAsArray](#function-encryptasarray) | [promiseWithTimeout](#function-promisewithtimeout) |
+| [createAction](#function-createaction) | [encryptAsString](#function-encryptasstring) | [proveCertificate](#function-provecertificate) |
+| [createCertificate](#function-createcertificate) | [getCertificates](#function-getcertificates) | [requestGroupPermission](#function-requestgrouppermission) |
+| [createHmac](#function-createhmac) | [getNetwork](#function-getnetwork) | [revealKeyLinkage](#function-revealkeylinkage) |
+| [createSignature](#function-createsignature) | [getPublicKey](#function-getpublickey) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
+| [decrypt](#function-decrypt) | [getRandomID](#function-getrandomid) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
+| [decryptAsArray](#function-decryptasarray) | [getTransactionOutputs](#function-gettransactionoutputs) | [submitDirectTransaction](#function-submitdirecttransaction) |
+| [decryptAsString](#function-decryptasstring) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
+| [discoverByAttributes](#function-discoverbyattributes) | [isAuthenticated](#function-isauthenticated) | [verifyHmac](#function-verifyhmac) |
+| [discoverByIdentityKey](#function-discoverbyidentitykey) | [listActions](#function-listactions) | [verifySignature](#function-verifysignature) |
 | [encrypt](#function-encrypt) | [makeHttpRequest](#function-makehttprequest) | [waitForAuthentication](#function-waitforauthentication) |
-| [encryptAsArray](#function-encryptasarray) | [promiseWithTimeout](#function-promisewithtimeout) |  |
-| [encryptAsString](#function-encryptasstring) | [proveCertificate](#function-provecertificate) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -1291,6 +1291,7 @@ export async function createAction(args: {
     outputs: CreateActionOutput[];
     lockTime?: number;
     description: string;
+    labels?: string[];
     dangerouslyDisableMapi?: boolean;
 }): Promise<CreateActionResult> 
 ```
@@ -1412,112 +1413,6 @@ Argument Details
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Function: encrypt
-
-Encrypts data with a key belonging to the user.
-If a counterparty is provided, also allows the counterparty to decrypt the data.
-The same protocolID, keyID, counterparty and privileged parameters must be used when decrypting.
-
-```ts
-export async function encrypt(args: {
-    plaintext: string | Uint8Array;
-    protocolID: ProtocolID;
-    keyID: string;
-    description?: string;
-    counterparty?: string;
-    privileged?: boolean;
-    returnType?: "Uint8Array" | "string";
-}): Promise<string | Uint8Array> 
-```
-
-<details>
-
-<summary>Function encrypt Details</summary>
-
-Returns
-
-The encrypted ciphertext.
-
-Argument Details
-
-+ **args**
-  + All parameters are passed in an object.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: encryptAsString
-
-Encrypts data with a key belonging to the user.
-If a counterparty is provided, also allows the counterparty to decrypt the data.
-The same protocolID, keyID, counterparty and privileged parameters must be used when decrypting.
-
-```ts
-export async function encryptAsString(args: {
-    plaintext: string | Uint8Array;
-    protocolID: string;
-    keyID: string;
-    description?: string;
-    counterparty?: string;
-    privileged?: boolean;
-}): Promise<string> 
-```
-
-<details>
-
-<summary>Function encryptAsString Details</summary>
-
-Returns
-
-The encrypted ciphertext.
-
-Argument Details
-
-+ **args**
-  + All parameters are passed in an object.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: encryptAsArray
-
-Encrypts data with a key belonging to the user.
-If a counterparty is provided, also allows the counterparty to decrypt the data.
-The same protocolID, keyID, counterparty and privileged parameters must be used when decrypting.
-
-```ts
-export async function encryptAsArray(args: {
-    plaintext: string | Uint8Array;
-    protocolID: string;
-    keyID: string;
-    description?: string;
-    counterparty?: string;
-    privileged?: boolean;
-}): Promise<Uint8Array> 
-```
-
-<details>
-
-<summary>Function encryptAsArray Details</summary>
-
-Returns
-
-The encrypted ciphertext.
-
-Argument Details
-
-+ **args**
-  + All parameters are passed in an object.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
 #### Function: decrypt
 
 Decrypts data with a key belonging to the user.
@@ -1624,6 +1519,162 @@ Argument Details
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: discoverByAttributes
+
+Resolves identity information by attributes from the user's trusted certifiers.
+
+```ts
+export async function discoverByAttributes(args: {
+    attributes: Record<string, string>;
+    description: string;
+}): Promise<object[]> 
+```
+
+<details>
+
+<summary>Function discoverByAttributes Details</summary>
+
+Argument Details
+
++ **obj**
+  + All parameters are provided in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: discoverByIdentityKey
+
+Resolves identity information by identity key from the user's trusted certifiers.
+
+```ts
+export async function discoverByIdentityKey(args: {
+    identityKey: string;
+    description: string;
+}): Promise<object[]> 
+```
+
+<details>
+
+<summary>Function discoverByIdentityKey Details</summary>
+
+Argument Details
+
++ **obj**
+  + All parameters are provided in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: encrypt
+
+Encrypts data with a key belonging to the user.
+If a counterparty is provided, also allows the counterparty to decrypt the data.
+The same protocolID, keyID, counterparty and privileged parameters must be used when decrypting.
+
+```ts
+export async function encrypt(args: {
+    plaintext: string | Uint8Array;
+    protocolID: ProtocolID;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+    returnType?: "Uint8Array" | "string";
+}): Promise<string | Uint8Array> 
+```
+
+<details>
+
+<summary>Function encrypt Details</summary>
+
+Returns
+
+The encrypted ciphertext.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: encryptAsString
+
+Encrypts data with a key belonging to the user.
+If a counterparty is provided, also allows the counterparty to decrypt the data.
+The same protocolID, keyID, counterparty and privileged parameters must be used when decrypting.
+
+```ts
+export async function encryptAsString(args: {
+    plaintext: string | Uint8Array;
+    protocolID: string;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+}): Promise<string> 
+```
+
+<details>
+
+<summary>Function encryptAsString Details</summary>
+
+Returns
+
+The encrypted ciphertext.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: encryptAsArray
+
+Encrypts data with a key belonging to the user.
+If a counterparty is provided, also allows the counterparty to decrypt the data.
+The same protocolID, keyID, counterparty and privileged parameters must be used when decrypting.
+
+```ts
+export async function encryptAsArray(args: {
+    plaintext: string | Uint8Array;
+    protocolID: string;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+}): Promise<Uint8Array> 
+```
+
+<details>
+
+<summary>Function encryptAsArray Details</summary>
+
+Returns
+
+The encrypted ciphertext.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: getCertificates
 
 Returns found certificates
@@ -1716,10 +1767,14 @@ Returns a set of transaction outputs that Dojo has tracked
 export async function getTransactionOutputs(args: {
     basket?: string;
     tracked?: boolean;
-    includeEnvelope?: boolean;
-    includeCustomInstructions?: boolean;
     spendable?: boolean;
+    tags?: string[];
     type?: string;
+    includeEnvelope?: boolean;
+    includeBasket?: boolean;
+    includeCustomInstructions?: boolean;
+    includeTags?: boolean;
+    tagQueryMode?: "all" | "any";
     limit?: number;
     offset?: number;
 }): Promise<GetTransactionOutputResult[]> 
@@ -1792,6 +1847,9 @@ Returns a list of Actions with a given label
 ```ts
 export async function listActions(args: {
     label: string;
+    addInputsAndOutputs?: boolean;
+    includeBasket?: boolean;
+    includeTags?: boolean;
     limit?: number;
     offset?: number;
 }): Promise<ListActionsResult> 
@@ -1989,6 +2047,7 @@ export async function submitDirectTransaction(args: {
     senderIdentityKey: string;
     note: string;
     amount: number;
+    labels?: string[];
     derivationPrefix: string;
 }): Promise<SubmitDirectTransactionResult> 
 ```
@@ -2003,7 +2062,7 @@ Object containing reference number, status=success, and human-readable note ackn
 
 Argument Details
 
-+ **obj**
++ **args**
   + All parameters for this function are provided in an object
 
 </details>
@@ -2176,6 +2235,8 @@ BabbageSDK = {
     decrypt,
     decryptAsArray,
     decryptAsString,
+    discoverByAttributes,
+    discoverByIdentityKey,
     encrypt,
     encryptAsArray,
     encryptAsString,
