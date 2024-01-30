@@ -96,7 +96,7 @@ export class Communicator {
             q += `${k}=${encodeURIComponent(v)}`
           }
         }
-        q = `http://localhost:3301/v1/${args.nameHttp || args.name}${q}`
+        q = `http://localhost:3301/v1/${args.isNinja ? 'ninja/' : ''}${args.nameHttp || args.name}${q}`
         const httpResult =
           args.bodyJsonParams
           ? await makeHttpRequest(
