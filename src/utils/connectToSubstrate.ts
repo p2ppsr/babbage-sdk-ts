@@ -89,14 +89,16 @@ export class Communicator {
     switch (this.substrate) {
       case 'cicada-api': {
         let q = ''
-        for (const [k, v] of Object.entries(args.params)) {
-          if (k === args.bodyParamKey) continue
-          q += !q ? '?' : '&'
-          q += `${k}=${encodeURIComponent(v)}`
+        if (!args.bodyJsonParams) {
+          for (const [k, v] of Object.entries(args.params)) {
+            if (k === args.bodyParamKey) continue
+            q += !q ? '?' : '&'
+            q += `${k}=${encodeURIComponent(v)}`
+          }
         }
         q = `http://localhost:3301/v1/${args.nameHttp || args.name}${q}`
         const httpResult =
-          !args.bodyParamKey
+          args.bodyJsonParams
           ? await makeHttpRequest(
             q,
             {
@@ -104,10 +106,11 @@ export class Communicator {
               headers: {
                 'Content-Type': !args.contentType ? 'application/json' : args.contentType
               },
-              body: !args.bodyJsonParams ? '' : JSON.stringify(args.params)
+              body: JSON.stringify(args.params)
             }
           )
-          : await makeHttpRequest(
+          : args.bodyParamKey
+          ? await makeHttpRequest(
             q,
             {
               method: args.isGet ? 'get' : 'post',
@@ -115,6 +118,15 @@ export class Communicator {
                 'Content-Type': 'application/octet-stream'
               },
               body: args.params[args.bodyParamKey]
+            }
+          )
+          : await makeHttpRequest(
+            q,
+            {
+              method: args.isGet ? 'get' : 'post',
+              headers: {
+                'Content-Type': !args.contentType ? 'application/json' : args.contentType
+              }
             }
           )
         return httpResult
