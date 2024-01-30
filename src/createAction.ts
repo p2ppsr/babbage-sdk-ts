@@ -7,6 +7,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * @param {CreateActionOutput[]} args.outputs The array of transaction outputs (amounts and scripts) that you want in the transaction. Each object contains "satoshis" and "script", which can be any custom locking script of your choosing.
  * @param {number} args.lockTime The lock time of the created transaction.
  * @param {string} args.description A present-tense description of the user Action being facilitated or represented by this BitCoin transaction.
+ * @param {Array<String>} args.labels An array of transaction labels to apply to the Action
  * @param {boolean} args.dangerouslyDisableMapi Optional. Disables returning mAPI responses with created transaction, dramatically improving performance while removing the ability of recipients to check for double-spends by checking mAPI signatures.
  * @returns {Promise<CreateActionResult>} An Action object containing "txid", "rawTx" "mapiResponses" and "inputs".
  */
@@ -15,7 +16,8 @@ export async function createAction(args: {
   outputs: CreateActionOutput[],
   lockTime?: number,
   description: string,
-  dangerouslyDisableMapi?: boolean
+  labels?: string[],
+  dangerouslyDisableMapi?: boolean // = false
 })
 : Promise<CreateActionResult>
 {
@@ -27,6 +29,7 @@ export async function createAction(args: {
       outputs: args.outputs,
       lockTime: args.lockTime || 0,
       description: args.description,
+      labels: args.labels,
       dangerouslyDisableMapi: args.dangerouslyDisableMapi || false
     },
     bodyJsonParams: true,

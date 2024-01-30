@@ -6,10 +6,14 @@ import { createCertificate } from './createCertificate'
 export { createCertificate }
 import { createSignature } from './createSignature'
 export { createSignature }
-import { encrypt, encryptAsArray, encryptAsString } from './encrypt'
-export { encrypt, encryptAsArray, encryptAsString }
 import { decrypt, decryptAsArray, decryptAsString } from './decrypt'
 export { decrypt, decryptAsArray, decryptAsString }
+import { discoverByAttributes } from './discoverByAttributes'
+export { discoverByAttributes }
+import { discoverByIdentityKey } from './discoverByIdentityKey'
+export { discoverByIdentityKey }
+import { encrypt, encryptAsArray, encryptAsString } from './encrypt'
+export { encrypt, encryptAsArray, encryptAsString }
 import { getCertificates } from './getCertificates'
 export { getCertificates }
 import { getNetwork } from './getNetwork'
@@ -49,6 +53,8 @@ export const BabbageSDK = {
     createCertificate,
     createSignature,
     decrypt, decryptAsArray, decryptAsString,
+    discoverByAttributes,
+    discoverByIdentityKey,
     encrypt, encryptAsArray, encryptAsString,
     getCertificates,
     getNetwork,
