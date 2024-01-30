@@ -1287,8 +1287,8 @@ Creates and broadcasts a BitCoin transaction with the provided inputs and output
 
 ```ts
 export async function createAction(args: {
-    inputs: Record<string, CreateActionInput>;
-    outputs: CreateActionOutput[];
+    inputs?: Record<string, CreateActionInput>;
+    outputs?: CreateActionOutput[];
     lockTime?: number;
     description: string;
     labels?: string[];
