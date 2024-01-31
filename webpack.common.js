@@ -8,7 +8,7 @@ module.exports = {
     globalObject: 'this',
     library: {
       type: 'umd',
-      name: 'BabbageSDK'
+      name: 'BabbageSDKTS'
     },
     filename: 'sdk.js'
   },

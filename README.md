@@ -1,10 +1,10 @@
-# @babbage/sdk
+# @babbage/sdk-ts
 
-Build Babbage apps in JavaScript
+Build Babbage apps in TypeScript
 
-**[NPM Package](https://www.npmjs.com/package/@babbage/sdk)**
+**[NPM Package](https://www.npmjs.com/package/@babbage/sdk-ts)**
 
-**[GitHub Repository](https://github.com/p2ppsr/babbage-sdk)**
+**[GitHub Repository](https://github.com/p2ppsr/babbage-sdk-ts)**
 
 ## Installation
 
@@ -28,7 +28,7 @@ The **[📚Babbage Learn website](https://projectbabbage.com/docs/babbage-sdk)**
 ### Encryption
 
 ```js
-const { encrypt, decrypt } = require('@babbage/sdk')
+import { encrypt, decrypt } from '@babbage/sdk-ts'
 
 // Encrypt and decrypt data using the Babbage SDK
 const encryptedData = await encrypt({
@@ -51,8 +51,8 @@ const decryptedData = await decrypt({
 > This example also uses [PushDrop](https://github.com/p2ppsr/pushdrop)
 
 ```js
-const { createAction } = require('@babbage/sdk')
-const { create, redeem } = require('pushdrop')
+import { createAction } from '@babbage/sdk'
+import { create, redeem } from 'pushdrop'
 
 const bitcoinOutputScript = await create({
   fields: [ // The "fields" are the data payload to attach to the token.
@@ -129,7 +129,7 @@ await createAction({
 ## API
 
 <!--#region ts2md-api-merged-here-->
-
+``
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ### Interfaces
