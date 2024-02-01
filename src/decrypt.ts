@@ -22,7 +22,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * @param {Boolean} [args.privileged=false] This indicates which keyring should be used when decrypting.
  * Use the same value as was used during encryption.
  * @param {string} [args.returnType=Uint8Array] Specify the data type for the returned plaintext.
- * Available types are `string` (binary) and `Uint8Array`.
+ * Available types are `string` (TextDecoder decoded) and `Uint8Array`.
  *
  * @returns {Promise<string|Uint8Array>} The decrypted plaintext.
  */
@@ -78,7 +78,7 @@ export async function decrypt(args: {
  * @param {Boolean} [args.privileged=false] This indicates which keyring should be used when decrypting.
  * Use the same value as was used during encryption.
  *
- * @returns {Promise<string>} The decrypted plaintext.
+ * @returns {Promise<string>} The decrypted plaintext TextDecoder decoded to string.
  */
 export async function decryptAsString(args: {
   ciphertext: string | Uint8Array,

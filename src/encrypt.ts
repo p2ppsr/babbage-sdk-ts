@@ -7,13 +7,13 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * The same protocolID, keyID, counterparty and privileged parameters must be used when decrypting.
  *
  * @param {Object} args All parameters are passed in an object.
- * @param {string|Uint8Array} args.plaintext The data to encrypt. If given as a string, it must be in base64 format.
+ * @param {string|Uint8Array} args.plaintext The data to encrypt. If given as a string, TextEncoder is used to encode it as Uint8Array.
  * @param {ProtocolID} args.protocolID Specify an identifier for the protocol under which this operation is being performed.
  * @param {string} args.keyID An identifier for the message being encrypted. When decrypting, the same message ID will be required. This can be used to prevent key re-use, even when the same two users are using the same protocol to encrypt multiple messages. It can be randomly-generated, sequential, or even fixed.
  * @param {string} [args.description] Describe the high-level operation being performed, so that the user can make an informed decision if permission is needed.
  * @param {Uint8Array|string} [args.counterparty=self] If specified, the user with this identity key will also be able to decrypt the message, as long as they specify the current user's identity key as their counterparty. Must be a hexadecimal string representing a 33-byte or 65-byte value, "self" or "anyone".
  * @param {boolean} [args.privileged=false] When true, the data will be encrypted with the user's privileged keyring instead of their primary keyring.
- * @param {string} [args.returnType='Uint8Array'] Specify the data type for the returned ciphertext. Available types are `string` (binary) and `Uint8Array`.
+ * @param {string} [args.returnType='Uint8Array'] Specify the data type for the returned ciphertext. Available types are `string` (base64 encoded binary) and `Uint8Array`.
  *
  * @returns {Promise<string|Uint8Array>} The encrypted ciphertext.
  */
@@ -50,14 +50,14 @@ export async function encrypt(args: {
  * The same protocolID, keyID, counterparty and privileged parameters must be used when decrypting.
  *
  * @param {Object} args All parameters are passed in an object.
- * @param {string|Uint8Array} args.plaintext The data to encrypt. If given as a string, it must be in base64 format.
+ * @param {string|Uint8Array} args.plaintext The data to encrypt. If given as a string, TextEncoder is used to encode it as Uint8Array.
  * @param {Array|string} args.protocolID Specify an identifier for the protocol under which this operation is being performed.
  * @param {string} args.keyID An identifier for the message being encrypted. When decrypting, the same message ID will be required. This can be used to prevent key re-use, even when the same two users are using the same protocol to encrypt multiple messages. It can be randomly-generated, sequential, or even fixed.
  * @param {string} [args.description] Describe the high-level operation being performed, so that the user can make an informed decision if permission is needed.
  * @param {Uint8Array|string} [args.counterparty=self] If specified, the user with this identity key will also be able to decrypt the message, as long as they specify the current user's identity key as their counterparty. Must be a hexadecimal string representing a 33-byte or 65-byte value, "self" or "anyone".
  * @param {Boolean} [args.privileged=false] When true, the data will be encrypted with the user's privileged keyring instead of their primary keyring.
  *
- * @returns {Promise<string>} The encrypted ciphertext.
+ * @returns {Promise<string>} The encrypted ciphertext data as base64 encoded string.
  */
 export async function encryptAsString(args: {
   plaintext: string | Uint8Array,
@@ -79,14 +79,14 @@ export async function encryptAsString(args: {
  * The same protocolID, keyID, counterparty and privileged parameters must be used when decrypting.
  *
  * @param {Object} args All parameters are passed in an object.
- * @param {string|Uint8Array} args.plaintext The data to encrypt. If given as a string, it must be in base64 format.
+ * @param {string|Uint8Array} args.plaintext The data to encrypt. If given as a string, TextEncoder is used to encode it as Uint8Array.
  * @param {Array|string} args.protocolID Specify an identifier for the protocol under which this operation is being performed.
  * @param {string} args.keyID An identifier for the message being encrypted. When decrypting, the same message ID will be required. This can be used to prevent key re-use, even when the same two users are using the same protocol to encrypt multiple messages. It can be randomly-generated, sequential, or even fixed.
  * @param {string} [args.description] Describe the high-level operation being performed, so that the user can make an informed decision if permission is needed.
  * @param {Uint8Array|string} [args.counterparty=self] If specified, the user with this identity key will also be able to decrypt the message, as long as they specify the current user's identity key as their counterparty. Must be a hexadecimal string representing a 33-byte or 65-byte value, "self" or "anyone".
  * @param {Boolean} [args.privileged=false] When true, the data will be encrypted with the user's privileged keyring instead of their primary keyring.
  *
- * @returns {Promise<Uint8Array>} The encrypted ciphertext.
+ * @returns {Promise<Uint8Array>} The encrypted ciphertext data.
  */
 export async function encryptAsArray(args: {
   plaintext: string | Uint8Array,
