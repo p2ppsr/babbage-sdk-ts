@@ -30,7 +30,7 @@ export async function encrypt(args: {
   const r = await connection.dispatch({
     name: 'encrypt',
     params: {
-      plaintext: args.plaintext,
+      plaintext: typeof args.plaintext === 'string' ? new TextEncoder().encode(args.plaintext) : args.plaintext,
       protocolID: args.protocolID,
       keyID: args.keyID,
       description: args.description || '',

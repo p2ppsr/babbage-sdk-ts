@@ -97,38 +97,30 @@ export class Communicator {
           }
         }
         q = `http://localhost:3301/v1/${args.isNinja ? 'ninja/' : ''}${args.nameHttp || args.name}${q}`
-        const httpResult =
+        const ri: RequestInit =
           args.bodyJsonParams
-          ? await makeHttpRequest(
-            q,
-            {
+          ? {
               method: args.isGet ? 'get' : 'post',
               headers: {
                 'Content-Type': !args.contentType ? 'application/json' : args.contentType
               },
               body: JSON.stringify(args.params)
             }
-          )
           : args.bodyParamKey
-          ? await makeHttpRequest(
-            q,
-            {
+          ? {
               method: args.isGet ? 'get' : 'post',
               headers: {
-                'Content-Type': 'application/octet-stream'
+                'Content-Type': !args.contentType ? 'application/octet-stream' : args.contentType
               },
               body: args.params[args.bodyParamKey]
             }
-          )
-          : await makeHttpRequest(
-            q,
-            {
+          : {
               method: args.isGet ? 'get' : 'post',
               headers: {
                 'Content-Type': !args.contentType ? 'application/json' : args.contentType
               }
             }
-          )
+        const httpResult = await makeHttpRequest(q, ri)
         return httpResult
       } break;
       case 'babbage-xdm': {

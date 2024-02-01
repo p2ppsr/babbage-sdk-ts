@@ -36,21 +36,25 @@ export async function decrypt(args: {
   returnType?: "Uint8Array" | "string"
 }) : Promise<string | Uint8Array> {
   const connection = await connectToSubstrate()
-  const r = await connection.dispatch({
+  const r = <Uint8Array>await connection.dispatch({
     name: 'decrypt',
     params: {
-      ciphertext: args.ciphertext,
+      ciphertext: typeof args.ciphertext === 'string'
+        ? Uint8Array.from(Buffer.from(args.ciphertext, 'base64'))
+        : args.ciphertext,
       protocolID: args.protocolID,
       keyID: args.keyID,
       description: args.description || '',
       counterparty: args.counterparty || 'self',
       privileged: args.privileged || false,
-      returnType: args.returnType || 'Uint8Array'
+      returnType: 'Uint8Array'
     },
     bodyParamKey: 'ciphertext',
     contentType: 'application/octet-stream'
   })
-  return r as (string | Uint8Array)
+  if (args.returnType !== 'string')
+    return r
+  return new TextDecoder().decode(r)
 }
 
 /**

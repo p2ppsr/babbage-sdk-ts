@@ -32,6 +32,7 @@
     "isomorphic-fetch": "^3.0.0"
   },
   "devDependencies": {
+    "@babbage/sdk": "^0.4.41",
     "@babel/core": "^7.18.5",
     "@babel/preset-env": "^7.18.2",
     "@types/jest": "^29.4.0",
@@ -40,7 +41,9 @@
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
     "babel-loader": "^8.2.5",
+    "cwi-base": "^0.3.107",
     "jest": "^29.4.3",
+    "pushdrop": "^0.1.32",
     "standard": "^17.1.0",
     "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",
