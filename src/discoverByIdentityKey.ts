@@ -19,7 +19,8 @@ export async function discoverByIdentityKey(args: {
     params: {
       identityKey: args.identityKey,
       description: args.description
-    }
+    },
+    isGet: true
   })
   return r as object[]
 }
