@@ -129,7 +129,7 @@ await createAction({
 ## API
 
 <!--#region ts2md-api-merged-here-->
-``
+
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ### Interfaces
@@ -1292,7 +1292,7 @@ export async function createAction(args: {
     lockTime?: number;
     description: string;
     labels?: string[];
-    dangerouslyDisableMapi?: boolean;
+    acceptDelayedBroadcast?: boolean;
 }): Promise<CreateActionResult> 
 ```
 
@@ -1472,7 +1472,7 @@ export async function decryptAsString(args: {
 
 Returns
 
-The decrypted plaintext.
+The decrypted plaintext TextDecoder decoded to string.
 
 Argument Details
 
@@ -1628,7 +1628,7 @@ export async function encryptAsString(args: {
 
 Returns
 
-The encrypted ciphertext.
+The encrypted ciphertext data as base64 encoded string.
 
 Argument Details
 
@@ -1663,7 +1663,7 @@ export async function encryptAsArray(args: {
 
 Returns
 
-The encrypted ciphertext.
+The encrypted ciphertext data.
 
 Argument Details
 
