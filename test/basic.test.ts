@@ -45,7 +45,7 @@ describe("basic tests", () => {
             const r = await sdk.createAction({
                 outputs: [{ basket: 'foobar', satoshis: 101, script: lockScript }],
                 description: 'test',
-                dangerouslyDisableMapi: true
+                acceptDelayedBroadcast: true
             })
 
             expect(r.txid.length).toBe(64)

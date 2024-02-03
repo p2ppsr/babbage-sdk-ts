@@ -8,7 +8,10 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * @param {number} args.lockTime The lock time of the created transaction.
  * @param {string} args.description A present-tense description of the user Action being facilitated or represented by this BitCoin transaction.
  * @param {Array<String>} args.labels An array of transaction labels to apply to the Action
- * @param {boolean} args.dangerouslyDisableMapi Optional. Disables returning mAPI responses with created transaction, dramatically improving performance while removing the ability of recipients to check for double-spends by checking mAPI signatures.
+ * @param {Boolean} args.acceptDelayedBroadcast=true If true, self-signs initial validation response, watchman handles broadcast and proof verification.
+ * Outputs are immediately available to following transactions using the same mode.
+ * If false, waits for broadcast to transaction processing network response. Throws an error if not accepted by at least one processor.
+ * Recommended mode for situations in which a double spend is possible.
  * @returns {Promise<CreateActionResult>} An Action object containing "txid", "rawTx" "mapiResponses" and "inputs".
  */
 export async function createAction(args: {
@@ -17,7 +20,7 @@ export async function createAction(args: {
   lockTime?: number,
   description: string,
   labels?: string[],
-  dangerouslyDisableMapi?: boolean // = false
+  acceptDelayedBroadcast?: boolean // = true
 })
 : Promise<CreateActionResult>
 {
@@ -30,7 +33,7 @@ export async function createAction(args: {
       lockTime: args.lockTime || 0,
       description: args.description,
       labels: args.labels,
-      dangerouslyDisableMapi: args.dangerouslyDisableMapi || false
+      acceptDelayedBroadcast: args.acceptDelayedBroadcast || true
     },
     bodyJsonParams: true,
   })
