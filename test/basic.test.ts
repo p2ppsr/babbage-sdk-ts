@@ -2,14 +2,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import sdk from '../src/index'
 import pushdrop from 'pushdrop'
-import { bsv } from 'cwi-base'
+import { bsv, randomBytesBase64 } from 'cwi-base'
 
 describe("basic tests", () => {
+
+    jest.setTimeout(90000000)
 
     test("0_getNetwork", async () => {
         const n = await sdk.getNetwork()
         expect(n).toBe('testnet')
-    }, 9000000)
+    })
 
     test("1_getTransactionOutputs", async () => {
         try {
@@ -55,7 +57,7 @@ describe("basic tests", () => {
 
         expect(outs.length).toBeGreaterThan(0)
 
-    }, 9000000)
+    })
   
     test("2_encrypt and decrypt", async () => {
         //await sdk.createCertificate({ certificateType: '', fieldObject: { a: 'a' }, certifierUrl: '', certifierPublicKey: '' })
@@ -117,5 +119,11 @@ describe("basic tests", () => {
         }
 
 
-    }, 9000000)
+    })
+
+    test("3_getPublicKey", async () => {
+        const keyID = randomBytesBase64(32)
+        const publicKey = await sdk.getPublicKey({ protocolID: 'demoo', keyID })
+        expect(publicKey.length).toBe(66)
+    })
 })

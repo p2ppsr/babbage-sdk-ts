@@ -30,6 +30,7 @@ export async function getPublicKey(args: {
   const connection = await connectToSubstrate()
   const r = await connection.dispatch({
     name: 'getPublicKey',
+    nameHttp: 'publicKey',
     params: {
       protocolID: args.protocolID,
       keyID: args.keyID,
