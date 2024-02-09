@@ -1025,6 +1025,7 @@ export interface CreateActionResult {
     inputs: Record<string, EnvelopeEvidenceApi>;
     mapiResponses: MapiResponseApi[];
     txid: string;
+    log?: string;
 }
 ```
 
@@ -1190,6 +1191,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 ```ts
 export class Communicator {
+    stampLog(log: string | undefined, lineToAdd: string): string | undefined 
     static setCached(substrate: string, version: string): Communicator 
     static getCached(): Communicator | undefined 
     async dispatch<P extends object>(args: {
@@ -1204,6 +1206,31 @@ export class Communicator {
     }): Promise<unknown> 
 }
 ```
+
+<details>
+
+<summary>Class Communicator Details</summary>
+
+##### Method stampLog
+
+If a log is being kept, add a time stamped line.
+
+```ts
+stampLog(log: string | undefined, lineToAdd: string): string | undefined 
+```
+
+Returns
+
+undefined or log extended by time stamped `lineToAdd` and new line.
+
+Argument Details
+
++ **log**
+  + Optional time stamped log to extend
++ **lineToAdd**
+  + Content to add to line.
+
+</details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -1293,6 +1320,7 @@ export async function createAction(args: {
     description: string;
     labels?: string[];
     acceptDelayedBroadcast?: boolean;
+    log?: string;
 }): Promise<CreateActionResult> 
 ```
 
