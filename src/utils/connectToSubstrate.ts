@@ -67,6 +67,17 @@ export class Communicator {
   private constructor(public substrate: string, public version: string) {
   }
 
+  /**
+   * If a log is being kept, add a time stamped line.
+   * @param log  Optional time stamped log to extend
+   * @param lineToAdd Content to add to line.
+   * @returns undefined or log extended by time stamped `lineToAdd` and new line.
+   */
+  stampLog(log: string | undefined, lineToAdd: string) : string | undefined {
+    if (typeof log !== 'string') return undefined
+    return log + `${new Date().toISOString()} ${lineToAdd}\n`
+  }
+
   static setCached(substrate: string, version: string) : Communicator {
     Communicator.cached ||= new Communicator(substrate, version)
     return Communicator.cached

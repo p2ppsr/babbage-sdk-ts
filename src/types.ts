@@ -385,7 +385,8 @@ export interface CreateActionResult {
   rawTx: string,
   inputs: Record<string, EnvelopeEvidenceApi>
   mapiResponses: MapiResponseApi[],
-  txid: string
+  txid: string,
+  log?: string
 }
 
 export interface GetTransactionOutputResult {

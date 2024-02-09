@@ -20,12 +20,14 @@ export async function createAction(args: {
   lockTime?: number,
   description: string,
   labels?: string[],
-  acceptDelayedBroadcast?: boolean // = true
+  acceptDelayedBroadcast?: boolean, // = true
+  log?: string
 })
 : Promise<CreateActionResult>
 {
   const connection = await connectToSubstrate()
-  const r = await connection.dispatch({
+  args.log = connection.stampLog(args.log, 'start sdk-ts createTransaction')
+  const r = <CreateActionResult>await connection.dispatch({
     name: 'createAction',
     params: {
       inputs: args.inputs,
@@ -37,7 +39,8 @@ export async function createAction(args: {
     },
     bodyJsonParams: true,
   })
-  return r as CreateActionResult
+  r.log = connection.stampLog(r.log, 'end sdk-ts createTransaction')
+  return r
 }
 
 export default createAction
