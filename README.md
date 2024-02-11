@@ -1191,7 +1191,6 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 ```ts
 export class Communicator {
-    stampLog(log: string | undefined, lineToAdd: string): string | undefined 
     static setCached(substrate: string, version: string): Communicator 
     static getCached(): Communicator | undefined 
     async dispatch<P extends object>(args: {
@@ -1207,31 +1206,6 @@ export class Communicator {
 }
 ```
 
-<details>
-
-<summary>Class Communicator Details</summary>
-
-##### Method stampLog
-
-If a log is being kept, add a time stamped line.
-
-```ts
-stampLog(log: string | undefined, lineToAdd: string): string | undefined 
-```
-
-Returns
-
-undefined or log extended by time stamped `lineToAdd` and new line.
-
-Argument Details
-
-+ **log**
-  + Optional time stamped log to extend
-+ **lineToAdd**
-  + Content to add to line.
-
-</details>
-
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
@@ -1239,17 +1213,18 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [connectToSubstrate](#function-connecttosubstrate) | [encryptAsArray](#function-encryptasarray) | [promiseWithTimeout](#function-promisewithtimeout) |
-| [createAction](#function-createaction) | [encryptAsString](#function-encryptasstring) | [proveCertificate](#function-provecertificate) |
-| [createCertificate](#function-createcertificate) | [getCertificates](#function-getcertificates) | [requestGroupPermission](#function-requestgrouppermission) |
-| [createHmac](#function-createhmac) | [getNetwork](#function-getnetwork) | [revealKeyLinkage](#function-revealkeylinkage) |
-| [createSignature](#function-createsignature) | [getPublicKey](#function-getpublickey) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
-| [decrypt](#function-decrypt) | [getRandomID](#function-getrandomid) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
-| [decryptAsArray](#function-decryptasarray) | [getTransactionOutputs](#function-gettransactionoutputs) | [submitDirectTransaction](#function-submitdirecttransaction) |
-| [decryptAsString](#function-decryptasstring) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
-| [discoverByAttributes](#function-discoverbyattributes) | [isAuthenticated](#function-isauthenticated) | [verifyHmac](#function-verifyhmac) |
-| [discoverByIdentityKey](#function-discoverbyidentitykey) | [listActions](#function-listactions) | [verifySignature](#function-verifysignature) |
-| [encrypt](#function-encrypt) | [makeHttpRequest](#function-makehttprequest) | [waitForAuthentication](#function-waitforauthentication) |
+| [connectToSubstrate](#function-connecttosubstrate) | [encryptAsString](#function-encryptasstring) | [requestGroupPermission](#function-requestgrouppermission) |
+| [createAction](#function-createaction) | [getCertificates](#function-getcertificates) | [revealKeyLinkage](#function-revealkeylinkage) |
+| [createCertificate](#function-createcertificate) | [getNetwork](#function-getnetwork) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
+| [createHmac](#function-createhmac) | [getPublicKey](#function-getpublickey) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
+| [createSignature](#function-createsignature) | [getRandomID](#function-getrandomid) | [stampLog](#function-stamplog) |
+| [decrypt](#function-decrypt) | [getTransactionOutputs](#function-gettransactionoutputs) | [stampLogFormat](#function-stamplogformat) |
+| [decryptAsArray](#function-decryptasarray) | [getVersion](#function-getversion) | [submitDirectTransaction](#function-submitdirecttransaction) |
+| [decryptAsString](#function-decryptasstring) | [isAuthenticated](#function-isauthenticated) | [unbasketOutput](#function-unbasketoutput) |
+| [discoverByAttributes](#function-discoverbyattributes) | [listActions](#function-listactions) | [verifyHmac](#function-verifyhmac) |
+| [discoverByIdentityKey](#function-discoverbyidentitykey) | [makeHttpRequest](#function-makehttprequest) | [verifySignature](#function-verifysignature) |
+| [encrypt](#function-encrypt) | [promiseWithTimeout](#function-promisewithtimeout) | [waitForAuthentication](#function-waitforauthentication) |
+| [encryptAsArray](#function-encryptasarray) | [proveCertificate](#function-provecertificate) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -1304,6 +1279,62 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ```ts
 export default async function connectToSubstrate(): Promise<Communicator> 
 ```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: stampLog
+
+If a log is being kept, add a time stamped line.
+
+```ts
+export function stampLog(log: string | undefined, lineToAdd: string): string | undefined 
+```
+
+<details>
+
+<summary>Function stampLog Details</summary>
+
+Returns
+
+undefined or log extended by time stamped `lineToAdd` and new line.
+
+Argument Details
+
++ **log**
+  + Optional time stamped log to extend
++ **lineToAdd**
+  + Content to add to line.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: stampLogFormat
+
+Replaces individual timestamps with delta msecs.
+Looks for two network crossings and adjusts clock for clock skew if found.
+Assumes log built by repeated calls to `stampLog`
+
+```ts
+export function stampLogFormat(log?: string): string 
+```
+
+<details>
+
+<summary>Function stampLogFormat Details</summary>
+
+Returns
+
+reformated multi-line event log
+
+Argument Details
+
++ **log**
+  + Each logged event starts with ISO time stamp, space, rest of line, terminated by `\n`.
+
+</details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
