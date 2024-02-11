@@ -40,20 +40,23 @@ export function stampLogFormat(log?: string): string {
         }
     }
     const total = data[data.length - 1].when - data[0].when
-    if (newClocks.length === 2) {
-        // Adjust for two network crossing times and clock skew between two clocks.
-        // Assumes a block of events on one clock,
-        // then a block of events on second clock,
-        // and a final block of events back on the original clock.
-        const block1 = data[newClocks[0] - 1].when - data[0].when
-        const block2 = data[newClocks[1] - 1].when - data[newClocks[0]].when
-        const block3 = data[data.length - 1].when - data[newClocks[1]].when
-        const network = total - block1 - block2 - block3
-        const network1 = Math.ceil(network / 2)
-        const network2 = network - network1
-        // Adjust newClock deltas to each be "half" of network time.
-        data[newClocks[0]].delta = network1
-        data[newClocks[1]].delta = network2
+    if (newClocks.length % 2 === 0) {
+        // Adjust for paired network crossing times and clock skew between clocks.
+        let clocked = total
+        let lastNewClock = 0
+        for (const newClock of newClocks) {
+            clocked -= data[newClock - 1].when - data[lastNewClock].when
+            lastNewClock = newClock
+        }
+        clocked -= data[data.length - 1].when - data[lastNewClock].when
+        let network = total - clocked
+        let networks = newClocks.length
+        for (const newClock of newClocks) {
+            const n = networks > 1 ? Math.floor(network / networks) : network
+            data[newClock].delta = n
+            network -= n
+            networks--
+        }
     }
     let log2 = `${new Date(data[0].when).toISOString()} Total = ${total} msecs\n`
     for (const d of data) {
