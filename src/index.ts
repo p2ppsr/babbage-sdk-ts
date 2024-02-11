@@ -44,6 +44,8 @@ import { verifySignature } from './verifySignature'
 export { verifySignature }
 import { waitForAuthentication } from './waitForAuthentication'
 export { waitForAuthentication }
+import { stampLog, stampLogFormat } from './utils/stampLog'
+export { stampLog, stampLogFormat }
 
 export * from './types'
 

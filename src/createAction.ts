@@ -1,5 +1,6 @@
 import { CreateActionInput, CreateActionOutput, CreateActionResult } from './types'
 import connectToSubstrate from './utils/connectToSubstrate'
+import { stampLog, stampLogFormat } from './utils/stampLog'
 
 /** Creates and broadcasts a BitCoin transaction with the provided inputs and outputs.
  * @param {object} args All parameters for this function are provided in an object
@@ -26,7 +27,7 @@ export async function createAction(args: {
 : Promise<CreateActionResult>
 {
   const connection = await connectToSubstrate()
-  args.log = connection.stampLog(args.log, 'start sdk-ts createTransaction')
+  let log = stampLog('', 'start sdk-ts createTransaction')
   const r = <CreateActionResult>await connection.dispatch({
     name: 'createAction',
     params: {
@@ -35,11 +36,18 @@ export async function createAction(args: {
       lockTime: args.lockTime || 0,
       description: args.description,
       labels: args.labels,
-      acceptDelayedBroadcast: args.acceptDelayedBroadcast || true
+      acceptDelayedBroadcast: args.acceptDelayedBroadcast || true,
+      log
     },
     bodyJsonParams: true,
   })
-  r.log = connection.stampLog(r.log, 'end sdk-ts createTransaction')
+  log = stampLog(r.log, 'end sdk-ts createTransaction')
+  if (typeof args.log === 'string')
+    r.log = args.log + log
+  else {
+    console.log(stampLogFormat(log))
+    r.log = log
+  }
   return r
 }
 

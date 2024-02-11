@@ -126,4 +126,87 @@ describe("basic tests", () => {
         const publicKey = await sdk.getPublicKey({ protocolID: 'demoo', keyID })
         expect(publicKey.length).toBe(66)
     })
+
+
+    test("4_format log", async () => {
+        const log = `
+2024-02-09T21:52:43.158Z start ninja createTransactionWithOutputs
+2024-02-09T21:52:43.159Z start dojo client createTransaction
+2024-02-09T21:52:44.147Z start dojo express createTransaction
+2024-02-09T21:52:44.151Z start dojo createTransactionWithOutputs
+2024-02-09T21:52:44.159Z ... dojo createTransactionWithOutputs validated
+2024-02-09T21:52:44.163Z ... dojo createTransactionWithOutputs selected inputs gotten
+2024-02-09T21:52:44.179Z ... dojo createTransactionWithOutputs found outputGeneration basket
+2024-02-09T21:52:44.182Z ... dojo createTransactionWithOutputs found count basket utxos
+2024-02-09T21:52:44.183Z ... dojo createTransactionWithOutputs change generated
+2024-02-09T21:52:44.184Z ... dojo createTransactionWithOutputs envelope generated for a0b7bdbe9d08b6e83f26ba34f10395c52bb32872d95bf392107b157bf2ef3b11     
+2024-02-09T21:52:44.186Z ... dojo createTransactionWithOutputs envelope generated for da94c28817d688fd7004082e693e6d33abc0ee50e6a05b3c5d760dbd9ed83185     
+2024-02-09T21:52:44.189Z ... dojo createTransactionWithOutputs envelope generated for 15989e0b263bf140f44bfba7aa61e868ded673f51b51311ee1bfc032053eb97b     
+2024-02-09T21:52:44.191Z ... dojo createTransactionWithOutputs storage transaction start
+2024-02-09T21:52:44.194Z ... dojo createTransactionWithOutputs storage transaction transaction inserted
+2024-02-09T21:52:44.204Z ... dojo createTransactionWithOutputs storage transaction selectedInputs updated
+2024-02-09T21:52:44.204Z ... dojo createTransactionWithOutputs storage transaction paymailHandle retrieved
+2024-02-09T21:52:44.206Z ... dojo createTransactionWithOutputs storage transaction findOrInsert output basket todo tokens
+2024-02-09T21:52:44.212Z ... dojo createTransactionWithOutputs storage transaction insert output non-service-charge
+2024-02-09T21:52:44.223Z ... dojo createTransactionWithOutputs storage transaction output tagged
+2024-02-09T21:52:44.225Z ... dojo createTransactionWithOutputs storage transaction insert commission
+2024-02-09T21:52:44.233Z ... dojo createTransactionWithOutputs storage transaction labeled
+2024-02-09T21:52:44.233Z ... dojo createTransactionWithOutputs storage transaction end
+2024-02-09T21:52:44.238Z end dojo createTransactionWithOutputs
+2024-02-09T21:52:44.239Z end dojo express createTransaction
+2024-02-09T21:52:43.488Z end dojo client createTransaction
+2024-02-09T21:52:43.488Z ... ninja createTransactionWithOutputs signing transaction
+2024-02-09T21:52:43.535Z end ninja createTransactionWithOutputs
+`
+        const logLines = log.split('\n')
+        const data: {
+            when: number,
+            rest: string,
+            delta: number,
+            newClock: boolean
+        }[] = []
+        let last = 0
+        const newClocks: number[] = []
+        for (const line of logLines) {
+            const spaceAt = line.indexOf(' ')
+            if (spaceAt > -1) {
+                const when = new Date(line.substring(0, spaceAt)).getTime()
+                const rest = line.substring(spaceAt + 1)
+                const delta = when - (last || when)
+                const newClock =
+                    rest === 'start dojo express createTransaction' ||
+                    rest === 'end dojo client createTransaction' ||
+                    rest.indexOf('**NETWORK**') > -1
+                if (newClock) newClocks.push(data.length)
+                data.push({ when, rest, delta, newClock })
+                last = when
+            }
+        }
+        const total = data[data.length - 1].when - data[0].when
+        if (newClocks.length === 2) {
+            // Adjust for two network crossing times and clock skew between two clocks.
+            // Assumes a block of events on one clock,
+            // then a block of events on second clock,
+            // and a final block of events back on the original clock.
+            const block1 = data[newClocks[0] - 1].when - data[0].when
+            const block2 = data[newClocks[1] - 1].when - data[newClocks[0]].when
+            const block3 = data[data.length - 1].when - data[newClocks[1]].when
+            const network = total - block1 - block2 - block3
+            const network1 = Math.ceil(network / 2)
+            const network2 = network - network1
+            // Adjust newClock deltas to each be "half" of network time.
+            data[newClocks[0]].delta = network1
+            data[newClocks[1]].delta = network2
+        }
+        let log2 = `${new Date(data[0].when).toISOString()} Total = ${total} msecs\n`
+        for (const d of data) {
+            let df = d.delta.toString()
+            df = `${' '.repeat(8 - df.length)}${df}`
+            const network = d.newClock && d.rest.indexOf('**NETWORK**') === -1
+                ? ' **NETWORK**'
+                : ''
+            log2 += `${df} ${d.rest}${network}\n`
+        }
+        console.log(log2)
+    })
 })
