@@ -42,14 +42,13 @@ export function stampLogFormat(log?: string): string {
     const total = data[data.length - 1].when - data[0].when
     if (newClocks.length % 2 === 0) {
         // Adjust for paired network crossing times and clock skew between clocks.
-        let clocked = total
+        let network = total
         let lastNewClock = 0
         for (const newClock of newClocks) {
-            clocked -= data[newClock - 1].when - data[lastNewClock].when
+            network -= data[newClock - 1].when - data[lastNewClock].when
             lastNewClock = newClock
         }
-        clocked -= data[data.length - 1].when - data[lastNewClock].when
-        let network = total - clocked
+        network -= data[data.length - 1].when - data[lastNewClock].when
         let networks = newClocks.length
         for (const newClock of newClocks) {
             const n = networks > 1 ? Math.floor(network / networks) : network
