@@ -1,8 +1,9 @@
 /* eslint-disable no-constant-condition */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { PrivateKey } from '@bsv/sdk'
 import sdk from '../src/index'
 import pushdrop from 'pushdrop'
-import { bsv, randomBytesBase64 } from 'cwi-base'
+import { randomBytesBase64 } from 'cwi-base'
 
 describe("basic tests", () => {
 
@@ -41,7 +42,7 @@ describe("basic tests", () => {
                 Buffer.from('2'),
                 Buffer.from('3'),
             ],
-            key: bsv.PrivKey.fromBn(new bsv.Bn(grantorKey, 'hex')).toWif()
+            key: PrivateKey.fromString(grantorKey, 'hex').toWif()
             })
 
             const r = await sdk.createAction({
