@@ -9,7 +9,7 @@ export async function getHeight() : Promise<number> {
   const r = await connection.dispatch({
     name: 'getHeight',
     params: {},
-    isGet: true,
+    bodyJsonParams: true,
     isNinja: true
   })
   return r as number

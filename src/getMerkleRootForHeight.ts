@@ -13,7 +13,7 @@ export async function getMerkleRootForHeight(height: number)
     params: {
         height
     },
-    isGet: true,
+    bodyJsonParams: true,
     isNinja: true
   }) as string | undefined
   return r
