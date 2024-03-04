@@ -1213,18 +1213,19 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [connectToSubstrate](#function-connecttosubstrate) | [encryptAsString](#function-encryptasstring) | [requestGroupPermission](#function-requestgrouppermission) |
-| [createAction](#function-createaction) | [getCertificates](#function-getcertificates) | [revealKeyLinkage](#function-revealkeylinkage) |
-| [createCertificate](#function-createcertificate) | [getNetwork](#function-getnetwork) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
-| [createHmac](#function-createhmac) | [getPublicKey](#function-getpublickey) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
-| [createSignature](#function-createsignature) | [getRandomID](#function-getrandomid) | [stampLog](#function-stamplog) |
-| [decrypt](#function-decrypt) | [getTransactionOutputs](#function-gettransactionoutputs) | [stampLogFormat](#function-stamplogformat) |
-| [decryptAsArray](#function-decryptasarray) | [getVersion](#function-getversion) | [submitDirectTransaction](#function-submitdirecttransaction) |
-| [decryptAsString](#function-decryptasstring) | [isAuthenticated](#function-isauthenticated) | [unbasketOutput](#function-unbasketoutput) |
-| [discoverByAttributes](#function-discoverbyattributes) | [listActions](#function-listactions) | [verifyHmac](#function-verifyhmac) |
-| [discoverByIdentityKey](#function-discoverbyidentitykey) | [makeHttpRequest](#function-makehttprequest) | [verifySignature](#function-verifysignature) |
-| [encrypt](#function-encrypt) | [promiseWithTimeout](#function-promisewithtimeout) | [waitForAuthentication](#function-waitforauthentication) |
-| [encryptAsArray](#function-encryptasarray) | [proveCertificate](#function-provecertificate) |  |
+| [connectToSubstrate](#function-connecttosubstrate) | [getCertificates](#function-getcertificates) | [requestGroupPermission](#function-requestgrouppermission) |
+| [createAction](#function-createaction) | [getHeight](#function-getheight) | [revealKeyLinkage](#function-revealkeylinkage) |
+| [createCertificate](#function-createcertificate) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
+| [createHmac](#function-createhmac) | [getNetwork](#function-getnetwork) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
+| [createSignature](#function-createsignature) | [getPublicKey](#function-getpublickey) | [stampLog](#function-stamplog) |
+| [decrypt](#function-decrypt) | [getRandomID](#function-getrandomid) | [stampLogFormat](#function-stamplogformat) |
+| [decryptAsArray](#function-decryptasarray) | [getTransactionOutputs](#function-gettransactionoutputs) | [submitDirectTransaction](#function-submitdirecttransaction) |
+| [decryptAsString](#function-decryptasstring) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
+| [discoverByAttributes](#function-discoverbyattributes) | [isAuthenticated](#function-isauthenticated) | [verifyHmac](#function-verifyhmac) |
+| [discoverByIdentityKey](#function-discoverbyidentitykey) | [listActions](#function-listactions) | [verifySignature](#function-verifysignature) |
+| [encrypt](#function-encrypt) | [makeHttpRequest](#function-makehttprequest) | [waitForAuthentication](#function-waitforauthentication) |
+| [encryptAsArray](#function-encryptasarray) | [promiseWithTimeout](#function-promisewithtimeout) |  |
+| [encryptAsString](#function-encryptasstring) | [proveCertificate](#function-provecertificate) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -1757,6 +1758,48 @@ Argument Details
 
 + **obj**
   + All parameters for this function are provided in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: getHeight
+
+Returns the current chain height of the network
+
+```ts
+export async function getHeight(): Promise<number> 
+```
+
+<details>
+
+<summary>Function getHeight Details</summary>
+
+Returns
+
+The current chain height
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: getMerkleRootForHeight
+
+A method to verify the validity of a Merkle root for a given block height.
+
+```ts
+export async function getMerkleRootForHeight(height: number): Promise<string | undefined> 
+```
+
+<details>
+
+<summary>Function getMerkleRootForHeight Details</summary>
+
+Returns
+
+Returns the merkle root for height or undefined, if height doesn't have a known merkle root or is invalid.
 
 </details>
 
@@ -2300,6 +2343,8 @@ BabbageSDK = {
     encryptAsArray,
     encryptAsString,
     getCertificates,
+    getHeight,
+    getMerkleRootForHeight,
     getNetwork,
     getPublicKey,
     getTransactionOutputs,
