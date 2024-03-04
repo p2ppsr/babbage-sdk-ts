@@ -2,24 +2,21 @@ import connectToSubstrate from './utils/connectToSubstrate'
 /**
  * A method to verify the validity of a Merkle root for a given block height.
  *
- * @returns {Promise<boolean>} Returns whether root is valid for height
+ * @returns {Promise<boolean>} Returns the merkle root for height or undefined, if height doesn't have a known merkle root or is invalid.
 */
-export async function isValidRootForHeight(args: {
-    root: string,
-    height: number
-})
-: Promise<boolean>
+export async function getMerkleRootForHeight(height: number)
+: Promise<string | undefined>
 {
   const connection = await connectToSubstrate()
   const r = await connection.dispatch({
     name: 'getMerkleRootForHeight',
     params: {
-        height: args.height
+        height
     },
     isGet: true,
     isNinja: true
   }) as string | undefined
-  return !r || r.toLowerCase() !== args.root.toLowerCase()
+  return r
 }
 
-export default isValidRootForHeight
+export default getMerkleRootForHeight
