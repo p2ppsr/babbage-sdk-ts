@@ -225,10 +225,10 @@ export default async function connectToSubstrate() : Promise<Communicator> {
   }
 
   // Check the kernel's compatibility before resolving
-  if (!cached.version.startsWith('0.4.')) {
+  if (!cached.version.startsWith('0.3.') && !cached.version.startsWith('0.4.')) {
     const e = new Error(`Your MetaNet portal is running an incompatible kernel version ${cached.version} This SDK requires a 0.4.x kernel`)
     e["code"] = 'ERR_INCOMPATIBLE_KERNEL'
-    e["compatibleKernels "]= '0.4.x'
+    e["compatibleKernels "]= '0.3.x or 0.4.x'
     e["invalidVersion "]= cached.version
     throw e
   }
