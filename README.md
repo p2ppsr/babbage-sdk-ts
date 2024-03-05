@@ -1808,10 +1808,10 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ---
 #### Function: getNetwork
 
-Returns the current network (main or test)
+Returns which BSV network we are using (mainnet or testnet)
 
 ```ts
-export async function getNetwork(): Promise<string> 
+export async function getNetwork(format?: "default" | "nonet"): Promise<string> 
 ```
 
 <details>
@@ -1820,7 +1820,12 @@ export async function getNetwork(): Promise<string>
 
 Returns
 
-The current network (e.g. "main")
+The current BSV network formatted as requested.
+
+Argument Details
+
++ **format**
+  + for the returned string. Either with (default) or without (nonet) a 'net' suffix.
 
 </details>
 
