@@ -24,13 +24,16 @@ export default async function makeHttpRequest<R>(
     requestInput
   )
 
+  const data = await response.arrayBuffer()
+
   // Determine the request success and response content type
   if (response.headers.get('content-type') === 'application/octet-stream') {
     // Success
-    return await response.arrayBuffer()
+    return data
   }
   
-  const parsedJSON = await response.json()
+  const parsedJSON = JSON.parse(Buffer.from(data).toString('utf-8'))
+
   if (parsedJSON.status === 'error') {
     const e = new Error(parsedJSON.description)
     e["code"] = parsedJSON["code"] || 'ERR_BAD_REQUEST'
