@@ -51,7 +51,7 @@ const decryptedData = await decrypt({
 > This example also uses [PushDrop](https://github.com/p2ppsr/pushdrop)
 
 ```js
-import { createAction } from '@babbage/sdk'
+import { createAction } from '@babbage/sdk-ts'
 import { create, redeem } from 'pushdrop'
 
 const bitcoinOutputScript = await create({
