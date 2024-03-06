@@ -9,7 +9,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * @param {string} args.senderIdentityKey Provide the identity key for the person who sent the transaction
  * @param {string} args.note Human-readable description for the transaction
  * @param {Number} args.amount Amount of satoshis associated with the transaction
- * @param {string} [args.derivationPrefix] A derivation prefix used for all outputs. If provided, derivation prefixes on all outputs are optional.
+ * @param {string} [args.derivationPrefix] Optional. A derivation prefix used for all outputs. If provided, derivation prefixes on all outputs are optional.
  * @param {Array<String>} [args.labels] Labels to apply to the submitted transaction
  * @returns {Promise<SubmitDirectTransactionResult>} Object containing reference number, status=success, and human-readable note acknowledging the transaction
  */
@@ -20,7 +20,7 @@ export async function submitDirectTransaction(args: {
   note: string,
   amount: number,
   labels?: string[],
-  derivationPrefix: string
+  derivationPrefix?: string
 })
 : Promise<SubmitDirectTransactionResult>
 {
