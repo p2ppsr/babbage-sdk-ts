@@ -1838,8 +1838,8 @@ Returns the public key. If identityKey is specified, returns the current user's 
 
 ```ts
 export async function getPublicKey(args: {
-    protocolID: ProtocolID;
-    keyID: string;
+    protocolID?: ProtocolID;
+    keyID?: string;
     privileged?: boolean;
     identityKey?: boolean;
     reason?: string;
@@ -2155,7 +2155,7 @@ export async function submitDirectTransaction(args: {
     note: string;
     amount: number;
     labels?: string[];
-    derivationPrefix: string;
+    derivationPrefix?: string;
 }): Promise<SubmitDirectTransactionResult> 
 ```
 
