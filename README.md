@@ -1349,6 +1349,7 @@ export async function createAction(args: {
     inputs?: Record<string, CreateActionInput>;
     outputs?: CreateActionOutput[];
     lockTime?: number;
+    version?: number;
     description: string;
     labels?: string[];
     acceptDelayedBroadcast?: boolean;
