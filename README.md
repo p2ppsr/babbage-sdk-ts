@@ -136,16 +136,17 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | |
 | --- | --- |
-| [CertificateApi](#interface-certificateapi) | [ListActionsResult](#interface-listactionsresult) |
-| [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult) | [ListActionsTransaction](#interface-listactionstransaction) |
-| [CreateActionInput](#interface-createactioninput) | [MapiResponseApi](#interface-mapiresponseapi) |
-| [CreateActionOutput](#interface-createactionoutput) | [ProveCertificateResult](#interface-provecertificateresult) |
-| [CreateActionOutputToRedeem](#interface-createactionoutputtoredeem) | [SpecificKeyLinkageResult](#interface-specifickeylinkageresult) |
-| [CreateActionResult](#interface-createactionresult) | [SubmitDirectTransaction](#interface-submitdirecttransaction) |
-| [CreateCertificateResult](#interface-createcertificateresult) | [SubmitDirectTransactionOutput](#interface-submitdirecttransactionoutput) |
-| [EnvelopeApi](#interface-envelopeapi) | [SubmitDirectTransactionResult](#interface-submitdirecttransactionresult) |
-| [EnvelopeEvidenceApi](#interface-envelopeevidenceapi) | [TscMerkleProofApi](#interface-tscmerkleproofapi) |
-| [GetTransactionOutputResult](#interface-gettransactionoutputresult) |  |
+| [CertificateApi](#interface-certificateapi) | [ListActionsTransaction](#interface-listactionstransaction) |
+| [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult) | [ListActionsTransactionInput](#interface-listactionstransactioninput) |
+| [CreateActionInput](#interface-createactioninput) | [ListActionsTransactionOutput](#interface-listactionstransactionoutput) |
+| [CreateActionOutput](#interface-createactionoutput) | [MapiResponseApi](#interface-mapiresponseapi) |
+| [CreateActionOutputToRedeem](#interface-createactionoutputtoredeem) | [ProveCertificateResult](#interface-provecertificateresult) |
+| [CreateActionResult](#interface-createactionresult) | [SpecificKeyLinkageResult](#interface-specifickeylinkageresult) |
+| [CreateCertificateResult](#interface-createcertificateresult) | [SubmitDirectTransaction](#interface-submitdirecttransaction) |
+| [EnvelopeApi](#interface-envelopeapi) | [SubmitDirectTransactionOutput](#interface-submitdirecttransactionoutput) |
+| [EnvelopeEvidenceApi](#interface-envelopeevidenceapi) | [SubmitDirectTransactionResult](#interface-submitdirecttransactionresult) |
+| [GetTransactionOutputResult](#interface-gettransactionoutputresult) | [TscMerkleProofApi](#interface-tscmerkleproofapi) |
+| [ListActionsResult](#interface-listactionsresult) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -722,6 +723,9 @@ export interface ListActionsTransaction {
     note: string;
     created_at: string;
     referenceNumber: string;
+    labels: string[];
+    inputs?: ListActionsTransactionInput[];
+    outputs?: ListActionsTransactionOutput[];
 }
 ```
 
@@ -751,6 +755,14 @@ Whether or not the transaction was created with `createTransaction`
 
 ```ts
 isOutgoing: boolean
+```
+
+##### Property labels
+
+A set of all the labels affixed to the transaction
+
+```ts
+labels: string[]
 ```
 
 ##### Property note
@@ -799,6 +811,200 @@ The transaction ID
 
 ```ts
 txid: string
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: ListActionsTransactionInput
+
+```ts
+export interface ListActionsTransactionInput {
+    txid: string;
+    vout: number;
+    amount: number;
+    outputScript: string;
+    type: string;
+    spendable: boolean;
+    spendingDescription?: string;
+    basket?: string;
+    tags?: string[];
+}
+```
+
+<details>
+
+<summary>Interface ListActionsTransactionInput Details</summary>
+
+##### Property amount
+
+Number of satoshis in the output
+
+```ts
+amount: number
+```
+
+##### Property basket
+
+Optionally included basket assignment.
+
+```ts
+basket?: string
+```
+
+##### Property outputScript
+
+Hex representation of output locking script
+
+```ts
+outputScript: string
+```
+
+##### Property spendable
+
+Whether this output is free to be spent
+
+```ts
+spendable: boolean
+```
+
+##### Property spendingDescription
+
+Spending description for this transaction input
+
+```ts
+spendingDescription?: string
+```
+
+##### Property tags
+
+Optionally included tag assignments.
+
+```ts
+tags?: string[]
+```
+
+##### Property txid
+
+Transaction ID of transaction that created the output
+
+```ts
+txid: string
+```
+
+##### Property type
+
+The type of output, for example "P2PKH" or "P2RPH"
+
+```ts
+type: string
+```
+
+##### Property vout
+
+Index in the transaction of the output
+
+```ts
+vout: number
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: ListActionsTransactionOutput
+
+```ts
+export interface ListActionsTransactionOutput {
+    txid: string;
+    vout: number;
+    amount: number;
+    outputScript: string;
+    type: string;
+    spendable: boolean;
+    description?: string;
+    basket?: string;
+    tags?: string[];
+}
+```
+
+<details>
+
+<summary>Interface ListActionsTransactionOutput Details</summary>
+
+##### Property amount
+
+Number of satoshis in the output
+
+```ts
+amount: number
+```
+
+##### Property basket
+
+Optionally included basket assignment.
+
+```ts
+basket?: string
+```
+
+##### Property description
+
+Output description
+
+```ts
+description?: string
+```
+
+##### Property outputScript
+
+Hex representation of output locking script
+
+```ts
+outputScript: string
+```
+
+##### Property spendable
+
+Whether this output is free to be spent
+
+```ts
+spendable: boolean
+```
+
+##### Property tags
+
+Optionally included tag assignments.
+
+```ts
+tags?: string[]
+```
+
+##### Property txid
+
+Transaction ID of transaction that created the output
+
+```ts
+txid: string
+```
+
+##### Property type
+
+The type of output, for example "P2PKH" or "P2RPH"
+
+```ts
+type: string
+```
+
+##### Property vout
+
+Index in the transaction of the output
+
+```ts
+vout: number
 ```
 
 </details>
