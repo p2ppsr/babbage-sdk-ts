@@ -289,7 +289,94 @@ export interface ListActionsTransaction {
      * The Dojo reference number for the transaction
      */
   referenceNumber: string
+  /**
+     * A set of all the labels affixed to the transaction
+     */
+  labels: string[],
+  inputs?: ListActionsTransactionInput[],
+  outputs?: ListActionsTransactionOutput[],
 }
+export interface ListActionsTransactionInput {
+   /**
+    * Transaction ID of transaction that created the output
+    */
+   txid: string
+   /**
+    * Index in the transaction of the output
+    */
+   vout: number
+   /**
+    * Number of satoshis in the output
+    */
+   amount: number
+   /**
+    * Hex representation of output locking script
+    */
+   outputScript: string
+   /**
+    * The type of output, for example "P2PKH" or "P2RPH"
+    */
+   type: string
+   /**
+    * Whether this output is free to be spent
+    */
+   spendable: boolean,
+   /**
+    * Spending description for this transaction input
+    */
+   spendingDescription?: string
+   /**
+    * Optionally included basket assignment.
+    */
+   basket?: string
+   /**
+    * Optionally included tag assignments.
+    */
+   tags?: string[]
+}
+
+/**
+ *
+ */
+export interface ListActionsTransactionOutput {
+   /**
+    * Transaction ID of transaction that created the output
+    */
+   txid: string
+   /**
+    * Index in the transaction of the output
+    */
+   vout: number
+   /**
+    * Number of satoshis in the output
+    */
+   amount: number
+   /**
+    * Hex representation of output locking script
+    */
+   outputScript: string
+   /**
+    * The type of output, for example "P2PKH" or "P2RPH"
+    */
+   type: string
+   /**
+    * Whether this output is free to be spent
+    */
+   spendable: boolean,
+   /**
+    * Output description
+    */
+   description?: string
+   /**
+    * Optionally included basket assignment.
+    */
+   basket?: string
+   /**
+    * Optionally included tag assignments.
+    */
+   tags?: string[]
+}
+
 
 /**
  *
