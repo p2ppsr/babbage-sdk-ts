@@ -176,7 +176,7 @@ export default async function connectToSubstrate() : Promise<Communicator> {
     return cached
   }
 
-  const noIdentityErrorMessage = 'The user does not have a current Babbage identity. Initialize a MetaNet portal onto one of the supported substrates. Supported substrates are "window-api", "babbage-xdm", and "cicada-api".'
+  const noIdentityErrorMessage = 'The user does not have a current MetaNet Identity. Initialize a MetaNet Client onto one of the supported substrates. Supported substrates are "window-api", "babbage-xdm", and "cicada-api".'
   const noIdentitySupportedSubstrates = ['window-api', 'babbage-xdm', 'cicada-api']
   const makeErr = () : Error => {
       // If there's no window object for XDM or window.CWI and HTTP fails
@@ -226,7 +226,7 @@ export default async function connectToSubstrate() : Promise<Communicator> {
 
   // Check the kernel's compatibility before resolving
   if (!cached.version.startsWith('0.3.') && !cached.version.startsWith('0.4.')) {
-    const e = new Error(`Your MetaNet portal is running an incompatible kernel version ${cached.version} This SDK requires a 0.4.x kernel`)
+    const e = new Error(`Your MetaNet Client is running an incompatible kernel version ${cached.version} This SDK requires a 0.4.x kernel`)
     e["code"] = 'ERR_INCOMPATIBLE_KERNEL'
     e["compatibleKernels "]= '0.3.x or 0.4.x'
     e["invalidVersion "]= cached.version
