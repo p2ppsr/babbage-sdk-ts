@@ -134,19 +134,18 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 ### Interfaces
 
-| | |
-| --- | --- |
-| [CertificateApi](#interface-certificateapi) | [ListActionsTransaction](#interface-listactionstransaction) |
-| [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult) | [ListActionsTransactionInput](#interface-listactionstransactioninput) |
-| [CreateActionInput](#interface-createactioninput) | [ListActionsTransactionOutput](#interface-listactionstransactionoutput) |
-| [CreateActionOutput](#interface-createactionoutput) | [MapiResponseApi](#interface-mapiresponseapi) |
-| [CreateActionOutputToRedeem](#interface-createactionoutputtoredeem) | [ProveCertificateResult](#interface-provecertificateresult) |
-| [CreateActionResult](#interface-createactionresult) | [SpecificKeyLinkageResult](#interface-specifickeylinkageresult) |
-| [CreateCertificateResult](#interface-createcertificateresult) | [SubmitDirectTransaction](#interface-submitdirecttransaction) |
-| [EnvelopeApi](#interface-envelopeapi) | [SubmitDirectTransactionOutput](#interface-submitdirecttransactionoutput) |
-| [EnvelopeEvidenceApi](#interface-envelopeevidenceapi) | [SubmitDirectTransactionResult](#interface-submitdirecttransactionresult) |
-| [GetTransactionOutputResult](#interface-gettransactionoutputresult) | [TscMerkleProofApi](#interface-tscmerkleproofapi) |
-| [ListActionsResult](#interface-listactionsresult) |  |
+| | | |
+| --- | --- | --- |
+| [AbortActionResult](#interface-abortactionresult) | [DojoCreatingTxInputsApi](#interface-dojocreatingtxinputsapi) | [ListActionsTransactionOutput](#interface-listactionstransactionoutput) |
+| [CertificateApi](#interface-certificateapi) | [DojoCreatingTxInstructionsApi](#interface-dojocreatingtxinstructionsapi) | [MapiResponseApi](#interface-mapiresponseapi) |
+| [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult) | [DojoCreatingTxOutputApi](#interface-dojocreatingtxoutputapi) | [ProveCertificateResult](#interface-provecertificateresult) |
+| [CreateActionInput](#interface-createactioninput) | [DojoOutputToRedeemApi](#interface-dojooutputtoredeemapi) | [SignActionResult](#interface-signactionresult) |
+| [CreateActionOutput](#interface-createactionoutput) | [EnvelopeApi](#interface-envelopeapi) | [SpecificKeyLinkageResult](#interface-specifickeylinkageresult) |
+| [CreateActionOutputToRedeem](#interface-createactionoutputtoredeem) | [EnvelopeEvidenceApi](#interface-envelopeevidenceapi) | [SubmitDirectTransaction](#interface-submitdirecttransaction) |
+| [CreateActionResult](#interface-createactionresult) | [GetTransactionOutputResult](#interface-gettransactionoutputresult) | [SubmitDirectTransactionOutput](#interface-submitdirecttransactionoutput) |
+| [CreateCertificateResult](#interface-createcertificateresult) | [ListActionsResult](#interface-listactionsresult) | [SubmitDirectTransactionResult](#interface-submitdirecttransactionresult) |
+| [DojoCreateTransactionResultApi](#interface-dojocreatetransactionresultapi) | [ListActionsTransaction](#interface-listactionstransaction) | [TscMerkleProofApi](#interface-tscmerkleproofapi) |
+| [DojoCreateTxOutputApi](#interface-dojocreatetxoutputapi) | [ListActionsTransactionInput](#interface-listactionstransactioninput) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -1097,7 +1096,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ```ts
 export interface CreateActionOutputToRedeem {
     index: number;
-    unlockingScript: string;
+    unlockingScript: string | number;
     spendingDescription?: string;
     sequenceNumber?: number;
 }
@@ -1125,13 +1124,13 @@ sequenceNumber?: number
 
 ##### Property unlockingScript
 
-Hex scriptcode that unlocks the satoshis.
+Hex scriptcode that unlocks the satoshis or the maximum script length (in bytes) if using `signAction`.
 
 Note that you should create any signatures with `SIGHASH_NONE | ANYONECANPAY` or similar
 so that the additional Dojo outputs can be added afterward without invalidating your signature.
 
 ```ts
-unlockingScript: string
+unlockingScript: string | number
 ```
 
 </details>
@@ -1223,14 +1222,215 @@ tags?: string[]
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Interface: CreateActionResult
+#### Interface: SignActionResult
 
 ```ts
-export interface CreateActionResult {
+export interface SignActionResult {
     rawTx: string;
     inputs: Record<string, EnvelopeEvidenceApi>;
     mapiResponses: MapiResponseApi[];
     txid: string;
+    log?: string;
+}
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: AbortActionResult
+
+```ts
+export interface AbortActionResult {
+    referenceNumber: string;
+    log?: string;
+}
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: DojoOutputToRedeemApi
+
+```ts
+export interface DojoOutputToRedeemApi {
+    index: number;
+    unlockingScriptLength: number;
+    spendingDescription?: string;
+}
+```
+
+<details>
+
+<summary>Interface DojoOutputToRedeemApi Details</summary>
+
+##### Property index
+
+Zero based output index within its transaction to spend.
+
+```ts
+index: number
+```
+
+##### Property unlockingScriptLength
+
+byte length of unlocking script
+
+Note: To protect client keys and utxo control, unlocking scripts are never shared with Dojo.
+
+```ts
+unlockingScriptLength: number
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: DojoCreatingTxInstructionsApi
+
+```ts
+export interface DojoCreatingTxInstructionsApi {
+    type: string;
+    derivationPrefix?: string;
+    derivationSuffix?: string;
+    senderIdentityKey?: string;
+    paymailHandle?: string;
+}
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: DojoCreatingTxInputsApi
+
+```ts
+export interface DojoCreatingTxInputsApi extends EnvelopeEvidenceApi {
+    outputsToRedeem: DojoOutputToRedeemApi[];
+    providedBy: DojoProvidedByApi;
+    instructions: Record<number, DojoCreatingTxInstructionsApi>;
+}
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: DojoCreateTxOutputApi
+
+A specific output to be created as part of a new transactions.
+These outputs can contain custom scripts as specified by recipients.
+
+```ts
+export interface DojoCreateTxOutputApi {
+    script: string;
+    satoshis: number;
+    description?: string;
+    basket?: string;
+    customInstructions?: string;
+    tags?: string[];
+}
+```
+
+<details>
+
+<summary>Interface DojoCreateTxOutputApi Details</summary>
+
+##### Property basket
+
+Destination output basket name for the new UTXO
+
+```ts
+basket?: string
+```
+
+##### Property customInstructions
+
+Custom spending instructions (metadata, string, optional)
+
+```ts
+customInstructions?: string
+```
+
+##### Property description
+
+Human-readable output line-item description
+
+```ts
+description?: string
+```
+
+##### Property satoshis
+
+The amount of the output in satoshis
+
+```ts
+satoshis: number
+```
+
+##### Property script
+
+The output script that will be included, hex encoded
+
+```ts
+script: string
+```
+
+##### Property tags
+
+Optional array of output tags to assign to this output.
+
+```ts
+tags?: string[]
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: DojoCreatingTxOutputApi
+
+```ts
+export interface DojoCreatingTxOutputApi extends DojoCreateTxOutputApi {
+    providedBy: DojoProvidedByApi;
+    purpose?: string;
+    destinationBasket?: string;
+    derivationSuffix?: string;
+    keyOffset?: string;
+}
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: DojoCreateTransactionResultApi
+
+```ts
+export interface DojoCreateTransactionResultApi {
+    inputs: Record<string, DojoCreatingTxInputsApi>;
+    outputs: DojoCreatingTxOutputApi[];
+    derivationPrefix: string;
+    version: number;
+    lockTime: number;
+    referenceNumber: string;
+    paymailHandle: string;
+    note?: string;
+    log?: string;
+}
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: CreateActionResult
+
+```ts
+export interface CreateActionResult {
+    signActionRequired?: boolean;
+    createResult?: DojoCreateTransactionResultApi;
+    rawTx?: string;
+    inputs: Record<string, EnvelopeEvidenceApi>;
+    mapiResponses?: MapiResponseApi[];
+    txid?: string;
     log?: string;
 }
 ```
@@ -1419,19 +1619,20 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [connectToSubstrate](#function-connecttosubstrate) | [getCertificates](#function-getcertificates) | [requestGroupPermission](#function-requestgrouppermission) |
-| [createAction](#function-createaction) | [getHeight](#function-getheight) | [revealKeyLinkage](#function-revealkeylinkage) |
-| [createCertificate](#function-createcertificate) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
-| [createHmac](#function-createhmac) | [getNetwork](#function-getnetwork) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
-| [createSignature](#function-createsignature) | [getPublicKey](#function-getpublickey) | [stampLog](#function-stamplog) |
-| [decrypt](#function-decrypt) | [getRandomID](#function-getrandomid) | [stampLogFormat](#function-stamplogformat) |
-| [decryptAsArray](#function-decryptasarray) | [getTransactionOutputs](#function-gettransactionoutputs) | [submitDirectTransaction](#function-submitdirecttransaction) |
-| [decryptAsString](#function-decryptasstring) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
-| [discoverByAttributes](#function-discoverbyattributes) | [isAuthenticated](#function-isauthenticated) | [verifyHmac](#function-verifyhmac) |
-| [discoverByIdentityKey](#function-discoverbyidentitykey) | [listActions](#function-listactions) | [verifySignature](#function-verifysignature) |
-| [encrypt](#function-encrypt) | [makeHttpRequest](#function-makehttprequest) | [waitForAuthentication](#function-waitforauthentication) |
-| [encryptAsArray](#function-encryptasarray) | [promiseWithTimeout](#function-promisewithtimeout) |  |
-| [encryptAsString](#function-encryptasstring) | [proveCertificate](#function-provecertificate) |  |
+| [abortAction](#function-abortaction) | [encryptAsString](#function-encryptasstring) | [requestGroupPermission](#function-requestgrouppermission) |
+| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getCertificates](#function-getcertificates) | [revealKeyLinkage](#function-revealkeylinkage) |
+| [connectToSubstrate](#function-connecttosubstrate) | [getHeight](#function-getheight) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
+| [createAction](#function-createaction) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
+| [createCertificate](#function-createcertificate) | [getNetwork](#function-getnetwork) | [signAction](#function-signaction) |
+| [createHmac](#function-createhmac) | [getPublicKey](#function-getpublickey) | [stampLog](#function-stamplog) |
+| [createSignature](#function-createsignature) | [getRandomID](#function-getrandomid) | [stampLogFormat](#function-stamplogformat) |
+| [decrypt](#function-decrypt) | [getTransactionOutputs](#function-gettransactionoutputs) | [submitDirectTransaction](#function-submitdirecttransaction) |
+| [decryptAsArray](#function-decryptasarray) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
+| [decryptAsString](#function-decryptasstring) | [isAuthenticated](#function-isauthenticated) | [verifyHmac](#function-verifyhmac) |
+| [discoverByAttributes](#function-discoverbyattributes) | [listActions](#function-listactions) | [verifySignature](#function-verifysignature) |
+| [discoverByIdentityKey](#function-discoverbyidentitykey) | [makeHttpRequest](#function-makehttprequest) | [waitForAuthentication](#function-waitforauthentication) |
+| [encrypt](#function-encrypt) | [promiseWithTimeout](#function-promisewithtimeout) |  |
+| [encryptAsArray](#function-encryptasarray) | [proveCertificate](#function-provecertificate) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -1540,6 +1741,35 @@ Argument Details
 
 + **log**
   + Each logged event starts with ISO time stamp, space, rest of line, terminated by `\n`.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: abortAction
+
+Aborts a previously created action which required custom input unlocking script signing.
+
+```ts
+export async function abortAction(args: {
+    referenceNumber: string;
+    log?: string;
+}): Promise<AbortActionResult> 
+```
+
+<details>
+
+<summary>Function abortAction Details</summary>
+
+Returns
+
+An Action object containing "txid", "rawTx" "mapiResponses" and "inputs".
+
+Argument Details
+
++ **args**
+  + All parameters for this function are provided in an object
 
 </details>
 
@@ -2350,6 +2580,37 @@ Argument Details
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: signAction
+
+Completes a previously created action which required custom input unlocking script signing.
+
+```ts
+export async function signAction(args: {
+    inputs?: Record<string, CreateActionInput>;
+    createResult: DojoCreateTransactionResultApi;
+    acceptDelayedBroadcast?: boolean;
+    log?: string;
+}): Promise<SignActionResult> 
+```
+
+<details>
+
+<summary>Function signAction Details</summary>
+
+Returns
+
+An Action object containing "txid", "rawTx" "mapiResponses" and "inputs".
+
+Argument Details
+
++ **args**
+  + All parameters for this function are provided in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: submitDirectTransaction
 
 Submits a transaction directly to a ninja
@@ -2504,10 +2765,37 @@ Always returns true
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: buildTransactionForSignActionUnlocking
+
+Constructs a
+
+```ts
+export async function buildTransactionForSignActionUnlocking(ninjaInputs: Record<string, CreateActionInput>, createResult: DojoCreateTransactionResultApi): Promise<Transaction> 
+```
+
+<details>
+
+<summary>Function buildTransactionForSignActionUnlocking Details</summary>
+
+Argument Details
+
++ **ninjaInputs**
+  + Ninja inputs as passed to createAction
++ **createResult**
+  + Create transaction results returned by createAction when signActionRequires is true.
++ **changeKeys**
+  + Dummy keys can be used to create a transaction with which to generate Ninja input lockingScripts.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 ### Types
 
 | |
 | --- |
+| [DojoProvidedByApi](#type-dojoprovidedbyapi) |
 | [ProtocolID](#type-protocolid) |
 | [TransactionStatusApi](#type-transactionstatusapi) |
 
@@ -2536,12 +2824,22 @@ export type TransactionStatusApi = "completed" | "failed" | "unprocessed" | "sen
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Type: DojoProvidedByApi
+
+```ts
+export type DojoProvidedByApi = "you" | "dojo" | "you-and-dojo"
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 ### Variables
 
 #### Variable: BabbageSDK
 
 ```ts
 BabbageSDK = {
+    abortAction,
     createAction,
     createHmac,
     createCertificate,
@@ -2568,6 +2866,7 @@ BabbageSDK = {
     revealKeyLinkage,
     revealKeyLinkageCounterparty,
     revealKeyLinkageSpecific,
+    signAction,
     submitDirectTransaction,
     unbasketOutput,
     verifyHmac,
