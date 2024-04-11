@@ -1,6 +1,6 @@
 import { CreateActionInput, DojoCreateTransactionResultApi, SignActionResult } from './types'
 import connectToSubstrate from './utils/connectToSubstrate'
-import { stampLog, stampLogFormat } from './utils/stampLog'
+import { stampLog } from './utils/stampLog'
 
 /** Completes a previously created action which required custom input unlocking script signing.
  * @param {object} args All parameters for this function are provided in an object
@@ -28,13 +28,9 @@ export async function signAction(args: {
     },
     bodyJsonParams: true,
   })
-  log = stampLog(r.log, 'end sdk-ts signAction')
+  r.log = stampLog(r.log, 'end sdk-ts signAction')
   if (typeof args.log === 'string')
-    r.log = args.log + log
-  else {
-    console.log(stampLogFormat(log))
-    r.log = log
-  }
+    r.log = args.log + r.log
   return r
 }
 
