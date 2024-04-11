@@ -1,3 +1,5 @@
+import { abortAction } from './abortAction'
+export { abortAction }
 import { createAction } from './createAction'
 export { createAction }
 import { createHmac } from './createHmac'
@@ -38,6 +40,8 @@ import { requestGroupPermission } from './requestGroupPermission'
 export { requestGroupPermission }
 import { revealKeyLinkage, revealKeyLinkageCounterparty, revealKeyLinkageSpecific } from './revealKeyLinkage'
 export { revealKeyLinkage, revealKeyLinkageCounterparty, revealKeyLinkageSpecific }
+import { signAction } from './signAction'
+export { signAction }
 import { submitDirectTransaction } from './submitDirectTransaction'
 export { submitDirectTransaction }
 import { unbasketOutput } from './unbasketOutput'
@@ -50,10 +54,13 @@ import { waitForAuthentication } from './waitForAuthentication'
 export { waitForAuthentication }
 import { stampLog, stampLogFormat } from './utils/stampLog'
 export { stampLog, stampLogFormat }
+import { buildTransactionForSignActionUnlocking } from './utils/buildTransactionForSignActionUnlocking'
+export { buildTransactionForSignActionUnlocking }
 
 export * from './types'
 
 export const BabbageSDK = {
+    abortAction,
     createAction,
     createHmac,
     createCertificate,
@@ -74,6 +81,7 @@ export const BabbageSDK = {
     proveCertificate,
     requestGroupPermission,
     revealKeyLinkage, revealKeyLinkageCounterparty, revealKeyLinkageSpecific,
+    signAction,
     submitDirectTransaction,
     unbasketOutput,
     verifyHmac,

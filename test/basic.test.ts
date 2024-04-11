@@ -3,7 +3,7 @@
 import { PrivateKey } from '@bsv/sdk'
 import sdk from '../src/index'
 import pushdrop from 'pushdrop'
-import { randomBytesBase64 } from 'cwi-base'
+import { randomBytesBase64, verifyTruthy } from 'cwi-base'
 
 describe("basic tests", () => {
 
@@ -51,7 +51,7 @@ describe("basic tests", () => {
                 acceptDelayedBroadcast: true
             })
 
-            expect(r.txid.length).toBe(64)
+            expect(verifyTruthy(r.txid).length).toBe(64)
 
             outs = await sdk.getTransactionOutputs({ basket: 'foobar' })
         }

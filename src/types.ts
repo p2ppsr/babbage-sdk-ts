@@ -419,12 +419,12 @@ export interface CreateActionOutputToRedeem {
      */
   index: number
   /**
-     * Hex scriptcode that unlocks the satoshis.
+     * Hex scriptcode that unlocks the satoshis or the maximum script length (in bytes) if using `signAction`.
      *
      * Note that you should create any signatures with `SIGHASH_NONE | ANYONECANPAY` or similar
      * so that the additional Dojo outputs can be added afterward without invalidating your signature.
      */
-  unlockingScript: string
+  unlockingScript: string | number
   spendingDescription?: string
    /**
      * Sequence number to use when spending
@@ -468,11 +468,108 @@ export interface CreateActionOutput {
    tags?: string[]
 }
 
-export interface CreateActionResult {
+export interface SignActionResult {
   rawTx: string,
   inputs: Record<string, EnvelopeEvidenceApi>
   mapiResponses: MapiResponseApi[],
   txid: string,
+  log?: string
+}
+
+export interface AbortActionResult {
+  referenceNumber: string,
+  log?: string
+}
+
+export type DojoProvidedByApi = 'you' | 'dojo' | 'you-and-dojo'
+
+export interface DojoOutputToRedeemApi {
+   /**
+      * Zero based output index within its transaction to spend.
+      */
+   index: number
+   /**
+      * byte length of unlocking script
+      *
+      * Note: To protect client keys and utxo control, unlocking scripts are never shared with Dojo.
+      */
+   unlockingScriptLength: number
+   spendingDescription?: string
+}
+
+export interface DojoCreatingTxInstructionsApi {
+   type: string
+   derivationPrefix?: string
+   derivationSuffix?: string
+   senderIdentityKey?: string
+   paymailHandle?: string
+}
+
+export interface DojoCreatingTxInputsApi extends EnvelopeEvidenceApi {
+   outputsToRedeem: DojoOutputToRedeemApi[]
+   providedBy: DojoProvidedByApi
+   instructions: Record<number, DojoCreatingTxInstructionsApi>
+}
+
+/**
+ * A specific output to be created as part of a new transactions.
+ * These outputs can contain custom scripts as specified by recipients.
+ */
+export interface DojoCreateTxOutputApi {
+   /**
+      * The output script that will be included, hex encoded
+      */
+   script: string
+   /**
+      * The amount of the output in satoshis
+      */
+   satoshis: number
+   /**
+      * Human-readable output line-item description
+      */
+   description?: string
+   /**
+      * Destination output basket name for the new UTXO
+      */
+   basket?: string
+   /**
+      * Custom spending instructions (metadata, string, optional)
+      */
+   customInstructions?: string
+   
+   /**
+    * Optional array of output tags to assign to this output.
+    */
+   tags?: string[]
+}
+
+export interface DojoCreatingTxOutputApi extends DojoCreateTxOutputApi {
+   providedBy: DojoProvidedByApi
+   purpose?: string
+   destinationBasket?: string
+   derivationSuffix?: string
+   keyOffset?: string
+}
+
+export interface DojoCreateTransactionResultApi {
+   inputs: Record<string, DojoCreatingTxInputsApi>
+   outputs: DojoCreatingTxOutputApi[]
+   derivationPrefix: string
+   version: number
+   lockTime: number
+   referenceNumber: string
+   paymailHandle: string
+   note?: string
+   log?: string
+}
+
+export interface CreateActionResult {
+  signActionRequired?: boolean
+  createResult?: DojoCreateTransactionResultApi
+  rawTx?: string
+  inputs: Record<string, EnvelopeEvidenceApi>
+  mapiResponses?: MapiResponseApi[]
+  txid?: string,
   log?: string
 }
 
