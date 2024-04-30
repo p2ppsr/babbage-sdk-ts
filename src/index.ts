@@ -14,6 +14,8 @@ import { discoverByAttributes } from './discoverByAttributes'
 export { discoverByAttributes }
 import { discoverByIdentityKey } from './discoverByIdentityKey'
 export { discoverByIdentityKey }
+import { getPreferredCurrency } from './getPreferredCurrency'
+export { getPreferredCurrency }
 import { encrypt, encryptAsArray, encryptAsString } from './encrypt'
 export { encrypt, encryptAsArray, encryptAsString }
 import { getCertificates } from './getCertificates'
@@ -60,33 +62,34 @@ export { buildTransactionForSignActionUnlocking }
 export * from './types'
 
 export const BabbageSDK = {
-    abortAction,
-    createAction,
-    createHmac,
-    createCertificate,
-    createSignature,
-    decrypt, decryptAsArray, decryptAsString,
-    discoverByAttributes,
-    discoverByIdentityKey,
-    encrypt, encryptAsArray, encryptAsString,
-    getCertificates,
-    getHeight,
-    getMerkleRootForHeight,
-    getNetwork,
-    getPublicKey,
-    getTransactionOutputs,
-    getVersion,
-    isAuthenticated,
-    listActions,
-    proveCertificate,
-    requestGroupPermission,
-    revealKeyLinkage, revealKeyLinkageCounterparty, revealKeyLinkageSpecific,
-    signAction,
-    submitDirectTransaction,
-    unbasketOutput,
-    verifyHmac,
-    verifySignature,
-    waitForAuthentication,
+  abortAction,
+  createAction,
+  createHmac,
+  createCertificate,
+  createSignature,
+  decrypt, decryptAsArray, decryptAsString,
+  discoverByAttributes,
+  discoverByIdentityKey,
+  getPreferredCurrency,
+  encrypt, encryptAsArray, encryptAsString,
+  getCertificates,
+  getHeight,
+  getMerkleRootForHeight,
+  getNetwork,
+  getPublicKey,
+  getTransactionOutputs,
+  getVersion,
+  isAuthenticated,
+  listActions,
+  proveCertificate,
+  requestGroupPermission,
+  revealKeyLinkage, revealKeyLinkageCounterparty, revealKeyLinkageSpecific,
+  signAction,
+  submitDirectTransaction,
+  unbasketOutput,
+  verifyHmac,
+  verifySignature,
+  waitForAuthentication,
 }
 
 export default BabbageSDK
