@@ -31,32 +31,47 @@ export default async function makeHttpRequest<R>(
   }
 
   console.log('parse json')
-  debugger
-  const jsonParser = parser();
-  response.body.pipe(jsonParser.input);
-  const resultStream = jsonParser.pipe(streamValues());
   let parsedJSON: any = [];
-  const dataPromise = new Promise((resolve, reject) => {
-    resultStream.on('data', ({ value }) => {
-      parsedJSON.push(value);
+  if (typeof window !== 'object') {
+    const jsonParser = parser();
+    response.body.pipe(jsonParser.input);
+    const resultStream = jsonParser.pipe(streamValues());
+    const dataPromise = new Promise((resolve, reject) => {
+      resultStream.on('data', ({ value }) => {
+        parsedJSON.push(value);
+      });
+      resultStream.on('end', () => {
+        resolve(parsedJSON);
+      });
+      resultStream.on('error', (err) => {
+        reject(err);
+      });
     });
-    resultStream.on('end', () => {
-      resolve(parsedJSON);
-    });
-    resultStream.on('error', (err) => {
-      reject(err);
-    });
-  });
 
-  console.log('await')
-  await dataPromise; // Wait until the stream is finished
+    console.log('await')
+    await dataPromise; // Wait until the stream is finished
 
-  // Assuming the JSON is an array, directly return the results array
-  // If it's expected to be a single object, you might need to aggregate differently
-  if (parsedJSON.length === 1 && !Array.isArray(parsedJSON[0])) {
-    parsedJSON = parsedJSON[0] as R; // Single object case
+    // Assuming the JSON is an array, directly return the results array
+    // If it's expected to be a single object, you might need to aggregate differently
+    if (parsedJSON.length === 1 && !Array.isArray(parsedJSON[0])) {
+      parsedJSON = parsedJSON[0] as R; // Single object case
+    }
+    parsedJSON = parsedJSON as unknown as R; // Array or complex object case
+  } else {
+    console.log('browser')
+    // Browser environment: use the ReadableStream interface
+    const reader = response.body.getReader();
+    let results = '';
+    let read;
+    do {
+      read = await reader.read();
+      if (!read.done) {
+        results += new TextDecoder('utf-8').decode(read.value, { stream: true });
+      }
+    } while (!read.done);
+    reader.releaseLock();
+    parsedJSON = JSON.parse(results) as R
   }
-  parsedJSON = parsedJSON as unknown as R; // Array or complex object case
   console.log('parse', parsedJSON)
 
   if (parsedJSON.status === 'error') {
