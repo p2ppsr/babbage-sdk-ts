@@ -31,6 +31,7 @@ export default async function makeHttpRequest<R>(
   }
 
   console.log('parse json')
+  debugger
   const jsonParser = parser();
   response.body.pipe(jsonParser.input);
   const resultStream = jsonParser.pipe(streamValues());
