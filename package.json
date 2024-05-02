@@ -30,7 +30,8 @@
   "homepage": "https://github.com/p2ppsr/babbage-sdk#readme",
   "dependencies": {
     "@bsv/sdk": "^1.0.20",
-    "isomorphic-fetch": "^3.0.0"
+    "isomorphic-fetch": "^3.0.0",
+    "stream-json": "^1.8.0"
   },
   "devDependencies": {
     "@babbage/sdk": "^0.4.41",

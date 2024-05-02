@@ -1,4 +1,7 @@
 import isomorphicFetch from 'isomorphic-fetch'
+import { parser } from 'stream-json';
+import { streamValues } from 'stream-json/streamers/StreamValues';
+import { finished } from 'stream/promises';
 
 const fetch =
   typeof window !== 'object'
@@ -8,8 +11,7 @@ const fetch =
 export default async function makeHttpRequest<R>(
   routeURL: string,
   requestInput: RequestInit = {}
-) : Promise<R>
-{
+): Promise<R> {
 
   // If we're in a node environment, we need to inject the Orign header
   if (typeof window !== 'object') {
@@ -31,8 +33,23 @@ export default async function makeHttpRequest<R>(
     // Success
     return data
   }
-  
-  const parsedJSON = JSON.parse(Buffer.from(data).toString('utf-8'))
+
+
+  const jsonParser = parser();
+  response.body.pipe(jsonParser.input);
+  const resultStream = jsonParser.pipe(streamValues());
+  let parsedJSON: any = [];
+  resultStream.on('data', ({ value }) => {
+    parsedJSON.push(value);
+  });
+  await finished(resultStream); // Wait until the stream is finished
+
+  // Assuming the JSON is an array, directly return the results array
+  // If it's expected to be a single object, you might need to aggregate differently
+  if (parsedJSON.length === 1 && !Array.isArray(parsedJSON[0])) {
+    parsedJSON = parsedJSON[0] as R; // Single object case
+  }
+  parsedJSON = parsedJSON as unknown as R; // Array or complex object case
 
   if (parsedJSON.status === 'error') {
     const e = new Error(parsedJSON.description)
