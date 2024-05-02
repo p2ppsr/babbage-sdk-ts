@@ -25,15 +25,12 @@ export default async function makeHttpRequest<R>(
     requestInput
   )
 
-  const data = await response.arrayBuffer()
-
   // Determine the request success and response content type
   if (response.headers.get('content-type') === 'application/octet-stream') {
-    // Success
-    return data
+    return await response.arrayBuffer()
   }
 
-
+  console.log('parse json')
   const jsonParser = parser();
   response.body.pipe(jsonParser.input);
   const resultStream = jsonParser.pipe(streamValues());
@@ -50,6 +47,7 @@ export default async function makeHttpRequest<R>(
     });
   });
 
+  console.log('await')
   await dataPromise; // Wait until the stream is finished
 
   // Assuming the JSON is an array, directly return the results array
@@ -58,6 +56,7 @@ export default async function makeHttpRequest<R>(
     parsedJSON = parsedJSON[0] as R; // Single object case
   }
   parsedJSON = parsedJSON as unknown as R; // Array or complex object case
+  console.log('parse', parsedJSON)
 
   if (parsedJSON.status === 'error') {
     const e = new Error(parsedJSON.description)
