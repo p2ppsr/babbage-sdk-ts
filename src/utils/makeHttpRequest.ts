@@ -1,7 +1,6 @@
 import isomorphicFetch from 'isomorphic-fetch'
-import { parser } from 'stream-json';
-import { streamValues } from 'stream-json/streamers/StreamValues';
-import { finished } from 'stream/promises';
+import { parser } from 'stream-json'
+import { streamValues } from 'stream-json/streamers/StreamValues'
 
 const fetch =
   typeof window !== 'object'
@@ -39,10 +38,19 @@ export default async function makeHttpRequest<R>(
   response.body.pipe(jsonParser.input);
   const resultStream = jsonParser.pipe(streamValues());
   let parsedJSON: any = [];
-  resultStream.on('data', ({ value }) => {
-    parsedJSON.push(value);
+  const dataPromise = new Promise((resolve, reject) => {
+    resultStream.on('data', ({ value }) => {
+      parsedJSON.push(value);
+    });
+    resultStream.on('end', () => {
+      resolve(parsedJSON);
+    });
+    resultStream.on('error', (err) => {
+      reject(err);
+    });
   });
-  await finished(resultStream); // Wait until the stream is finished
+
+  await dataPromise; // Wait until the stream is finished
 
   // Assuming the JSON is an array, directly return the results array
   // If it's expected to be a single object, you might need to aggregate differently
