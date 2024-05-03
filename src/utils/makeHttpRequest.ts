@@ -33,8 +33,7 @@ export default async function makeHttpRequest<R>(
   let parsedJSON: any = [];
   if (typeof window !== 'object') {
     const jsonParser = parser();
-    response.body.pipe(jsonParser.input);
-    const resultStream = jsonParser.pipe(streamValues());
+    const resultStream = response.body.pipe(jsonParser).pipe(streamValues());
     const dataPromise = new Promise((resolve, reject) => {
       resultStream.on('data', ({ value }) => {
         parsedJSON.push(value);
