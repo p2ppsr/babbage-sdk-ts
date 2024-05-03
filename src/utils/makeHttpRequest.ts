@@ -30,7 +30,6 @@ export default async function makeHttpRequest<R>(
     return await response.arrayBuffer()
   }
 
-  console.log('parse json')
   let parsedJSON: any = [];
   if (typeof window !== 'object') {
     const jsonParser = parser();
@@ -48,7 +47,6 @@ export default async function makeHttpRequest<R>(
       });
     });
 
-    console.log('await')
     await dataPromise; // Wait until the stream is finished
 
     // Assuming the JSON is an array, directly return the results array
@@ -58,7 +56,6 @@ export default async function makeHttpRequest<R>(
     }
     parsedJSON = parsedJSON as unknown as R; // Array or complex object case
   } else {
-    console.log('browser')
     // Browser environment: use the ReadableStream interface
     const reader = response.body.getReader();
     let results = '';
@@ -72,7 +69,6 @@ export default async function makeHttpRequest<R>(
     reader.releaseLock();
     parsedJSON = JSON.parse(results) as R
   }
-  console.log('parse', parsedJSON)
 
   if (parsedJSON.status === 'error') {
     const e = new Error(parsedJSON.description)
