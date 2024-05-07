@@ -2422,6 +2422,7 @@ export async function listActions(args: {
     addInputsAndOutputs?: boolean;
     includeBasket?: boolean;
     includeTags?: boolean;
+    noRawTx?: boolean;
     limit?: number;
     offset?: number;
 }): Promise<ListActionsResult> 
