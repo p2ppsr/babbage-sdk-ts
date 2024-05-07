@@ -415,7 +415,7 @@ export interface SpecificKeyLinkageResult {
 
 export interface CreateActionOutputToRedeem {
   /**
-     * Zero based output index within its transaction to spend.
+     * Zero based output index within its transaction to spend, vout.
      */
   index: number
   /**
@@ -466,6 +466,13 @@ export interface CreateActionOutput {
     * Optional array of output tags to assign to this output.
     */
    tags?: string[]
+
+   /**
+    * If true, envelope evidence is not desired for this new output.
+    * If all new outputs are flagged `forSelf` then the results
+    * `inputs` object will be empty.
+    */
+   forSelf?: boolean
 }
 
 export interface SignActionResult {
@@ -563,14 +570,55 @@ export interface DojoCreateTransactionResultApi {
    log?: string
 }
 
+export interface CreateActionParams {
+  /**
+   * If an input is self-provided (known to user's Dojo),
+   * `TrustSelfInput` can ommit envelope evidence supporting
+   * the input.
+   */
+  inputs?: Record<string, CreateActionInput | TrustSelfInput>,
+  outputs?: CreateActionOutput[],
+  lockTime?: number,
+  version?: number,
+  description: string,
+  labels?: string[],
+  acceptDelayedBroadcast?: boolean, // = true
+  /**
+   * If true, the new transaction is not going to an external party.
+   * Result properties normally used only to prove the validity
+   * of new outputs are ommitted.
+   * The result will not include the new `rawTx`, as it can be
+   * obtained using the result txid from the user's Dojo at any time.
+   */
+  forSelf?: boolean
+  log?: string
+}
+
 export interface CreateActionResult {
   signActionRequired?: boolean
   createResult?: DojoCreateTransactionResultApi
   rawTx?: string
+  /**
+   * Envelope evidence for the new transaction.
+   * If all of the new transaction's outputs are flagged `forSelf`,
+   * or if params `forSelf` is true, 
+   * then this object is empty.
+   */
   inputs: Record<string, EnvelopeEvidenceApi>
   mapiResponses?: MapiResponseApi[]
   txid?: string,
   log?: string
+}
+
+/**
+ * Alternative to CreateActionInput which is suitable
+ * if the input transaction is already known to the user's Dojo,
+ * and the user is opting to trust themselves and their Dojo.
+ * Performance is improved by ommitting envelope information,
+ * which may not be needed if all outputs are returning to the user.
+ */
+export interface TrustSelfInput {
+  outputsToRedeem: CreateActionOutputToRedeem[]
 }
 
 export interface GetTransactionOutputResult {
