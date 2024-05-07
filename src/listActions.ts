@@ -8,6 +8,7 @@ import connectToSubstrate from './utils/connectToSubstrate'
  * @param {Boolean} [args.addInputsAndOutputs] Optional. If true, include the list of transaction inputs and outputs when retrieving transactions. Enabling this option adds the 'inputs' and 'outputs' properties to each transaction, providing detailed information about the transaction's inputs and outputs.
  * @param {Boolean} [args.includeBasket] Optional. If true, the basket for each input and output will be included.
  * @param {Boolean} [args.includeTags] Optional. If true, the tags on each input and output will be included.
+ * @param {Boolean} [args.noRawTx] Optional. If true, excludes rawTx and outputScript properties from results. 
  * @param {Number} [args.limit=25] Provide a limit on the number of outputs that will be returned.
  * @param {Number} [args.offset=0] Provide an offset into the list of outputs.
  * @returns {Promise<ListActionsResult>} A set of outputs that match the criteria
@@ -17,6 +18,7 @@ export async function listActions(args: {
   addInputsAndOutputs?: boolean, // = false,
   includeBasket?: boolean, // = false,
   includeTags?: boolean, // = false
+  noRawTx?: boolean, // = false
   limit?: number, // = 25,
   offset?: number // = 0
 })
@@ -31,6 +33,7 @@ export async function listActions(args: {
       addInputsAndOutputs: args.addInputsAndOutputs,
       includeBasket: args.includeBasket,
       includeTags: args.includeTags,
+      noRawTx: args.noRawTx,
       limit: args.limit || 25,
       offset: args.offset || 0
     },
