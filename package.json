@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/p2ppsr/babbage-sdk#readme",
   "dependencies": {
-    "@bsv/sdk": "^1.0.21",
+    "@bsv/sdk": "^1.0.29",
     "isomorphic-fetch": "^3.0.0",
     "stream-json": "^1.8.0"
   },
