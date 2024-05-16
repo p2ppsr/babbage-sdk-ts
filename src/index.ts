@@ -28,6 +28,8 @@ import { getNetwork } from './getNetwork'
 export { getNetwork }
 import { getPublicKey } from './getPublicKey'
 export { getPublicKey }
+import { getEnvelopeForTransaction } from './getEnvelopeForTransaction'
+export { getEnvelopeForTransaction }
 import { getTransactionOutputs } from './getTransactionOutputs'
 export { getTransactionOutputs }
 import { getVersion } from './getVersion'
@@ -77,6 +79,7 @@ export const BabbageSDK = {
   getMerkleRootForHeight,
   getNetwork,
   getPublicKey,
+  getEnvelopeForTransaction,
   getTransactionOutputs,
   getVersion,
   isAuthenticated,
