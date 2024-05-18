@@ -135,6 +135,49 @@ export interface EnvelopeEvidenceApi {
   depth?: number
 }
 
+/**
+ * Optional EnvelopeEvidenceApi.
+ * If rawTx is not undefined, this is valid envelope evidence.
+ * If rawTx is undefined, all properties may be undefined.
+ */
+export interface OptionalEnvelopeEvidenceApi {
+  /**
+   * A valid bitcoin transaction encoded as a hex string.
+   */
+  rawTx?: string
+  /**
+     * Either proof, or inputs, must have a value.
+     * Leaf nodes have proofs.
+     *
+     * If value is a Buffer, content is binary encoded serialized proof
+     * see: chaintracks-spv.utils.serializeTscMerkleProof
+     */
+  proof?: TscMerkleProofApi | Buffer
+  /**
+     * Only one of proof or inputs must be valid.
+     * Branching nodes have inputs with a sub envelope (values) for every input transaction txid (keys)
+     */
+  inputs?: Record<string, EnvelopeEvidenceApi>
+  /**
+     * double SHA256 hash of serialized rawTx. Optional.
+     */
+  txid?: string
+  /**
+     * Array of mapi transaction status update responses
+     * Only the payload, signature, and publicKey properties are relevant.
+     *
+     * Branching inputs nodes only.
+     * Array of mapi transaction status update responses confirming
+     * unproven transctions have at least been submitted for processing.
+     */
+  mapiResponses?: MapiResponseApi[]
+  /**
+     * count of maximum number of chained unproven transactions before a proven leaf node
+     * proof nodes have depth zero.
+     */
+  depth?: number
+}
+
 export type ProtocolID = string | [ 0 | 1 | 2, string]
 
 export interface CertificateApi {
@@ -432,7 +475,7 @@ export interface CreateActionOutputToRedeem {
   sequenceNumber?: number
 }
 
-export interface CreateActionInput extends EnvelopeEvidenceApi {
+export interface CreateActionInput extends OptionalEnvelopeEvidenceApi {
   outputsToRedeem: CreateActionOutputToRedeem[]
 }
 
@@ -573,10 +616,10 @@ export interface DojoCreateTransactionResultApi {
 export interface CreateActionParams {
   /**
    * If an input is self-provided (known to user's Dojo),
-   * `TrustSelfInput` can ommit envelope evidence supporting
-   * the input.
+   * envelope evidence can be ommitted, reducing data
+   * size and processing time.
    */
-  inputs?: Record<string, CreateActionInput | TrustSelfInput>,
+  inputs?: Record<string, CreateActionInput>,
   outputs?: CreateActionOutput[],
   lockTime?: number,
   version?: number,
@@ -608,17 +651,6 @@ export interface CreateActionResult {
   mapiResponses?: MapiResponseApi[]
   txid?: string,
   log?: string
-}
-
-/**
- * Alternative to CreateActionInput which is suitable
- * if the input transaction is already known to the user's Dojo,
- * and the user is opting to trust themselves and their Dojo.
- * Performance is improved by ommitting envelope information,
- * which may not be needed if all outputs are returning to the user.
- */
-export interface TrustSelfInput {
-  outputsToRedeem: CreateActionOutputToRedeem[]
 }
 
 export interface GetTransactionOutputResult {
