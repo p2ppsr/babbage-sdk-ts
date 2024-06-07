@@ -51,7 +51,7 @@ function convertUniqueProofsToMerklePaths(e: EnvelopeEvidenceApi, merklePaths: R
         // No need to proceed
         return
     if (e.proof && !Buffer.isBuffer(e.proof)) {
-        const mp = convertProofToMerklePath(e.proof)
+        const mp = convertProofToMerklePath(txid, e.proof)
         merklePaths[txid] = mp
     } else if (e.inputs) {
         for (const [txid, ie] of Object.entries(e.inputs || {})) {
@@ -62,7 +62,7 @@ function convertUniqueProofsToMerklePaths(e: EnvelopeEvidenceApi, merklePaths: R
     }
 }
 
-export function convertProofToMerklePath(proof: TscMerkleProofApi): MerklePath {
+export function convertProofToMerklePath(txid: string, proof: TscMerkleProofApi): MerklePath {
     if (proof.height === undefined || Buffer.isBuffer(proof.nodes)) {
         throw new Error('Unsupported proof format.')
     }
@@ -86,6 +86,19 @@ export function convertProofToMerklePath(proof: TscMerkleProofApi): MerklePath {
             duplicate: node === '*'
         }
         path[level].push(leaf)
+        if (level === 0) {
+            const txidLeaf = {
+                offset: proof.index,
+                hash: txid,
+                txid: true,
+                duplicate: false
+            }
+            if (isOdd) {
+                path[0].unshift(txidLeaf)
+            } else {
+                path[0].push(txidLeaf)
+            }
+        }
         index = index >> 1
     }
     return new MerklePath(blockHeight, path)
