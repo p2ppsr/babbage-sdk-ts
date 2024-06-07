@@ -1,8 +1,19 @@
 import { MerklePath, Transaction } from "@bsv/sdk";
 import { EnvelopeEvidenceApi } from "../types";
-import { TscMerkleProofApi, asString } from "cwi-base";
+import { TscMerkleProofApi } from "cwi-base";
 
-export function toBEEFfromEnvelope(e: EnvelopeEvidenceApi, verify?: boolean)
+/**
+ * Converts a BRC-8 Everett-style Transaction Envelope 
+ * to a @bsv/sdk-ts Transaction
+ * with corresponding merklePath and sourceTransaction properties.
+ * 
+ * Uses tx.toBEEF() to generate binary BEEF data.
+ * 
+ * @param e 
+ * @returns tx: Transaction containing required merklePath and sourceTransaction values
+ * @returns beef: tx.toBEEF()
+ */
+export function toBEEFfromEnvelope(e: EnvelopeEvidenceApi)
 : { tx: Transaction, beef: number[] }
 {
     const merklePaths: Record<string, MerklePath> = {}
@@ -64,6 +75,12 @@ function convertUniqueProofsToMerklePaths(e: EnvelopeEvidenceApi, merklePaths: R
     }
 }
 
+/**
+ * Convert a single BRC-10 proof to a MerklePath
+ * @param txid transaction hash as big endian hex string
+ * @param proof transaction proof in BRC-10 string format.
+ * @returns corresponding MerklePath
+ */
 export function convertProofToMerklePath(txid: string, proof: TscMerkleProofApi): MerklePath {
     if (proof.height === undefined || Buffer.isBuffer(proof.nodes)) {
         throw new Error('Unsupported proof format.')
