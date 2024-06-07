@@ -2,13 +2,15 @@ import { MerklePath, Transaction } from "@bsv/sdk";
 import { EnvelopeEvidenceApi } from "../types";
 import { TscMerkleProofApi, asString } from "cwi-base";
 
-export function toBEEFfromEnvelope(e: EnvelopeEvidenceApi) : number[] {
+export function toBEEFfromEnvelope(e: EnvelopeEvidenceApi, verify?: boolean)
+: { tx: Transaction, beef: number[] }
+{
     const merklePaths: Record<string, MerklePath> = {}
     convertUniqueProofsToMerklePaths(e, merklePaths)
     const transactions: Record<string, Transaction> = {}
     const tx = createTransactionFromEnvelope(e, merklePaths, transactions)
     const beef = tx.toBEEF()
-    return beef
+    return { tx, beef }
 }
 
 function createTransactionFromEnvelope(
