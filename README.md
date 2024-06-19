@@ -1619,20 +1619,21 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [abortAction](#function-abortaction) | [encryptAsString](#function-encryptasstring) | [proveCertificate](#function-provecertificate) |
-| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getCertificates](#function-getcertificates) | [requestGroupPermission](#function-requestgrouppermission) |
-| [connectToSubstrate](#function-connecttosubstrate) | [getHeight](#function-getheight) | [revealKeyLinkage](#function-revealkeylinkage) |
-| [createAction](#function-createaction) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
-| [createCertificate](#function-createcertificate) | [getNetwork](#function-getnetwork) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
-| [createHmac](#function-createhmac) | [getPreferredCurrency](#function-getpreferredcurrency) | [signAction](#function-signaction) |
-| [createSignature](#function-createsignature) | [getPublicKey](#function-getpublickey) | [stampLog](#function-stamplog) |
-| [decrypt](#function-decrypt) | [getRandomID](#function-getrandomid) | [stampLogFormat](#function-stamplogformat) |
-| [decryptAsArray](#function-decryptasarray) | [getTransactionOutputs](#function-gettransactionoutputs) | [submitDirectTransaction](#function-submitdirecttransaction) |
-| [decryptAsString](#function-decryptasstring) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
-| [discoverByAttributes](#function-discoverbyattributes) | [isAuthenticated](#function-isauthenticated) | [verifyHmac](#function-verifyhmac) |
-| [discoverByIdentityKey](#function-discoverbyidentitykey) | [listActions](#function-listactions) | [verifySignature](#function-verifysignature) |
-| [encrypt](#function-encrypt) | [makeHttpRequest](#function-makehttprequest) | [waitForAuthentication](#function-waitforauthentication) |
-| [encryptAsArray](#function-encryptasarray) | [promiseWithTimeout](#function-promisewithtimeout) |  |
+| [abortAction](#function-abortaction) | [encryptAsString](#function-encryptasstring) | [requestGroupPermission](#function-requestgrouppermission) |
+| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getCertificates](#function-getcertificates) | [revealKeyLinkage](#function-revealkeylinkage) |
+| [connectToSubstrate](#function-connecttosubstrate) | [getHeight](#function-getheight) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
+| [convertProofToMerklePath](#function-convertprooftomerklepath) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
+| [createAction](#function-createaction) | [getNetwork](#function-getnetwork) | [signAction](#function-signaction) |
+| [createCertificate](#function-createcertificate) | [getPreferredCurrency](#function-getpreferredcurrency) | [stampLog](#function-stamplog) |
+| [createHmac](#function-createhmac) | [getPublicKey](#function-getpublickey) | [stampLogFormat](#function-stamplogformat) |
+| [createSignature](#function-createsignature) | [getRandomID](#function-getrandomid) | [submitDirectTransaction](#function-submitdirecttransaction) |
+| [decrypt](#function-decrypt) | [getTransactionOutputs](#function-gettransactionoutputs) | [toBEEFfromEnvelope](#function-tobeeffromenvelope) |
+| [decryptAsArray](#function-decryptasarray) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
+| [decryptAsString](#function-decryptasstring) | [isAuthenticated](#function-isauthenticated) | [verifyHmac](#function-verifyhmac) |
+| [discoverByAttributes](#function-discoverbyattributes) | [listActions](#function-listactions) | [verifySignature](#function-verifysignature) |
+| [discoverByIdentityKey](#function-discoverbyidentitykey) | [makeHttpRequest](#function-makehttprequest) | [verifyTruthy](#function-verifytruthy) |
+| [encrypt](#function-encrypt) | [promiseWithTimeout](#function-promisewithtimeout) | [waitForAuthentication](#function-waitforauthentication) |
+| [encryptAsArray](#function-encryptasarray) | [proveCertificate](#function-provecertificate) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -2816,6 +2817,70 @@ Argument Details
   + Dummy keys can be used to create a transaction with which to generate Ninja input lockingScripts.
 
 </details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: toBEEFfromEnvelope
+
+Converts a BRC-8 Everett-style Transaction Envelope 
+to a
+
+```ts
+export function toBEEFfromEnvelope(e: EnvelopeEvidenceApi): {
+    tx: Transaction;
+    beef: number[];
+} 
+```
+
+<details>
+
+<summary>Function toBEEFfromEnvelope Details</summary>
+
+Returns
+
+tx: Transaction containing required merklePath and sourceTransaction values
+
+beef: tx.toBEEF()
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: convertProofToMerklePath
+
+Convert a single BRC-10 proof to a MerklePath
+
+```ts
+export function convertProofToMerklePath(txid: string, proof: TscMerkleProofApi): MerklePath 
+```
+
+<details>
+
+<summary>Function convertProofToMerklePath Details</summary>
+
+Returns
+
+corresponding MerklePath
+
+Argument Details
+
++ **txid**
+  + transaction hash as big endian hex string
++ **proof**
+  + transaction proof in BRC-10 string format.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: verifyTruthy
+
+```ts
+export function verifyTruthy<T>(v: T | null | undefined, description?: string): T 
+```
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 

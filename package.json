@@ -1,6 +1,6 @@
 {
   "name": "@babbage/sdk-ts",
-  "version": "0.2.36",
+  "version": "0.2.39",
   "description": "Build Babbage Apps with TypeScript",
   "main": "./out/src/index.js",
   "types": "./out/src/index.d.ts",
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/p2ppsr/babbage-sdk#readme",
   "dependencies": {
-    "@bsv/sdk": "^1.0.32",
+    "@bsv/sdk": "^1.1.7",
     "isomorphic-fetch": "^3.0.0",
     "stream-json": "^1.8.0"
   },
