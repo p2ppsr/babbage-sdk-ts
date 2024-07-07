@@ -1,4 +1,4 @@
-import { CreateActionInput, CreateActionOutput, CreateActionResult } from './types'
+import { CreateActionInput, CreateActionOutput, CreateActionParams, CreateActionResult } from './types'
 import connectToSubstrate from './utils/connectToSubstrate'
 import { stampLog } from './utils/stampLog'
 
@@ -11,25 +11,17 @@ import { stampLog } from './utils/stampLog'
  * @param {string} args.description A present-tense description of the user Action being facilitated or represented by this BitCoin transaction.
  * @param {Array<String>} args.labels An array of transaction labels to apply to the Action
  * @param {Boolean} args.acceptDelayedBroadcast=true If true, self-signs initial validation response, watchman handles broadcast and proof verification.
+ * @param {Boolean} args.trustSelf Optional. If 'known', only txid of known inputs are required (and rawTx and proof can be ommitted).
  * Outputs are immediately available to following transactions using the same mode.
  * If false, waits for broadcast to transaction processing network response. Throws an error if not accepted by at least one processor.
  * Recommended mode for situations in which a double spend is possible.
  * @returns {Promise<CreateActionResult>} An Action object containing "txid", "rawTx" "mapiResponses" and "inputs".
  */
-export async function createAction(args: {
-  inputs?: Record<string, CreateActionInput>,
-  outputs?: CreateActionOutput[],
-  lockTime?: number,
-  version?: number,
-  description: string,
-  labels?: string[],
-  acceptDelayedBroadcast?: boolean, // = true
-  log?: string
-})
+export async function createAction(args: CreateActionParams)
 : Promise<CreateActionResult>
 {
   const connection = await connectToSubstrate()
-  let log = stampLog('', 'start sdk-ts createTransaction')
+  let log = stampLog('', 'start sdk-ts createAction')
   const r = <CreateActionResult>await connection.dispatch({
     name: 'createAction',
     params: {
@@ -39,12 +31,13 @@ export async function createAction(args: {
       version: args.version || 1,
       description: args.description,
       labels: args.labels,
-      acceptDelayedBroadcast: args.acceptDelayedBroadcast || true,
+      acceptDelayedBroadcast: args.acceptDelayedBroadcast === undefined ? true : args.acceptDelayedBroadcast,
+      trustSelf: args.trustSelf,
       log
     },
     bodyJsonParams: true,
   })
-  r.log = stampLog(r.log, 'end sdk-ts createTransaction')
+  r.log = stampLog(r.log, 'end sdk-ts createAction')
   if (typeof args.log === 'string')
     r.log = args.log + r.log
   return r

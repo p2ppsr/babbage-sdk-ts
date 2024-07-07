@@ -23,7 +23,7 @@ export async function signAction(args: {
     params: {
       inputs: args.inputs,
       createResult: args.createResult,
-      acceptDelayedBroadcast: args.acceptDelayedBroadcast || true,
+      acceptDelayedBroadcast: args.acceptDelayedBroadcast === undefined ? true : args.acceptDelayedBroadcast,
       log
     },
     bodyJsonParams: true,
