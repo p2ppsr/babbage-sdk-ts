@@ -22,6 +22,8 @@ import { getCertificates } from './getCertificates'
 export { getCertificates }
 import { getHeight } from './getHeight'
 export { getHeight }
+import { getInfo } from './getInfo'
+export { getInfo }
 import { getMerkleRootForHeight } from './getMerkleRootForHeight'
 export { getMerkleRootForHeight }
 import { getNetwork } from './getNetwork'
@@ -78,6 +80,7 @@ export const BabbageSDK = {
   encrypt, encryptAsArray, encryptAsString,
   getCertificates,
   getHeight,
+  getInfo,
   getMerkleRootForHeight,
   getNetwork,
   getPublicKey,

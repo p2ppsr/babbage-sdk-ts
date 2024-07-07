@@ -721,3 +721,23 @@ export interface SubmitDirectTransactionResult {
   transactionId: number
   referenceNumber: string
 }
+
+export interface GetInfoParams {
+   /**
+    * Describe the high-level operation being performed, so that the user can make an informed decision if permission is needed.
+    */
+   description?: string
+}
+
+export type Chain = 'main' | 'test'
+
+export interface GetInfoResult {
+   metanetClientVersion: string
+   chain: Chain
+   height: number
+   userId: number
+   userIdentityKey: string
+   dojoIdentityKey: string
+   dojoIdentityName?: string
+   perferredCurrency: string
+}
