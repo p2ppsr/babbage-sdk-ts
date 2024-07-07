@@ -60,8 +60,8 @@ import { stampLog, stampLogFormat } from './utils/stampLog'
 export { stampLog, stampLogFormat }
 import { buildTransactionForSignActionUnlocking } from './utils/buildTransactionForSignActionUnlocking'
 export { buildTransactionForSignActionUnlocking }
-import { toBEEFfromEnvelope } from './utils/toBEEF'
-export { toBEEFfromEnvelope }
+import { toBEEFfromEnvelope, validateOptionalEnvelopeEvidence, resolveOptionalEnvelopeEvidence } from './utils/toBEEF'
+export { toBEEFfromEnvelope, validateOptionalEnvelopeEvidence, resolveOptionalEnvelopeEvidence }
 
 export * from './types'
 

@@ -136,9 +136,9 @@ export interface EnvelopeEvidenceApi {
 }
 
 /**
- * Optional EnvelopeEvidenceApi.
- * If rawTx is not undefined, this is valid envelope evidence.
- * If rawTx is undefined, all properties may be undefined.
+ * Either rawTx or txid are required. If txid, then it must be a known transaction.
+ * 
+ * If not a known trxid, either inputs or proof are required.
  */
 export interface OptionalEnvelopeEvidenceApi {
   /**
@@ -157,7 +157,7 @@ export interface OptionalEnvelopeEvidenceApi {
      * Only one of proof or inputs must be valid.
      * Branching nodes have inputs with a sub envelope (values) for every input transaction txid (keys)
      */
-  inputs?: Record<string, EnvelopeEvidenceApi>
+  inputs?: Record<string, OptionalEnvelopeEvidenceApi>
   /**
      * double SHA256 hash of serialized rawTx. Optional.
      */
@@ -509,13 +509,53 @@ export interface CreateActionOutput {
     * Optional array of output tags to assign to this output.
     */
    tags?: string[]
+}
 
-   /**
-    * If true, envelope evidence is not desired for this new output.
-    * If all new outputs are flagged `forSelf` then the results
-    * `inputs` object will be empty.
-    */
-   forSelf?: boolean
+/**
+ * Controls level of trust for inputs from user's own transactions.
+ */
+export type TrustSelf = 'known'
+
+export interface CreateActionParams {
+  /**
+   * If an input is self-provided (known to user's Dojo),
+   * envelope evidence can be ommitted, reducing data
+   * size and processing time.
+   */
+  inputs?: Record<string, CreateActionInput>,
+  outputs?: CreateActionOutput[],
+  lockTime?: number,
+  version?: number,
+  description: string,
+  labels?: string[],
+  acceptDelayedBroadcast?: boolean, // = true
+  /**
+   * If undefined, normal case, all inputs must be provably valid by chain of rawTx and merkle proof values,
+   * and results will include new rawTx and proof chains for new outputs.
+   * 
+   * If 'known', any input txid corresponding to a previously processed transaction may ommit its rawTx and proofs,
+   * and results will exclude new rawTx and proof chains for new outputs.
+   */
+  trustSelf?: TrustSelf
+  log?: string
+}
+
+export interface CreateActionResult {
+  signActionRequired?: boolean
+  createResult?: DojoCreateTransactionResultApi
+  rawTx?: string
+  inputs: Record<string, EnvelopeEvidenceApi>
+  mapiResponses?: MapiResponseApi[]
+  txid?: string,
+  /**
+   * Copy of value used in `CreateActionParams`.
+   * 
+   * If undefined, normal case, results include new rawTx and proof chains for new outputs.
+   * 
+   * If 'known', results exclude rawTx and proof chains for new outputs (`inputs` is an empty object).
+   */
+  trustSelf?: 'known'
+  log?: string
 }
 
 export interface SignActionResult {
@@ -613,46 +653,6 @@ export interface DojoCreateTransactionResultApi {
    log?: string
 }
 
-export interface CreateActionParams {
-  /**
-   * If an input is self-provided (known to user's Dojo),
-   * envelope evidence can be ommitted, reducing data
-   * size and processing time.
-   */
-  inputs?: Record<string, CreateActionInput>,
-  outputs?: CreateActionOutput[],
-  lockTime?: number,
-  version?: number,
-  description: string,
-  labels?: string[],
-  acceptDelayedBroadcast?: boolean, // = true
-  /**
-   * If true, the new transaction is not going to an external party.
-   * Result properties normally used only to prove the validity
-   * of new outputs are ommitted.
-   * The result will not include the new `rawTx`, as it can be
-   * obtained using the result txid from the user's Dojo at any time.
-   */
-  forSelf?: boolean
-  log?: string
-}
-
-export interface CreateActionResult {
-  signActionRequired?: boolean
-  createResult?: DojoCreateTransactionResultApi
-  rawTx?: string
-  /**
-   * Envelope evidence for the new transaction.
-   * If all of the new transaction's outputs are flagged `forSelf`,
-   * or if params `forSelf` is true, 
-   * then this object is empty.
-   */
-  inputs: Record<string, EnvelopeEvidenceApi>
-  mapiResponses?: MapiResponseApi[]
-  txid?: string,
-  log?: string
-}
-
 export interface GetTransactionOutputResult {
    /**
     * Transaction ID of transaction that created the output
@@ -710,7 +710,7 @@ export interface SubmitDirectTransactionOutput {
 export interface SubmitDirectTransaction {
   rawTx: string
   txid?: string
-  inputs?: Record<string, EnvelopeEvidenceApi>
+  inputs?: Record<string, OptionalEnvelopeEvidenceApi>
   mapiResponses?: MapiResponseApi[]
   proof?: TscMerkleProofApi
   outputs: SubmitDirectTransactionOutput[]

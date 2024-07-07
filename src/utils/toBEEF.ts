@@ -1,5 +1,5 @@
 import { MerklePath, Transaction } from "@bsv/sdk";
-import { EnvelopeEvidenceApi } from "../types";
+import { EnvelopeEvidenceApi, OptionalEnvelopeEvidenceApi } from "../types";
 import { TscMerkleProofApi } from "cwi-base";
 
 /**
@@ -127,4 +127,73 @@ export function verifyTruthy<T> (v: T | null | undefined, description?: string):
   if (v == null) throw new Error(description ?? 'A truthy value is required.')
   return v
 }
+
+/**
+ * Convert OptionalEnvelopeEvidenceApi to EnvelopeEvidenceApi.
+ * 
+ * Missing data (rawTx / proofs) can be looked up if lookupMissing is provided.
+ * 
+ * Any mising data will result in an Error throw.
+ * 
+ * @param e 
+ * @param lookupMissing 
+ */
+export async function resolveOptionalEnvelopeEvidence(
+    e: OptionalEnvelopeEvidenceApi,
+    lookupMissing?: (txid: string) => Promise<{ rawTx?: string, proof?: TscMerkleProofApi }>
+) : Promise<EnvelopeEvidenceApi> {
+    let rawTx = e.rawTx
+    let proof = e.proof
+    if (!rawTx) {
+        if (lookupMissing && e.txid) {
+            const r = await lookupMissing(e.txid)
+            rawTx = r.rawTx
+            proof ||= r.proof
+        }
+    }
+    if (!rawTx) {
+        throw new Error('Missing rawTx')
+    }
+    const r: EnvelopeEvidenceApi = {
+        ...e,
+        rawTx,
+        proof,
+        inputs: undefined
+    }
+    if (e.inputs) {
+        r.inputs = {}
+        for (const [txid, oe] of Object.entries(e.inputs)) {
+            const ee = await resolveOptionalEnvelopeEvidence(oe, lookupMissing)
+            if (ee) {
+                r.inputs[txid] = ee
+            }
+        }
+    }
+    return r
+}
+
+export function validateOptionalEnvelopeEvidence(
+    e: OptionalEnvelopeEvidenceApi,
+) : EnvelopeEvidenceApi {
+    let rawTx = e.rawTx
+    if (!rawTx) {
+        throw new Error('Missing rawTx')
+    }
+    const r: EnvelopeEvidenceApi = {
+        ...e,
+        rawTx,
+        inputs: undefined
+    }
+    if (e.inputs) {
+        r.inputs = {}
+        for (const [txid, oe] of Object.entries(e.inputs)) {
+            const ee = validateOptionalEnvelopeEvidence(oe)
+            r.inputs[txid] = ee
+        }
+    }
+    if (!e.inputs && !e.proof)
+        throw new Error('Either inputs or proof is required.')
+    return r
+}
+
 
