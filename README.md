@@ -136,17 +136,17 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [AbortActionResult](#interface-abortactionresult) | [DojoCreatingTxInputsApi](#interface-dojocreatingtxinputsapi) | [MapiResponseApi](#interface-mapiresponseapi) |
-| [CertificateApi](#interface-certificateapi) | [DojoCreatingTxInstructionsApi](#interface-dojocreatingtxinstructionsapi) | [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi) |
-| [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult) | [DojoCreatingTxOutputApi](#interface-dojocreatingtxoutputapi) | [ProveCertificateResult](#interface-provecertificateresult) |
-| [CreateActionInput](#interface-createactioninput) | [DojoOutputToRedeemApi](#interface-dojooutputtoredeemapi) | [SignActionResult](#interface-signactionresult) |
-| [CreateActionOutput](#interface-createactionoutput) | [EnvelopeApi](#interface-envelopeapi) | [SpecificKeyLinkageResult](#interface-specifickeylinkageresult) |
-| [CreateActionOutputToRedeem](#interface-createactionoutputtoredeem) | [EnvelopeEvidenceApi](#interface-envelopeevidenceapi) | [SubmitDirectTransaction](#interface-submitdirecttransaction) |
-| [CreateActionParams](#interface-createactionparams) | [GetTransactionOutputResult](#interface-gettransactionoutputresult) | [SubmitDirectTransactionOutput](#interface-submitdirecttransactionoutput) |
-| [CreateActionResult](#interface-createactionresult) | [ListActionsResult](#interface-listactionsresult) | [SubmitDirectTransactionResult](#interface-submitdirecttransactionresult) |
-| [CreateCertificateResult](#interface-createcertificateresult) | [ListActionsTransaction](#interface-listactionstransaction) | [TscMerkleProofApi](#interface-tscmerkleproofapi) |
-| [DojoCreateTransactionResultApi](#interface-dojocreatetransactionresultapi) | [ListActionsTransactionInput](#interface-listactionstransactioninput) |  |
-| [DojoCreateTxOutputApi](#interface-dojocreatetxoutputapi) | [ListActionsTransactionOutput](#interface-listactionstransactionoutput) |  |
+| [AbortActionResult](#interface-abortactionresult) | [DojoCreatingTxInputsApi](#interface-dojocreatingtxinputsapi) | [ListActionsTransactionInput](#interface-listactionstransactioninput) |
+| [CertificateApi](#interface-certificateapi) | [DojoCreatingTxInstructionsApi](#interface-dojocreatingtxinstructionsapi) | [ListActionsTransactionOutput](#interface-listactionstransactionoutput) |
+| [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult) | [DojoCreatingTxOutputApi](#interface-dojocreatingtxoutputapi) | [MapiResponseApi](#interface-mapiresponseapi) |
+| [CreateActionInput](#interface-createactioninput) | [DojoOutputToRedeemApi](#interface-dojooutputtoredeemapi) | [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi) |
+| [CreateActionOutput](#interface-createactionoutput) | [EnvelopeApi](#interface-envelopeapi) | [ProveCertificateResult](#interface-provecertificateresult) |
+| [CreateActionOutputToRedeem](#interface-createactionoutputtoredeem) | [EnvelopeEvidenceApi](#interface-envelopeevidenceapi) | [SignActionResult](#interface-signactionresult) |
+| [CreateActionParams](#interface-createactionparams) | [GetInfoParams](#interface-getinfoparams) | [SpecificKeyLinkageResult](#interface-specifickeylinkageresult) |
+| [CreateActionResult](#interface-createactionresult) | [GetInfoResult](#interface-getinforesult) | [SubmitDirectTransaction](#interface-submitdirecttransaction) |
+| [CreateCertificateResult](#interface-createcertificateresult) | [GetTransactionOutputResult](#interface-gettransactionoutputresult) | [SubmitDirectTransactionOutput](#interface-submitdirecttransactionoutput) |
+| [DojoCreateTransactionResultApi](#interface-dojocreatetransactionresultapi) | [ListActionsResult](#interface-listactionsresult) | [SubmitDirectTransactionResult](#interface-submitdirecttransactionresult) |
+| [DojoCreateTxOutputApi](#interface-dojocreatetxoutputapi) | [ListActionsTransaction](#interface-listactionstransaction) | [TscMerkleProofApi](#interface-tscmerkleproofapi) |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -1743,6 +1743,49 @@ export interface SubmitDirectTransactionResult {
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Interface: GetInfoParams
+
+```ts
+export interface GetInfoParams {
+    description?: string;
+}
+```
+
+<details>
+
+<summary>Interface GetInfoParams Details</summary>
+
+##### Property description
+
+Describe the high-level operation being performed, so that the user can make an informed decision if permission is needed.
+
+```ts
+description?: string
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: GetInfoResult
+
+```ts
+export interface GetInfoResult {
+    metanetClientVersion: string;
+    chain: Chain;
+    height: number;
+    userId: number;
+    userIdentityKey: string;
+    dojoIdentityKey: string;
+    dojoIdentityName?: string;
+    perferredCurrency: string;
+}
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 ### Classes
 
 #### Class: Communicator
@@ -1771,22 +1814,22 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [abortAction](#function-abortaction) | [getCertificates](#function-getcertificates) | [resolveOptionalEnvelopeEvidence](#function-resolveoptionalenvelopeevidence) |
-| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getEnvelopeForTransaction](#function-getenvelopefortransaction) | [revealKeyLinkage](#function-revealkeylinkage) |
-| [connectToSubstrate](#function-connecttosubstrate) | [getHeight](#function-getheight) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
-| [convertProofToMerklePath](#function-convertprooftomerklepath) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
-| [createAction](#function-createaction) | [getNetwork](#function-getnetwork) | [signAction](#function-signaction) |
-| [createCertificate](#function-createcertificate) | [getPreferredCurrency](#function-getpreferredcurrency) | [stampLog](#function-stamplog) |
-| [createHmac](#function-createhmac) | [getPublicKey](#function-getpublickey) | [stampLogFormat](#function-stamplogformat) |
-| [createSignature](#function-createsignature) | [getRandomID](#function-getrandomid) | [submitDirectTransaction](#function-submitdirecttransaction) |
-| [decrypt](#function-decrypt) | [getTransactionOutputs](#function-gettransactionoutputs) | [toBEEFfromEnvelope](#function-tobeeffromenvelope) |
-| [decryptAsArray](#function-decryptasarray) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
-| [decryptAsString](#function-decryptasstring) | [isAuthenticated](#function-isauthenticated) | [validateOptionalEnvelopeEvidence](#function-validateoptionalenvelopeevidence) |
-| [discoverByAttributes](#function-discoverbyattributes) | [listActions](#function-listactions) | [verifyHmac](#function-verifyhmac) |
-| [discoverByIdentityKey](#function-discoverbyidentitykey) | [makeHttpRequest](#function-makehttprequest) | [verifySignature](#function-verifysignature) |
-| [encrypt](#function-encrypt) | [promiseWithTimeout](#function-promisewithtimeout) | [verifyTruthy](#function-verifytruthy) |
-| [encryptAsArray](#function-encryptasarray) | [proveCertificate](#function-provecertificate) | [waitForAuthentication](#function-waitforauthentication) |
-| [encryptAsString](#function-encryptasstring) | [requestGroupPermission](#function-requestgrouppermission) |  |
+| [abortAction](#function-abortaction) | [getCertificates](#function-getcertificates) | [requestGroupPermission](#function-requestgrouppermission) |
+| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getEnvelopeForTransaction](#function-getenvelopefortransaction) | [resolveOptionalEnvelopeEvidence](#function-resolveoptionalenvelopeevidence) |
+| [connectToSubstrate](#function-connecttosubstrate) | [getHeight](#function-getheight) | [revealKeyLinkage](#function-revealkeylinkage) |
+| [convertProofToMerklePath](#function-convertprooftomerklepath) | [getInfo](#function-getinfo) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
+| [createAction](#function-createaction) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
+| [createCertificate](#function-createcertificate) | [getNetwork](#function-getnetwork) | [signAction](#function-signaction) |
+| [createHmac](#function-createhmac) | [getPreferredCurrency](#function-getpreferredcurrency) | [stampLog](#function-stamplog) |
+| [createSignature](#function-createsignature) | [getPublicKey](#function-getpublickey) | [stampLogFormat](#function-stamplogformat) |
+| [decrypt](#function-decrypt) | [getRandomID](#function-getrandomid) | [submitDirectTransaction](#function-submitdirecttransaction) |
+| [decryptAsArray](#function-decryptasarray) | [getTransactionOutputs](#function-gettransactionoutputs) | [toBEEFfromEnvelope](#function-tobeeffromenvelope) |
+| [decryptAsString](#function-decryptasstring) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
+| [discoverByAttributes](#function-discoverbyattributes) | [isAuthenticated](#function-isauthenticated) | [validateOptionalEnvelopeEvidence](#function-validateoptionalenvelopeevidence) |
+| [discoverByIdentityKey](#function-discoverbyidentitykey) | [listActions](#function-listactions) | [verifyHmac](#function-verifyhmac) |
+| [encrypt](#function-encrypt) | [makeHttpRequest](#function-makehttprequest) | [verifySignature](#function-verifysignature) |
+| [encryptAsArray](#function-encryptasarray) | [promiseWithTimeout](#function-promisewithtimeout) | [verifyTruthy](#function-verifytruthy) |
+| [encryptAsString](#function-encryptasstring) | [proveCertificate](#function-provecertificate) | [waitForAuthentication](#function-waitforauthentication) |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -2395,6 +2438,46 @@ The current chain height
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: getVersion
+
+Returns the current version of the kernel
+
+```ts
+export async function getVersion(): Promise<string> 
+```
+
+<details>
+
+<summary>Function getVersion Details</summary>
+
+Returns
+
+The current kernel version (e.g. "0.3.49")
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: getInfo
+
+```ts
+export async function getInfo(args?: GetInfoParams): Promise<GetInfoResult> 
+```
+
+<details>
+
+<summary>Function getInfo Details</summary>
+
+Returns
+
+information about the metanet-client context (version, chain, height, user...).
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: getMerkleRootForHeight
 
 A method to verify the validity of a Merkle root for a given block height.
@@ -2546,27 +2629,6 @@ Argument Details
 
 + **args**
   + All parameters are given in an object
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: getVersion
-
-Returns the current version of the kernal
-
-```ts
-export async function getVersion(): Promise<string> 
-```
-
-<details>
-
-<summary>Function getVersion Details</summary>
-
-Returns
-
-The current kernel version (e.g. "0.3.49")
 
 </details>
 
@@ -3097,6 +3159,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | |
 | --- |
+| [Chain](#type-chain) |
 | [DojoProvidedByApi](#type-dojoprovidedbyapi) |
 | [ProtocolID](#type-protocolid) |
 | [TransactionStatusApi](#type-transactionstatusapi) |
@@ -3147,6 +3210,15 @@ export type DojoProvidedByApi = "you" | "dojo" | "you-and-dojo"
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Type: Chain
+
+```ts
+export type Chain = "main" | "test"
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 ### Variables
 
 #### Variable: BabbageSDK
@@ -3169,6 +3241,7 @@ BabbageSDK = {
     encryptAsString,
     getCertificates,
     getHeight,
+    getInfo,
     getMerkleRootForHeight,
     getNetwork,
     getPublicKey,
