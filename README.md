@@ -136,16 +136,17 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [AbortActionResult](#interface-abortactionresult) | [DojoCreatingTxInputsApi](#interface-dojocreatingtxinputsapi) | [ListActionsTransactionOutput](#interface-listactionstransactionoutput) |
-| [CertificateApi](#interface-certificateapi) | [DojoCreatingTxInstructionsApi](#interface-dojocreatingtxinstructionsapi) | [MapiResponseApi](#interface-mapiresponseapi) |
+| [AbortActionResult](#interface-abortactionresult) | [DojoCreatingTxInputsApi](#interface-dojocreatingtxinputsapi) | [MapiResponseApi](#interface-mapiresponseapi) |
+| [CertificateApi](#interface-certificateapi) | [DojoCreatingTxInstructionsApi](#interface-dojocreatingtxinstructionsapi) | [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi) |
 | [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult) | [DojoCreatingTxOutputApi](#interface-dojocreatingtxoutputapi) | [ProveCertificateResult](#interface-provecertificateresult) |
 | [CreateActionInput](#interface-createactioninput) | [DojoOutputToRedeemApi](#interface-dojooutputtoredeemapi) | [SignActionResult](#interface-signactionresult) |
 | [CreateActionOutput](#interface-createactionoutput) | [EnvelopeApi](#interface-envelopeapi) | [SpecificKeyLinkageResult](#interface-specifickeylinkageresult) |
 | [CreateActionOutputToRedeem](#interface-createactionoutputtoredeem) | [EnvelopeEvidenceApi](#interface-envelopeevidenceapi) | [SubmitDirectTransaction](#interface-submitdirecttransaction) |
-| [CreateActionResult](#interface-createactionresult) | [GetTransactionOutputResult](#interface-gettransactionoutputresult) | [SubmitDirectTransactionOutput](#interface-submitdirecttransactionoutput) |
-| [CreateCertificateResult](#interface-createcertificateresult) | [ListActionsResult](#interface-listactionsresult) | [SubmitDirectTransactionResult](#interface-submitdirecttransactionresult) |
-| [DojoCreateTransactionResultApi](#interface-dojocreatetransactionresultapi) | [ListActionsTransaction](#interface-listactionstransaction) | [TscMerkleProofApi](#interface-tscmerkleproofapi) |
-| [DojoCreateTxOutputApi](#interface-dojocreatetxoutputapi) | [ListActionsTransactionInput](#interface-listactionstransactioninput) |  |
+| [CreateActionParams](#interface-createactionparams) | [GetTransactionOutputResult](#interface-gettransactionoutputresult) | [SubmitDirectTransactionOutput](#interface-submitdirecttransactionoutput) |
+| [CreateActionResult](#interface-createactionresult) | [ListActionsResult](#interface-listactionsresult) | [SubmitDirectTransactionResult](#interface-submitdirecttransactionresult) |
+| [CreateCertificateResult](#interface-createcertificateresult) | [ListActionsTransaction](#interface-listactionstransaction) | [TscMerkleProofApi](#interface-tscmerkleproofapi) |
+| [DojoCreateTransactionResultApi](#interface-dojocreatetransactionresultapi) | [ListActionsTransactionInput](#interface-listactionstransactioninput) |  |
+| [DojoCreateTxOutputApi](#interface-dojocreatetxoutputapi) | [ListActionsTransactionOutput](#interface-listactionstransactionoutput) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -412,6 +413,91 @@ A valid bitcoin transaction encoded as a hex string.
 
 ```ts
 rawTx: string
+```
+
+##### Property txid
+
+double SHA256 hash of serialized rawTx. Optional.
+
+```ts
+txid?: string
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: OptionalEnvelopeEvidenceApi
+
+Either rawTx or txid are required. If txid, then it must be a known transaction.
+
+If not a known trxid, either inputs or proof are required.
+
+```ts
+export interface OptionalEnvelopeEvidenceApi {
+    rawTx?: string;
+    proof?: TscMerkleProofApi | Buffer;
+    inputs?: Record<string, OptionalEnvelopeEvidenceApi>;
+    txid?: string;
+    mapiResponses?: MapiResponseApi[];
+    depth?: number;
+}
+```
+
+<details>
+
+<summary>Interface OptionalEnvelopeEvidenceApi Details</summary>
+
+##### Property depth
+
+count of maximum number of chained unproven transactions before a proven leaf node
+proof nodes have depth zero.
+
+```ts
+depth?: number
+```
+
+##### Property inputs
+
+Only one of proof or inputs must be valid.
+Branching nodes have inputs with a sub envelope (values) for every input transaction txid (keys)
+
+```ts
+inputs?: Record<string, OptionalEnvelopeEvidenceApi>
+```
+
+##### Property mapiResponses
+
+Array of mapi transaction status update responses
+Only the payload, signature, and publicKey properties are relevant.
+
+Branching inputs nodes only.
+Array of mapi transaction status update responses confirming
+unproven transctions have at least been submitted for processing.
+
+```ts
+mapiResponses?: MapiResponseApi[]
+```
+
+##### Property proof
+
+Either proof, or inputs, must have a value.
+Leaf nodes have proofs.
+
+If value is a Buffer, content is binary encoded serialized proof
+see: chaintracks-spv.utils.serializeTscMerkleProof
+
+```ts
+proof?: TscMerkleProofApi | Buffer
+```
+
+##### Property rawTx
+
+A valid bitcoin transaction encoded as a hex string.
+
+```ts
+rawTx?: string
 ```
 
 ##### Property txid
@@ -1108,7 +1194,7 @@ export interface CreateActionOutputToRedeem {
 
 ##### Property index
 
-Zero based output index within its transaction to spend.
+Zero based output index within its transaction to spend, vout.
 
 ```ts
 index: number
@@ -1141,7 +1227,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 #### Interface: CreateActionInput
 
 ```ts
-export interface CreateActionInput extends EnvelopeEvidenceApi {
+export interface CreateActionInput extends OptionalEnvelopeEvidenceApi {
     outputsToRedeem: CreateActionOutputToRedeem[];
 }
 ```
@@ -1215,6 +1301,89 @@ Optional array of output tags to assign to this output.
 
 ```ts
 tags?: string[]
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: CreateActionParams
+
+```ts
+export interface CreateActionParams {
+    inputs?: Record<string, CreateActionInput>;
+    outputs?: CreateActionOutput[];
+    lockTime?: number;
+    version?: number;
+    description: string;
+    labels?: string[];
+    acceptDelayedBroadcast?: boolean;
+    trustSelf?: TrustSelf;
+    log?: string;
+}
+```
+
+<details>
+
+<summary>Interface CreateActionParams Details</summary>
+
+##### Property inputs
+
+If an input is self-provided (known to user's Dojo),
+envelope evidence can be ommitted, reducing data
+size and processing time.
+
+```ts
+inputs?: Record<string, CreateActionInput>
+```
+
+##### Property trustSelf
+
+If undefined, normal case, all inputs must be provably valid by chain of rawTx and merkle proof values,
+and results will include new rawTx and proof chains for new outputs.
+
+If 'known', any input txid corresponding to a previously processed transaction may ommit its rawTx and proofs,
+and results will exclude new rawTx and proof chains for new outputs.
+
+```ts
+trustSelf?: TrustSelf
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: CreateActionResult
+
+```ts
+export interface CreateActionResult {
+    signActionRequired?: boolean;
+    createResult?: DojoCreateTransactionResultApi;
+    rawTx?: string;
+    inputs: Record<string, EnvelopeEvidenceApi>;
+    mapiResponses?: MapiResponseApi[];
+    txid?: string;
+    trustSelf?: "known";
+    log?: string;
+}
+```
+
+<details>
+
+<summary>Interface CreateActionResult Details</summary>
+
+##### Property trustSelf
+
+Copy of value used in `CreateActionParams`.
+
+If undefined, normal case, results include new rawTx and proof chains for new outputs.
+
+If 'known', results exclude rawTx and proof chains for new outputs (`inputs` is an empty object).
+
+```ts
+trustSelf?: "known"
 ```
 
 </details>
@@ -1421,23 +1590,6 @@ export interface DojoCreateTransactionResultApi {
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Interface: CreateActionResult
-
-```ts
-export interface CreateActionResult {
-    signActionRequired?: boolean;
-    createResult?: DojoCreateTransactionResultApi;
-    rawTx?: string;
-    inputs: Record<string, EnvelopeEvidenceApi>;
-    mapiResponses?: MapiResponseApi[];
-    txid?: string;
-    log?: string;
-}
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
 #### Interface: GetTransactionOutputResult
 
 ```ts
@@ -1568,7 +1720,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 export interface SubmitDirectTransaction {
     rawTx: string;
     txid?: string;
-    inputs?: Record<string, EnvelopeEvidenceApi>;
+    inputs?: Record<string, OptionalEnvelopeEvidenceApi>;
     mapiResponses?: MapiResponseApi[];
     proof?: TscMerkleProofApi;
     outputs: SubmitDirectTransactionOutput[];
@@ -1619,8 +1771,8 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [abortAction](#function-abortaction) | [encryptAsString](#function-encryptasstring) | [requestGroupPermission](#function-requestgrouppermission) |
-| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getCertificates](#function-getcertificates) | [revealKeyLinkage](#function-revealkeylinkage) |
+| [abortAction](#function-abortaction) | [getCertificates](#function-getcertificates) | [resolveOptionalEnvelopeEvidence](#function-resolveoptionalenvelopeevidence) |
+| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getEnvelopeForTransaction](#function-getenvelopefortransaction) | [revealKeyLinkage](#function-revealkeylinkage) |
 | [connectToSubstrate](#function-connecttosubstrate) | [getHeight](#function-getheight) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
 | [convertProofToMerklePath](#function-convertprooftomerklepath) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
 | [createAction](#function-createaction) | [getNetwork](#function-getnetwork) | [signAction](#function-signaction) |
@@ -1629,11 +1781,12 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 | [createSignature](#function-createsignature) | [getRandomID](#function-getrandomid) | [submitDirectTransaction](#function-submitdirecttransaction) |
 | [decrypt](#function-decrypt) | [getTransactionOutputs](#function-gettransactionoutputs) | [toBEEFfromEnvelope](#function-tobeeffromenvelope) |
 | [decryptAsArray](#function-decryptasarray) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
-| [decryptAsString](#function-decryptasstring) | [isAuthenticated](#function-isauthenticated) | [verifyHmac](#function-verifyhmac) |
-| [discoverByAttributes](#function-discoverbyattributes) | [listActions](#function-listactions) | [verifySignature](#function-verifysignature) |
-| [discoverByIdentityKey](#function-discoverbyidentitykey) | [makeHttpRequest](#function-makehttprequest) | [verifyTruthy](#function-verifytruthy) |
-| [encrypt](#function-encrypt) | [promiseWithTimeout](#function-promisewithtimeout) | [waitForAuthentication](#function-waitforauthentication) |
-| [encryptAsArray](#function-encryptasarray) | [proveCertificate](#function-provecertificate) |  |
+| [decryptAsString](#function-decryptasstring) | [isAuthenticated](#function-isauthenticated) | [validateOptionalEnvelopeEvidence](#function-validateoptionalenvelopeevidence) |
+| [discoverByAttributes](#function-discoverbyattributes) | [listActions](#function-listactions) | [verifyHmac](#function-verifyhmac) |
+| [discoverByIdentityKey](#function-discoverbyidentitykey) | [makeHttpRequest](#function-makehttprequest) | [verifySignature](#function-verifysignature) |
+| [encrypt](#function-encrypt) | [promiseWithTimeout](#function-promisewithtimeout) | [verifyTruthy](#function-verifytruthy) |
+| [encryptAsArray](#function-encryptasarray) | [proveCertificate](#function-provecertificate) | [waitForAuthentication](#function-waitforauthentication) |
+| [encryptAsString](#function-encryptasstring) | [requestGroupPermission](#function-requestgrouppermission) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -1782,16 +1935,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 Creates and broadcasts a BitCoin transaction with the provided inputs and outputs.
 
 ```ts
-export async function createAction(args: {
-    inputs?: Record<string, CreateActionInput>;
-    outputs?: CreateActionOutput[];
-    lockTime?: number;
-    version?: number;
-    description: string;
-    labels?: string[];
-    acceptDelayedBroadcast?: boolean;
-    log?: string;
-}): Promise<CreateActionResult> 
+export async function createAction(args: CreateActionParams): Promise<CreateActionResult> 
 ```
 
 <details>
@@ -2326,6 +2470,43 @@ Argument Details
 
 + **args**
   + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: getEnvelopeForTransaction
+
+Returns an Everett Style envelope for the given txid.
+
+A transaction envelope is a tree of inputs where all the leaves are proven transactions.
+The trivial case is a single leaf: the envelope for a proven transaction is the rawTx and its proof.
+
+Each branching level of the tree corresponds to an unmined transaction without a proof,
+in which case the envelope is:
+- rawTx
+- mapiResponses from transaction processors (optional)
+- inputs object where keys are this transaction's input txids and values are recursive envelope for those txids.
+
+```ts
+export async function getEnvelopeForTransaction(args: {
+    txid: string;
+}): Promise<EnvelopeApi | undefined> 
+```
+
+<details>
+
+<summary>Function getEnvelopeForTransaction Details</summary>
+
+Returns
+
+Undefined if the txid does not exist or an envelope can't be generated.
+
+Argument Details
+
++ **args**
+  + All parameters are given in an object
 
 </details>
 
@@ -2885,6 +3066,33 @@ export function verifyTruthy<T>(v: T | null | undefined, description?: string): 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: resolveOptionalEnvelopeEvidence
+
+Convert OptionalEnvelopeEvidenceApi to EnvelopeEvidenceApi.
+
+Missing data (rawTx / proofs) can be looked up if lookupMissing is provided.
+
+Any mising data will result in an Error throw.
+
+```ts
+export async function resolveOptionalEnvelopeEvidence(e: OptionalEnvelopeEvidenceApi, lookupMissing?: (txid: string) => Promise<{
+    rawTx?: string;
+    proof?: TscMerkleProofApi;
+}>): Promise<EnvelopeEvidenceApi> 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: validateOptionalEnvelopeEvidence
+
+```ts
+export function validateOptionalEnvelopeEvidence(e: OptionalEnvelopeEvidenceApi): EnvelopeEvidenceApi 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 ### Types
 
 | |
@@ -2892,6 +3100,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 | [DojoProvidedByApi](#type-dojoprovidedbyapi) |
 | [ProtocolID](#type-protocolid) |
 | [TransactionStatusApi](#type-transactionstatusapi) |
+| [TrustSelf](#type-trustself) |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -2913,6 +3122,17 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 ```ts
 export type TransactionStatusApi = "completed" | "failed" | "unprocessed" | "sending" | "unproven" | "unsigned"
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Type: TrustSelf
+
+Controls level of trust for inputs from user's own transactions.
+
+```ts
+export type TrustSelf = "known"
 ```
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
@@ -2952,6 +3172,7 @@ BabbageSDK = {
     getMerkleRootForHeight,
     getNetwork,
     getPublicKey,
+    getEnvelopeForTransaction,
     getTransactionOutputs,
     getVersion,
     isAuthenticated,
