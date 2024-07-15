@@ -1814,22 +1814,23 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [abortAction](#function-abortaction) | [getCertificates](#function-getcertificates) | [requestGroupPermission](#function-requestgrouppermission) |
-| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getEnvelopeForTransaction](#function-getenvelopefortransaction) | [resolveOptionalEnvelopeEvidence](#function-resolveoptionalenvelopeevidence) |
-| [connectToSubstrate](#function-connecttosubstrate) | [getHeight](#function-getheight) | [revealKeyLinkage](#function-revealkeylinkage) |
-| [convertProofToMerklePath](#function-convertprooftomerklepath) | [getInfo](#function-getinfo) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
-| [createAction](#function-createaction) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
-| [createCertificate](#function-createcertificate) | [getNetwork](#function-getnetwork) | [signAction](#function-signaction) |
-| [createHmac](#function-createhmac) | [getPreferredCurrency](#function-getpreferredcurrency) | [stampLog](#function-stamplog) |
-| [createSignature](#function-createsignature) | [getPublicKey](#function-getpublickey) | [stampLogFormat](#function-stamplogformat) |
-| [decrypt](#function-decrypt) | [getRandomID](#function-getrandomid) | [submitDirectTransaction](#function-submitdirecttransaction) |
-| [decryptAsArray](#function-decryptasarray) | [getTransactionOutputs](#function-gettransactionoutputs) | [toBEEFfromEnvelope](#function-tobeeffromenvelope) |
-| [decryptAsString](#function-decryptasstring) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
-| [discoverByAttributes](#function-discoverbyattributes) | [isAuthenticated](#function-isauthenticated) | [validateOptionalEnvelopeEvidence](#function-validateoptionalenvelopeevidence) |
-| [discoverByIdentityKey](#function-discoverbyidentitykey) | [listActions](#function-listactions) | [verifyHmac](#function-verifyhmac) |
-| [encrypt](#function-encrypt) | [makeHttpRequest](#function-makehttprequest) | [verifySignature](#function-verifysignature) |
-| [encryptAsArray](#function-encryptasarray) | [promiseWithTimeout](#function-promisewithtimeout) | [verifyTruthy](#function-verifytruthy) |
-| [encryptAsString](#function-encryptasstring) | [proveCertificate](#function-provecertificate) | [waitForAuthentication](#function-waitforauthentication) |
+| [abortAction](#function-abortaction) | [getCertificates](#function-getcertificates) | [resolveOptionalEnvelopeEvidence](#function-resolveoptionalenvelopeevidence) |
+| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getEnvelopeForTransaction](#function-getenvelopefortransaction) | [revealKeyLinkage](#function-revealkeylinkage) |
+| [connectToSubstrate](#function-connecttosubstrate) | [getHeight](#function-getheight) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
+| [convertMerklePathToProof](#function-convertmerklepathtoproof) | [getInfo](#function-getinfo) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
+| [convertProofToMerklePath](#function-convertprooftomerklepath) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [signAction](#function-signaction) |
+| [createAction](#function-createaction) | [getNetwork](#function-getnetwork) | [stampLog](#function-stamplog) |
+| [createCertificate](#function-createcertificate) | [getPreferredCurrency](#function-getpreferredcurrency) | [stampLogFormat](#function-stamplogformat) |
+| [createHmac](#function-createhmac) | [getPublicKey](#function-getpublickey) | [submitDirectTransaction](#function-submitdirecttransaction) |
+| [createSignature](#function-createsignature) | [getRandomID](#function-getrandomid) | [toBEEFfromEnvelope](#function-tobeeffromenvelope) |
+| [decrypt](#function-decrypt) | [getTransactionOutputs](#function-gettransactionoutputs) | [toEnvelopeFromBEEF](#function-toenvelopefrombeef) |
+| [decryptAsArray](#function-decryptasarray) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
+| [decryptAsString](#function-decryptasstring) | [isAuthenticated](#function-isauthenticated) | [validateOptionalEnvelopeEvidence](#function-validateoptionalenvelopeevidence) |
+| [discoverByAttributes](#function-discoverbyattributes) | [listActions](#function-listactions) | [verifyHmac](#function-verifyhmac) |
+| [discoverByIdentityKey](#function-discoverbyidentitykey) | [makeHttpRequest](#function-makehttprequest) | [verifySignature](#function-verifysignature) |
+| [encrypt](#function-encrypt) | [promiseWithTimeout](#function-promisewithtimeout) | [verifyTruthy](#function-verifytruthy) |
+| [encryptAsArray](#function-encryptasarray) | [proveCertificate](#function-provecertificate) | [waitForAuthentication](#function-waitforauthentication) |
+| [encryptAsString](#function-encryptasstring) | [requestGroupPermission](#function-requestgrouppermission) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -3064,6 +3065,32 @@ Argument Details
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: toEnvelopeFromBEEF
+
+```ts
+export function toEnvelopeFromBEEF(input: Transaction | number[]): EnvelopeEvidenceApi 
+```
+
+<details>
+
+<summary>Function toEnvelopeFromBEEF Details</summary>
+
+Returns
+
+Everett-style Envelope for the transaction.
+
+Argument Details
+
++ **input**
+  + Either a `Transaction` with sourceTransaction and merklePath,
+recursively, on inputs,
+or a serialized BEEF of the transaction.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: toBEEFfromEnvelope
 
 Converts a BRC-8 Everett-style Transaction Envelope 
@@ -3085,6 +3112,34 @@ Returns
 tx: Transaction containing required merklePath and sourceTransaction values
 
 beef: tx.toBEEF()
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: convertMerklePathToProof
+
+Convert a MerklePath to a single BRC-10 proof
+
+```ts
+export function convertMerklePathToProof(txid: string, mp: MerklePath): TscMerkleProofApi 
+```
+
+<details>
+
+<summary>Function convertMerklePathToProof Details</summary>
+
+Returns
+
+transaction proof in BRC-10 string format.
+
+Argument Details
+
++ **txid**
+  + the txid in `mp` for which a BRC-10 proof is needed
++ **mp**
+  + MerklePath
 
 </details>
 
