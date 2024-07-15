@@ -3,6 +3,40 @@ import { EnvelopeEvidenceApi, OptionalEnvelopeEvidenceApi } from "../types";
 import { TscMerkleProofApi } from "cwi-base";
 
 /**
+ * @param input Either a `Transaction` with sourceTransaction and merklePath,
+ * recursively, on inputs,
+ * or a serialized BEEF of the transaction.
+ * @returns Everett-style Envelope for the transaction.
+ */
+export function toEnvelopeFromBEEF(input: Transaction | number[])
+: EnvelopeEvidenceApi {
+    let tx: Transaction
+    if (Array.isArray(input)) {
+        tx = Transaction.fromBEEF(input)
+    } else {
+        tx = input
+    }
+    const r: EnvelopeEvidenceApi = {
+        rawTx: tx.toHex(),
+        txid: tx.id('hex'),
+    }
+    if (tx.merklePath) {
+        r.proof = convertMerklePathToProof(r.txid!, tx.merklePath)
+    } else {
+        r.inputs = {}
+        for (const input of tx.inputs) {
+            if (!r.inputs[input.sourceTXID!]) {
+                if (!input.sourceTransaction) {
+                    throw new Error(`Missing sourceTransaction for ${input.sourceTXID}`)
+                }
+                r.inputs[input.sourceTXID!] = toEnvelopeFromBEEF(input.sourceTransaction!)
+            }
+        }
+    }
+    return r
+}
+
+/**
  * Converts a BRC-8 Everett-style Transaction Envelope 
  * to a @bsv/sdk-ts Transaction
  * with corresponding merklePath and sourceTransaction properties.
@@ -73,6 +107,44 @@ function convertUniqueProofsToMerklePaths(e: EnvelopeEvidenceApi, merklePaths: R
             convertUniqueProofsToMerklePaths(ie, merklePaths)
         }
     }
+}
+
+/**
+ * Convert a MerklePath to a single BRC-10 proof
+ * @param txid the txid in `mp` for which a BRC-10 proof is needed
+ * @param mp MerklePath
+ * @returns transaction proof in BRC-10 string format.
+ */
+export function convertMerklePathToProof(txid: string, mp: MerklePath) : TscMerkleProofApi {
+    const l = mp.path[0].find(l => l.txid && l.hash === txid)
+    if (l === undefined) {
+        throw new Error(`MerklePath does not contain txid ${txid}`)
+    }
+    const nodes: string[] = []
+
+    const r: TscMerkleProofApi = {
+        height: mp.blockHeight,
+        index: l.offset,
+        txOrId: txid,
+        target: mp.blockHeight.toString(),
+        targetType: 'height',
+        nodes
+    }
+
+    let index = r.index
+    for (let h = 0; h < mp.path.length; h++) {
+        const isOdd = index % 2 === 1
+        const offset = isOdd ? index - 1 : index + 1
+        const l = mp.path[h].find(l => l.offset === offset)
+        if (l === undefined) {
+            throw new Error(`Invalid MerklePath for txid ${txid}`)
+        }
+        const hash = (l!.duplicate) ? '*' : l!.hash!
+        nodes.push(hash)
+        index = index >> 1
+    }
+
+    return r
 }
 
 /**
