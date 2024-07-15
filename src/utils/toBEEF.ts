@@ -1,6 +1,6 @@
 import { MerklePath, Transaction } from "@bsv/sdk";
 import { EnvelopeEvidenceApi, OptionalEnvelopeEvidenceApi } from "../types";
-import { TscMerkleProofApi } from "cwi-base";
+import { asString, doubleSha256BE, TscMerkleProofApi } from "cwi-base";
 
 /**
  * @param input Either a `Transaction` with sourceTransaction and merklePath,
@@ -93,6 +93,8 @@ function createTransactionFromEnvelope(
 }
 
 function convertUniqueProofsToMerklePaths(e: EnvelopeEvidenceApi, merklePaths: Record<string, MerklePath>) {
+    if (!e.txid && e.rawTx)
+        e.txid = asString(doubleSha256BE(e.rawTx))
     const txid = verifyTruthy(e.txid)
     if (merklePaths[txid])
         // No need to proceed
