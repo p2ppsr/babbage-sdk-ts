@@ -156,8 +156,11 @@ export function convertMerklePathToProof(txid: string, mp: MerklePath) : TscMerk
  * @returns corresponding MerklePath
  */
 export function convertProofToMerklePath(txid: string, proof: TscMerkleProofApi): MerklePath {
-    if (proof.height === undefined || Buffer.isBuffer(proof.nodes)) {
-        throw new Error('Unsupported proof format.')
+    if (proof.height === undefined) {
+        throw new Error('Merkle proofs must include height.')
+    }
+    if (Buffer.isBuffer(proof.nodes)) {
+        throw new Error('Serialized merkle proof format is currently unsupported.')
     }
     const blockHeight = proof.height
     const treeHeight = proof.nodes.length
