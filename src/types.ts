@@ -544,7 +544,7 @@ export interface CreateActionResult {
   signActionRequired?: boolean
   createResult?: DojoCreateTransactionResultApi
   rawTx?: string
-  inputs: Record<string, EnvelopeEvidenceApi>
+  inputs?: Record<string, OptionalEnvelopeEvidenceApi>
   mapiResponses?: MapiResponseApi[]
   txid?: string,
   /**
