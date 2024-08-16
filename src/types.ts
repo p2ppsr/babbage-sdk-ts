@@ -293,7 +293,7 @@ export interface ProveCertificateResult extends CertificateApi {
   keyring: Record<string, string>
 }
 
-export type TransactionStatusApi = 'completed' | 'failed' | 'unprocessed' | 'sending' | 'unproven' | 'unsigned'
+export type TransactionStatusApi = 'completed' | 'failed' | 'unprocessed' | 'sending' | 'unproven' | 'unsigned' | 'nosend'
 
 export interface ListActionsTransaction {
   /**
@@ -548,7 +548,7 @@ export interface CreateActionParams {
    */
   resultFormat?: 'beef'
   /**
-   * If true, successfully created transactions remain in the `unproven` state and are marked `noBroadcast`.
+   * If true, successfully created transactions remain in the `nosend` state.
    * A proof will be sought but it will not be considered an error if the txid remains unknown.
    * 
    * Supports testing, user control over broadcasting of transactions, and batching.
