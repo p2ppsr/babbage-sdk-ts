@@ -1,6 +1,6 @@
 {
   "name": "@babbage/sdk-ts",
-  "version": "0.2.48",
+  "version": "0.2.49",
   "description": "Build Babbage Apps with TypeScript",
   "main": "./out/src/index.js",
   "types": "./out/src/index.d.ts",
