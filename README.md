@@ -1320,6 +1320,9 @@ export interface CreateActionParams {
     labels?: string[];
     acceptDelayedBroadcast?: boolean;
     trustSelf?: TrustSelf;
+    knownTxids?: string[];
+    resultFormat?: "beef";
+    noBroadcast?: boolean;
     log?: string;
 }
 ```
@@ -1336,6 +1339,35 @@ size and processing time.
 
 ```ts
 inputs?: Record<string, CreateActionInput>
+```
+
+##### Property knownTxids
+
+If the caller already has envelopes or BUMPS for certain txids, pass them in this
+array and they will be assumed to be valid and not returned again in the results.
+
+```ts
+knownTxids?: string[]
+```
+
+##### Property noBroadcast
+
+If true, successfully created transactions remain in the `unproven` state and are marked `noBroadcast`.
+A proof will be sought but it will not be considered an error if the txid remains unknown.
+
+Supports testing, user control over broadcasting of transactions, and batching.
+
+```ts
+noBroadcast?: boolean
+```
+
+##### Property resultFormat
+
+If 'beef', the results will format new transaction and supporting input proofs in BEEF format.
+Otherwise, the results will use `EnvelopeEvidenceApi` format.
+
+```ts
+resultFormat?: "beef"
 ```
 
 ##### Property trustSelf
@@ -1362,7 +1394,7 @@ export interface CreateActionResult {
     signActionRequired?: boolean;
     createResult?: DojoCreateTransactionResultApi;
     rawTx?: string;
-    inputs: Record<string, EnvelopeEvidenceApi>;
+    inputs?: Record<string, OptionalEnvelopeEvidenceApi>;
     mapiResponses?: MapiResponseApi[];
     txid?: string;
     trustSelf?: "known";
