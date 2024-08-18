@@ -2,6 +2,14 @@ import { Hash, Utils, MerklePath, Transaction } from "@bsv/sdk";
 import { EnvelopeEvidenceApi, OptionalEnvelopeEvidenceApi, TscMerkleProofApi } from "../types";
 
 /**
+ * BEEF standard: BRC-62: Background Evaluation Extended Format (BEEF) Transactions
+ * https://github.com/bitcoin-sv/BRCs/blob/master/transactions/0062.md
+ * 
+ * BUMP standard: BRC-74: BSV Unified Merkle Path (BUMP) Format
+ * https://github.com/bitcoin-sv/BRCs/blob/master/transactions/0074.md
+ */
+
+/**
  * @param input Either a `Transaction` with sourceTransaction and merklePath,
  * recursively, on inputs,
  * or a serialized BEEF of the transaction.
