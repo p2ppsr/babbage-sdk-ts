@@ -516,6 +516,67 @@ export interface CreateActionOutput {
  */
 export type TrustSelf = 'known'
 
+/**
+ * Identifies a unique transaction output by its `txid` and index `vout`
+ */
+export interface OutPoint {
+   /**
+    * Transaction double sha256 hash as big endian hex string
+    */
+   txid: string
+   /**
+    * zero based output index within the transaction
+    */
+   vout: number
+}
+
+export interface CreateActionOptions {
+   /**
+    * true if local validation and self-signed mapi response is sufficient.
+    * Upon return, transaction will have `sending` status. Watchman will proceed to send the transaction asynchronously.
+    *
+    * false if a valid mapi response from the bitcoin transaction processing network is required.
+    * Upon return, transaction will have `unproven` status. Watchman will proceed to prove transaction.
+    *
+    * default true
+    */
+   acceptDelayedBroadcast?: boolean, // = true
+   /**
+    * If undefined, normal case, all inputs must be provably valid by chain of rawTx and merkle proof values,
+    * and results will include new rawTx and proof chains for new outputs.
+    * 
+    * If 'known', any input txid corresponding to a previously processed transaction may ommit its rawTx and proofs,
+    * and results will exclude new rawTx and proof chains for new outputs.
+    */
+   trustSelf?: TrustSelf
+   /**
+    * If the caller already has envelopes or BUMPS for certain txids, pass them in this
+    * array and they will be assumed to be valid and not returned again in the results.
+    */
+   knownTxids?: string[]
+   /**
+    * If 'beef', the results will format new transaction and supporting input proofs in BEEF format.
+    * Otherwise, the results will use `EnvelopeEvidenceApi` format.
+    */
+   resultFormat?: 'beef'
+   /**
+    * If true, successfully created transactions remain in the `nosend` state.
+    * A proof will be sought but it will not be considered an error if the txid remains unknown.
+    * 
+    * Supports testing, user control over broadcasting of transactions, and batching.
+    */
+   noSend?: boolean
+   /**
+    * Available transaction fee payment output(s) belonging to the user.
+    * 
+    * Only change outputs previously created by a noSend transaction.
+    * 
+    * Supports chained noSend transactions by minimizing the consumption
+    * and non-replenishment of change outputs.
+    */
+   noSendChange?: OutPoint[]
+}
+
 export interface CreateActionParams {
    /**
     * Human readable string giving the purpose of this transaction.
@@ -563,6 +624,10 @@ export interface CreateActionParams {
     */
    originator?: string;
    /**
+    * Processing options.
+    */
+   options?: CreateActionOptions
+   /**
     * true if local validation and self-signed mapi response is sufficient.
     * Upon return, transaction will have `sending` status. Watchman will proceed to send the transaction asynchronously.
     *
@@ -570,33 +635,10 @@ export interface CreateActionParams {
     * Upon return, transaction will have `unproven` status. Watchman will proceed to prove transaction.
     *
     * default true
+    * 
+    * OBSOLETE: Use options.acceptDelayedBroadcast instead.
     */
    acceptDelayedBroadcast?: boolean, // = true
-   /**
-    * If undefined, normal case, all inputs must be provably valid by chain of rawTx and merkle proof values,
-    * and results will include new rawTx and proof chains for new outputs.
-    * 
-    * If 'known', any input txid corresponding to a previously processed transaction may ommit its rawTx and proofs,
-    * and results will exclude new rawTx and proof chains for new outputs.
-    */
-   trustSelf?: TrustSelf
-   /**
-    * If the caller already has envelopes or BUMPS for certain txids, pass them in this
-    * array and they will be assumed to be valid and not returned again in the results.
-    */
-   knownTxids?: string[]
-   /**
-    * If 'beef', the results will format new transaction and supporting input proofs in BEEF format.
-    * Otherwise, the results will use `EnvelopeEvidenceApi` format.
-    */
-   resultFormat?: 'beef'
-   /**
-    * If true, successfully created transactions remain in the `nosend` state.
-    * A proof will be sought but it will not be considered an error if the txid remains unknown.
-    * 
-    * Supports testing, user control over broadcasting of transactions, and batching.
-    */
-   noBroadcast?: boolean
    log?: string
 }
 
@@ -609,7 +651,7 @@ export interface CreateActionResult {
     * a timely manner will cause the transaction to transition to `failed`.
     * 
     * If false or undefined, completed transaction will have status of `sending`, `nosend` or `unproven`,
-    * depending on `acceptDelayedBroadcast` and `noBroadcast`.   
+    * depending on `acceptDelayedBroadcast` and `noSend`.   
     */
    signActionRequired?: boolean
    /**
@@ -634,6 +676,19 @@ export interface CreateActionResult {
     */
    inputs?: Record<string, OptionalEnvelopeEvidenceApi>
    /**
+    * Valid for options.resultFormat 'beef',
+    * in which case `rawTx` and `inputs` will be undefined.
+    * 
+    * Change output(s) that may be forwarded to chained noSend transactions.
+    */
+   beef?: number[]
+   /**
+    * Valid for options.noSend true.
+    * 
+    * Change output(s) that may be forwarded to chained noSend transactions.
+    */
+   noSendChange?: OutPoint[]
+   /**
     * If not `signActionRequired`, at least one valid mapi response.
     * may be a self-signed response if `acceptDelayedBroadcast` is true.
     * 
@@ -641,30 +696,9 @@ export interface CreateActionResult {
     */
    mapiResponses?: MapiResponseApi[]
    /**
-    * Copy of value used in `CreateActionParams`.
-    * 
-    * If undefined, normal case, results include new rawTx and proof chains for new outputs.
-    * 
-    * If 'known', results exclude rawTx and proof chains for new outputs (`inputs` is an empty object).
+    * Processing options.
     */
-   trustSelf?: 'known'
-   /**
-    * If the caller already has envelopes or BUMPS for certain txids, pass them in this
-    * array and they will be assumed to be valid and not returned again in the results.
-    */
-   knownTxids?: string[]
-   /**
-    * If 'beef', the results will format new transaction and supporting input proofs in BEEF format.
-    * Otherwise, the results will use `EnvelopeEvidenceApi` format.
-    */
-   resultFormat?: 'beef'
-   /**
-    * If true, successfully created transactions remain in the `nosend` state.
-    * A proof will be sought but it will not be considered an error if the txid remains unknown.
-    * 
-    * Supports testing, user control over broadcasting of transactions, and batching.
-    */
-   noBroadcast?: boolean
+   options?: CreateActionOptions
    /**
     * operational and performance logging if enabled.
     */

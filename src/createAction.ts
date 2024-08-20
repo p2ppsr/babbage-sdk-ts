@@ -10,8 +10,8 @@ import { stampLog } from './utils/stampLog'
  * @param {number} args.version Optional. Transaction version number, default is current standard transaction version value.
  * @param {string} args.description A present-tense description of the user Action being facilitated or represented by this BitCoin transaction.
  * @param {Array<String>} args.labels An array of transaction labels to apply to the Action
- * @param {Boolean} args.acceptDelayedBroadcast=true If true, self-signs initial validation response, watchman handles broadcast and proof verification.
- * @param {Boolean} args.trustSelf Optional. If 'known', only txid of known inputs are required (and rawTx and proof can be ommitted).
+ * @param {Boolean} args.acceptDelayedBroadcast=true If true, self-signs initial validation response, watchman handles broadcast and proof verification. DEPRECATED: Use same parameter in `options`.
+ * @param {CreateActionOptions} args.options Optional processing options.
  * Outputs are immediately available to following transactions using the same mode.
  * If false, waits for broadcast to transaction processing network response. Throws an error if not accepted by at least one processor.
  * Recommended mode for situations in which a double spend is possible.
@@ -22,6 +22,9 @@ export async function createAction(args: CreateActionParams)
 {
   const connection = await connectToSubstrate()
   let log = stampLog('', 'start sdk-ts createAction')
+  const options = args.options || {}
+  if (args.acceptDelayedBroadcast !== undefined) options.acceptDelayedBroadcast = args.acceptDelayedBroadcast
+  if (options.acceptDelayedBroadcast === undefined) options.acceptDelayedBroadcast = true
   const r = <CreateActionResult>await connection.dispatch({
     name: 'createAction',
     params: {
@@ -31,8 +34,7 @@ export async function createAction(args: CreateActionParams)
       version: args.version || 1,
       description: args.description,
       labels: args.labels,
-      acceptDelayedBroadcast: args.acceptDelayedBroadcast === undefined ? true : args.acceptDelayedBroadcast,
-      trustSelf: args.trustSelf,
+      options: args.options,
       log
     },
     bodyJsonParams: true,
