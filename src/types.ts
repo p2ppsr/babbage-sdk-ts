@@ -636,7 +636,7 @@ export interface CreateActionParams {
     *
     * default true
     * 
-    * OBSOLETE: Use options.acceptDelayedBroadcast instead.
+    * DEPRECATED: Use options.acceptDelayedBroadcast instead.
     */
    acceptDelayedBroadcast?: boolean, // = true
    log?: string
