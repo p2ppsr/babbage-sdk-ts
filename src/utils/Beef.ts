@@ -1,8 +1,16 @@
 import { MerklePath, Transaction, Utils } from "@bsv/sdk";
 import { asString, doubleSha256BE, ERR_INTERNAL, ERR_INVALID_PARAMETER } from "cwi-base";
 
+/*
+ * BEEF standard: BRC-62: Background Evaluation Extended Format (BEEF) Transactions
+ * https://github.com/bitcoin-sv/BRCs/blob/master/transactions/0062.md
+ * 
+ * BUMP standard: BRC-74: BSV Unified Merkle Path (BUMP) Format
+ * https://github.com/bitcoin-sv/BRCs/blob/master/transactions/0074.md
+ */
+
 export const BEEF_MAGIC = 4022206465 // 0100BEEF in LE order
-export const BEEF_MAGIC_V1 = 4022206465 // 0100BEEF in LE order
+export const BEEF_MAGIC_KNOWN_TXID_EXTENSION = 4022206465 // 0100BEEF in LE order
 
 export class BeefTx {
     bumpIndex?: number
@@ -10,6 +18,8 @@ export class BeefTx {
     _rawTx?: number[]
     _txid?: string
     known: boolean
+    inputTxids: string[] = []
+    degree: number = 0
 
     constructor (tx: Transaction | number[] | string, bumpIndex?: number) {
         if (typeof tx === 'string') {
@@ -22,15 +32,18 @@ export class BeefTx {
             } else {
                 this._tx = <Transaction>tx
             }
+            const inputTxids: Record<string, boolean> = {}
+            for (const input of this.tx!.inputs)
+                inputTxids[input.sourceTXID!] = true
+            this.inputTxids = Object.keys(inputTxids)
         }
         this.bumpIndex = bumpIndex
     }
 
     toWriter(writer: Utils.Writer) : void {
         if (this._txid && this.known) {
-            // Encode just the txid of a known transaction using the
-            // v1 BEEF magic value.
-            writer.writeUInt32LE(BEEF_MAGIC_V1)
+            // Encode just the txid of a known transaction using the txid
+            writer.writeUInt32LE(BEEF_MAGIC_KNOWN_TXID_EXTENSION)
             writer.writeReverse(Utils.toArray(this._txid, 'hex'))
         } else if (this._rawTx)
             writer.write(this._rawTx)
@@ -49,7 +62,7 @@ export class BeefTx {
     static fromReader (br: Utils.Reader): BeefTx {
         let tx: Transaction | number[] | string | undefined = undefined
         const version = br.readUInt32LE()
-        if (version === BEEF_MAGIC_V1) {
+        if (version === BEEF_MAGIC_KNOWN_TXID_EXTENSION) {
             // This is the extension to support known transactions
             tx = Utils.toHex(br.readReverse(32))
         } else {
@@ -224,11 +237,22 @@ export class Beef {
      * 3. Order of transactions satisfies dependencies before dependents.
      * 4. No transaction duplicate txids.
      */
-    validate() {
+    isValid() {
+        for (const tx of this.txs)
+            if (tx.known) return false
 
+        const missingTxids = this.sortTxs()
+
+        if (missingTxids.length > 0)
+            return false
+
+        return true
     }
 
     toBinary() : number[] {
+
+        this.sortTxs()
+
         const writer = new Utils.Writer()
         writer.writeUInt32LE(BEEF_MAGIC)
 
@@ -290,4 +314,73 @@ export class Beef {
         return false
     }
 
+    /**
+     * Sort the `txs` by input txid dependency order.
+     * @returns array of input txids of unproven transactions that aren't included in txs.
+     */
+    sortTxs() : string[] {
+        const missingInputs: Record<string, boolean> = {}
+
+        const txidToTx: Record<string, BeefTx> = {}
+
+        for (const tx of this.txs) {
+            txidToTx[tx.txid] = tx
+            // All transactions in this beef start at degree zero.
+            tx.degree = 0
+        }
+
+        for (const tx of this.txs) {
+            if (tx.bumpIndex === undefined) {
+                // For all the unproven transactions,
+                // link their inputs that exist in this beef,
+                // make a note of missing inputs.
+                for (const inputTxid of tx.inputTxids) {
+                    if (!txidToTx[inputTxid])
+                        missingInputs[inputTxid] = true
+                }
+            }
+        }
+
+        // queue of transactions that no unsorted transactions depend upon...
+        const queue: BeefTx[] = []
+        // sorted transactions
+        const result: BeefTx[] = []
+
+        // Increment each txid's degree for every input reference to it by another txid
+        for (const tx of this.txs) {
+            for (const inputTxid of tx.inputTxids) {
+                const tx = txidToTx[inputTxid]
+                if (tx)
+                    tx.degree++
+            }
+        }
+        // Since circular dependencies aren't possible, start with the txids no one depends on.
+        // These are the transactions that should be sent last...
+        for (const tx of this.txs) {
+            if (tx.degree === 0) {
+                queue.push(tx)
+            }
+        }
+        // As long as we have transactions to send...
+        while (queue.length) {
+            let tx = queue.shift()!
+            // Add it as new first to send
+            result.unshift(tx)
+            // And remove its impact on degree
+            // noting that any tx achieving a
+            // value of zero can be sent...
+            for (const inputTxid of tx.inputTxids) {
+                const inputTx = txidToTx[inputTxid]
+                if (inputTx) {
+                    inputTx.degree--
+                    if (inputTx.degree === 0) {
+                        queue.push(tx)
+                    }
+                }
+            }
+        }
+        this.txs = result
+
+        return Object.keys(missingInputs)
+    }
 }

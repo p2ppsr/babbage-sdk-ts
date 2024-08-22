@@ -556,9 +556,10 @@ export interface CreateActionOptions {
    knownTxids?: string[]
    /**
     * If 'beef', the results will format new transaction and supporting input proofs in BEEF format.
+    * If 'none', the results will include only the txid of the new transaction.
     * Otherwise, the results will use `EnvelopeEvidenceApi` format.
     */
-   resultFormat?: 'beef'
+   resultFormat?: 'beef' | 'none'
    /**
     * If true, successfully created transactions remain in the `nosend` state.
     * A proof will be sought but it will not be considered an error if the txid remains unknown.
