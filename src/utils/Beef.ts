@@ -13,13 +13,39 @@ export const BEEF_MAGIC = 4022206465 // 0100BEEF in LE order
 export const BEEF_MAGIC_KNOWN_TXID_EXTENSION = 4022206465 // 0100BEEF in LE order
 
 export class BeefTx {
-    bumpIndex?: number
+    _bumpIndex?: number
     _tx?: Transaction
     _rawTx?: number[]
     _txid?: string
     known: boolean
     inputTxids: string[] = []
     degree: number = 0
+
+    get bumpIndex() : number | undefined { return this._bumpIndex}
+
+    set bumpIndex(v: number | undefined) {
+        this._bumpIndex = v
+        this.updateInputTxids()
+    }
+
+    get txid() {
+        if (this._txid) return this._txid
+        if (this._tx) return this._txid = this._tx.id('hex')
+        if (this._rawTx) return this._txid = asString(doubleSha256BE(Buffer.from(this._rawTx)))
+        throw new ERR_INTERNAL()
+    }
+
+    get tx() {
+        if (this._tx) return this._tx
+        if (this._rawTx) return this._tx = Transaction.fromBinary(this._rawTx)
+        return undefined
+    }
+
+    get rawTx() {
+        if (this._rawTx) return this._rawTx
+        if (this._tx) return this._rawTx = this._tx.toBinary()
+        return undefined
+    }
 
     constructor (tx: Transaction | number[] | string, bumpIndex?: number) {
         if (typeof tx === 'string') {
@@ -38,6 +64,18 @@ export class BeefTx {
             this.inputTxids = Object.keys(inputTxids)
         }
         this.bumpIndex = bumpIndex
+    }
+
+    updateInputTxids() {
+        if (this.bumpIndex !== undefined || this.known || !this.tx)
+            // If we have a proof, or are known, no inputs need proving
+            this.inputTxids = []
+        else {
+            const inputTxids = {};
+            for (const input of this.tx.inputs)
+                inputTxids[input.sourceTXID!] = true;
+            this.inputTxids = Object.keys(inputTxids);
+        }
     }
 
     toWriter(writer: Utils.Writer) : void {
@@ -74,24 +112,6 @@ export class BeefTx {
         return beefTx
     }
 
-    get txid() {
-        if (this._txid) return this._txid
-        if (this._tx) return this._txid = this._tx.id('hex')
-        if (this._rawTx) return this._txid = asString(doubleSha256BE(Buffer.from(this._rawTx)))
-        throw new ERR_INTERNAL()
-    }
-
-    get tx() {
-        if (this._tx) return this._tx
-        if (this._rawTx) return this._tx = Transaction.fromBinary(this._rawTx)
-        return undefined
-    }
-
-    get rawTx() {
-        if (this._rawTx) return this._rawTx
-        if (this._tx) return this._rawTx = this._tx.toBinary()
-        return undefined
-    }
 }
 
 export class Beef {
@@ -161,24 +181,21 @@ export class Beef {
      * 
      * Checks that a transaction with the same txid hasn't already been merged.
      * 
-     * Attempts to match an existing bump to the new transaction.
+     * Replaces existing transaction with same txid.
      * 
      * @param rawTx 
-     * @returns 
      */
-    mergeRawTx(rawTx: number[]) : number {
+    mergeRawTx(rawTx: number[]) {
         const newTx: BeefTx = new BeefTx(rawTx)
-        const i = this.txs.findIndex(t => t.txid === newTx.txid)
-        if (i >= 0) {
-            return i
-        }
+        this.removeExistingTxid(newTx.txid)
         this.txs.push(newTx)
         this.tryToValidateBumpIndex(newTx)
-        return this.txs.length - 1
     }
 
     /**
      * Merge a `Transaction` and any referenced `merklePath` and `sourceTransaction`, recursifely.
+     * 
+     * Replaces existing transaction with same txid.
      * 
      * Attempts to match an existing bump to the new transaction.
      * 
@@ -187,22 +204,26 @@ export class Beef {
      */
     mergeTransaction(tx: Transaction) {
         const txid = tx.id('hex')
+        this.removeExistingTxid(txid)
         let bumpIndex: number | undefined = undefined
         if (tx.merklePath)
             bumpIndex = this.mergeBump(tx.merklePath)
-        const existingTx = this.txs.find(t => t.txid === txid)
-        if (!existingTx) {
-            const newTx = new BeefTx(tx, bumpIndex)
-            this.txs.push(newTx)
-            this.tryToValidateBumpIndex(newTx)
-            bumpIndex = newTx.bumpIndex
-        }
+        const newTx = new BeefTx(tx, bumpIndex)
+        this.txs.push(newTx)
+        this.tryToValidateBumpIndex(newTx)
+        bumpIndex = newTx.bumpIndex
         if (bumpIndex === undefined) {
             for (const input of tx.inputs) {
                 if (input.sourceTransaction)
                     this.mergeTransaction(input.sourceTransaction)
             }
         }
+    }
+
+    removeExistingTxid(txid: string) {
+        const existingTxIndex = this.txs.findIndex(t => t.txid === txid)
+        if (existingTxIndex >= 0)
+            this.txs.splice(existingTxIndex, 1)
     }
 
     mergeKnownTxid(txid: string) {
@@ -241,10 +262,17 @@ export class Beef {
         for (const tx of this.txs)
             if (tx.known) return false
 
-        const missingTxids = this.sortTxs()
+        const txids: Record<string, boolean> = {}
 
-        if (missingTxids.length > 0)
-            return false
+        for (const b of this.bumps)
+            for (const n of b.path[0])
+                if (n.txid && n.hash) txids[n.hash] = true
+
+        for (const t of this.txs) {
+            for (const i of t.inputTxids)
+                if (!txids[i]) return false
+            txids[t.txid] = true
+        }
 
         return true
     }
@@ -269,6 +297,10 @@ export class Beef {
         return writer.toArray()
     }
 
+    toHex() : string {
+        return Utils.toHex(this.toBinary())
+    }
+
     static fromReader (br: Utils.Reader): Beef {
         const version = br.readUInt32LE()
         if (version !== BEEF_MAGIC)
@@ -288,6 +320,13 @@ export class Beef {
     }
 
     static fromBinary(bin: number[]): Beef {
+        const br = new Utils.Reader(bin)
+        return Beef.fromReader(br)
+    }
+
+    static fromString(s: string, enc?: 'hex' | 'utf8' | 'base64'): Beef {
+        enc ||= 'hex'
+        const bin = Utils.toArray(s, enc)
         const br = new Utils.Reader(bin)
         return Beef.fromReader(br)
     }
@@ -374,7 +413,7 @@ export class Beef {
                 if (inputTx) {
                     inputTx.degree--
                     if (inputTx.degree === 0) {
-                        queue.push(tx)
+                        queue.push(inputTx)
                     }
                 }
             }
@@ -382,5 +421,27 @@ export class Beef {
         this.txs = result
 
         return Object.keys(missingInputs)
+    }
+
+    toLogString() : string {
+        let log = ''
+        log += `BEEF with ${this.bumps.length} BUMPS and ${this.txs.length} Transactions, isValid ${this.isValid()}\n`
+        let i = -1
+        for (const b of this.bumps) {
+            i++
+            log += `  BUMP ${i}\n    block: ${b.blockHeight}\n    txids: [${b.path[0].filter(n => !!n.txid).map(n => `'${n.txid}'`).join(',')}]\n`
+        }
+        i = -1
+        for (const t of this.txs) {
+            i++
+            log += `  TX ${i}\n    txid: ${t.txid}\n`
+            if (t.bumpIndex !== undefined) {
+                log += `    bumpIndex: ${t.bumpIndex}\n`
+            }
+            if (t.inputTxids.length > 0) {
+                log += `    inputs: [${t.inputTxids.map(it => `'${it}'`).join(',')}]\n`
+            }
+        }
+        return log
     }
 }
