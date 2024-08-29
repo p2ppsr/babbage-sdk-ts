@@ -576,6 +576,15 @@ export interface CreateActionOptions {
     * and non-replenishment of change outputs.
     */
    noSendChange?: OutPoint[]
+   /**
+    * Setting `sendWith` to an array of `txid` values for previously created `noSend` transactions
+    * causes all of them to be sent to the bitcoin network as a single batch of transactions.
+    * 
+    * When using `sendWith`, `createAction` can be called without inputs or outputs,
+    * in which case previously created `noSend` transactions will be sent
+    * without creating a new transaction.
+    */
+   sendWith?: string[]
 }
 
 export interface CreateActionParams {
@@ -643,6 +652,13 @@ export interface CreateActionParams {
    log?: string
 }
 
+export interface DojoSendWithResultsApi {
+   txid: string
+   transactionId: number
+   reference: string
+   status: 'unproven' | 'failed'
+}
+
 export interface CreateActionResult {
    /**
     * true if at least one input's outputsToRedeem uses numeric max script byte length for unlockingScript
@@ -696,6 +712,7 @@ export interface CreateActionResult {
     * If `signActionRequired`, empty array.
     */
    mapiResponses?: MapiResponseApi[]
+   sendWithResults?: DojoSendWithResultsApi[]
    /**
     * Processing options.
     */

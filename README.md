@@ -140,6 +140,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 | [CertificateApi](#interface-certificateapi) | [DojoCreatingTxInstructionsApi](#interface-dojocreatingtxinstructionsapi) | [ListActionsTransactionOutput](#interface-listactionstransactionoutput) |
 | [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult) | [DojoCreatingTxOutputApi](#interface-dojocreatingtxoutputapi) | [MapiResponseApi](#interface-mapiresponseapi) |
 | [CreateActionInput](#interface-createactioninput) | [DojoOutputToRedeemApi](#interface-dojooutputtoredeemapi) | [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi) |
+| [CreateActionOptions](#interface-createactionoptions) | [DojoSendWithResultsApi](#interface-dojosendwithresultsapi) | [OutPoint](#interface-outpoint) |
 | [CreateActionOutput](#interface-createactionoutput) | [EnvelopeApi](#interface-envelopeapi) | [ProveCertificateResult](#interface-provecertificateresult) |
 | [CreateActionOutputToRedeem](#interface-createactionoutputtoredeem) | [EnvelopeEvidenceApi](#interface-envelopeevidenceapi) | [SignActionResult](#interface-signactionresult) |
 | [CreateActionParams](#interface-createactionparams) | [GetInfoParams](#interface-getinfoparams) | [SpecificKeyLinkageResult](#interface-specifickeylinkageresult) |
@@ -1308,37 +1309,72 @@ tags?: string[]
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Interface: CreateActionParams
+#### Interface: OutPoint
+
+Identifies a unique transaction output by its `txid` and index `vout`
 
 ```ts
-export interface CreateActionParams {
-    inputs?: Record<string, CreateActionInput>;
-    outputs?: CreateActionOutput[];
-    lockTime?: number;
-    version?: number;
-    description: string;
-    labels?: string[];
-    acceptDelayedBroadcast?: boolean;
-    trustSelf?: TrustSelf;
-    knownTxids?: string[];
-    resultFormat?: "beef";
-    noBroadcast?: boolean;
-    log?: string;
+export interface OutPoint {
+    txid: string;
+    vout: number;
 }
 ```
 
 <details>
 
-<summary>Interface CreateActionParams Details</summary>
+<summary>Interface OutPoint Details</summary>
 
-##### Property inputs
+##### Property txid
 
-If an input is self-provided (known to user's Dojo),
-envelope evidence can be ommitted, reducing data
-size and processing time.
+Transaction double sha256 hash as big endian hex string
 
 ```ts
-inputs?: Record<string, CreateActionInput>
+txid: string
+```
+
+##### Property vout
+
+zero based output index within the transaction
+
+```ts
+vout: number
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: CreateActionOptions
+
+```ts
+export interface CreateActionOptions {
+    acceptDelayedBroadcast?: boolean;
+    trustSelf?: TrustSelf;
+    knownTxids?: string[];
+    resultFormat?: "beef" | "none";
+    noSend?: boolean;
+    noSendChange?: OutPoint[];
+    sendWith?: string[];
+}
+```
+
+<details>
+
+<summary>Interface CreateActionOptions Details</summary>
+
+##### Property acceptDelayedBroadcast
+
+true if local validation and self-signed mapi response is sufficient.
+Upon return, transaction will have `sending` status. Watchman will proceed to send the transaction asynchronously.
+
+false if a valid mapi response from the bitcoin transaction processing network is required.
+Upon return, transaction will have `unproven` status. Watchman will proceed to prove transaction.
+
+default true
+
+```ts
+acceptDelayedBroadcast?: boolean
 ```
 
 ##### Property knownTxids
@@ -1350,7 +1386,7 @@ array and they will be assumed to be valid and not returned again in the results
 knownTxids?: string[]
 ```
 
-##### Property noBroadcast
+##### Property noSend
 
 If true, successfully created transactions remain in the `nosend` state.
 A proof will be sought but it will not be considered an error if the txid remains unknown.
@@ -1358,16 +1394,43 @@ A proof will be sought but it will not be considered an error if the txid remain
 Supports testing, user control over broadcasting of transactions, and batching.
 
 ```ts
-noBroadcast?: boolean
+noSend?: boolean
+```
+
+##### Property noSendChange
+
+Available transaction fee payment output(s) belonging to the user.
+
+Only change outputs previously created by a noSend transaction.
+
+Supports chained noSend transactions by minimizing the consumption
+and non-replenishment of change outputs.
+
+```ts
+noSendChange?: OutPoint[]
 ```
 
 ##### Property resultFormat
 
 If 'beef', the results will format new transaction and supporting input proofs in BEEF format.
+If 'none', the results will include only the txid of the new transaction.
 Otherwise, the results will use `EnvelopeEvidenceApi` format.
 
 ```ts
-resultFormat?: "beef"
+resultFormat?: "beef" | "none"
+```
+
+##### Property sendWith
+
+Setting `sendWith` to an array of `txid` values for previously created `noSend` transactions
+causes all of them to be sent to the bitcoin network as a single batch of transactions.
+
+When using `sendWith`, `createAction` can be called without inputs or outputs,
+in which case previously created `noSend` transactions will be sent
+without creating a new transaction.
+
+```ts
+sendWith?: string[]
 ```
 
 ##### Property trustSelf
@@ -1387,17 +1450,157 @@ trustSelf?: TrustSelf
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Interface: CreateActionParams
+
+```ts
+export interface CreateActionParams {
+    description: string;
+    inputs?: Record<string, CreateActionInput>;
+    outputs?: CreateActionOutput[];
+    lockTime?: number;
+    version?: number;
+    labels?: string[];
+    originator?: string;
+    options?: CreateActionOptions;
+    acceptDelayedBroadcast?: boolean;
+    log?: string;
+}
+```
+
+<details>
+
+<summary>Interface CreateActionParams Details</summary>
+
+##### Property acceptDelayedBroadcast
+
+true if local validation and self-signed mapi response is sufficient.
+Upon return, transaction will have `sending` status. Watchman will proceed to send the transaction asynchronously.
+
+false if a valid mapi response from the bitcoin transaction processing network is required.
+Upon return, transaction will have `unproven` status. Watchman will proceed to prove transaction.
+
+default true
+
+DEPRECATED: Use options.acceptDelayedBroadcast instead.
+
+```ts
+acceptDelayedBroadcast?: boolean
+```
+
+##### Property description
+
+Human readable string giving the purpose of this transaction.
+Value will be encrypted prior to leaving this device.
+Encrypted length limit is 500 characters.
+
+```ts
+description: string
+```
+
+##### Property inputs
+
+If an input is self-provided (known to user's Dojo),
+envelope evidence can be ommitted, reducing data
+size and processing time.
+
+each input's outputsToRedeem:
+  - satoshis must be greater than zero, must match output's value.
+  - spendingDescription length limit is 50, values are encrypted before leaving this device
+  - unlockingScript is max byte length for `signActionRequired` mode, otherwise hex string.
+
+```ts
+inputs?: Record<string, CreateActionInput>
+```
+
+##### Property labels
+
+transaction labels to apply to this transaction
+default []
+
+```ts
+labels?: string[]
+```
+
+##### Property lockTime
+
+Optional. Default is zero.
+When the transaction can be processed into a block:
+>= 500,000,000 values are interpreted as minimum required unix time stamps in seconds
+< 500,000,000 values are interpreted as minimum required block height
+
+```ts
+lockTime?: number
+```
+
+##### Property options
+
+Processing options.
+
+```ts
+options?: CreateActionOptions
+```
+
+##### Property originator
+
+Reserved Admin originators
+  'projectbabbage.com'
+  'staging-satoshiframe.babbage.systems'
+  'satoshiframe.babbage.systems'
+
+```ts
+originator?: string
+```
+
+##### Property outputs
+
+each output:
+  - description length limit is 50, values are encrypted before leaving this device
+
+```ts
+outputs?: CreateActionOutput[]
+```
+
+##### Property version
+
+Optional. Transaction version number, default is current standard transaction version value.
+
+```ts
+version?: number
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: DojoSendWithResultsApi
+
+```ts
+export interface DojoSendWithResultsApi {
+    txid: string;
+    transactionId: number;
+    reference: string;
+    status: "unproven" | "failed";
+}
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Interface: CreateActionResult
 
 ```ts
 export interface CreateActionResult {
     signActionRequired?: boolean;
     createResult?: DojoCreateTransactionResultApi;
+    txid?: string;
     rawTx?: string;
     inputs?: Record<string, OptionalEnvelopeEvidenceApi>;
+    beef?: number[];
+    noSendChange?: OutPoint[];
     mapiResponses?: MapiResponseApi[];
-    txid?: string;
-    trustSelf?: "known";
+    sendWithResults?: DojoSendWithResultsApi[];
+    options?: CreateActionOptions;
     log?: string;
 }
 ```
@@ -1406,16 +1609,104 @@ export interface CreateActionResult {
 
 <summary>Interface CreateActionResult Details</summary>
 
-##### Property trustSelf
+##### Property beef
 
-Copy of value used in `CreateActionParams`.
+Valid for options.resultFormat 'beef',
+in which case `rawTx` and `inputs` will be undefined.
 
-If undefined, normal case, results include new rawTx and proof chains for new outputs.
-
-If 'known', results exclude rawTx and proof chains for new outputs (`inputs` is an empty object).
+Change output(s) that may be forwarded to chained noSend transactions.
 
 ```ts
-trustSelf?: "known"
+beef?: number[]
+```
+
+##### Property createResult
+
+if signActionRequired, the dojo createTransaction results to be forwarded to signAction
+
+```ts
+createResult?: DojoCreateTransactionResultApi
+```
+
+##### Property inputs
+
+This is the fully-formed `inputs` field of this transaction, as per the SPV Envelope specification.
+
+```ts
+inputs?: Record<string, OptionalEnvelopeEvidenceApi>
+```
+
+##### Property log
+
+operational and performance logging if enabled.
+
+```ts
+log?: string
+```
+
+##### Property mapiResponses
+
+If not `signActionRequired`, at least one valid mapi response.
+may be a self-signed response if `acceptDelayedBroadcast` is true.
+
+If `signActionRequired`, empty array.
+
+```ts
+mapiResponses?: MapiResponseApi[]
+```
+
+##### Property noSendChange
+
+Valid for options.noSend true.
+
+Change output(s) that may be forwarded to chained noSend transactions.
+
+```ts
+noSendChange?: OutPoint[]
+```
+
+##### Property options
+
+Processing options.
+
+```ts
+options?: CreateActionOptions
+```
+
+##### Property rawTx
+
+if not signActionRequired, fully signed transaction as LE hex string
+
+if signActionRequired:
+  - All length specified unlocking scripts are zero bytes
+  - All SABPPP template unlocking scripts have zero byte signatures
+  - All custom provided unlocking scripts fully copied.
+
+```ts
+rawTx?: string
+```
+
+##### Property signActionRequired
+
+true if at least one input's outputsToRedeem uses numeric max script byte length for unlockingScript
+
+If true, in-process transaction will have status `unsigned`. An `unsigned` transaction must be completed
+by signing all remaining unsigned inputs and calling `signAction`. Failure to complete the process in
+a timely manner will cause the transaction to transition to `failed`.
+
+If false or undefined, completed transaction will have status of `sending`, `nosend` or `unproven`,
+depending on `acceptDelayedBroadcast` and `noSend`.
+
+```ts
+signActionRequired?: boolean
+```
+
+##### Property txid
+
+if not signActionRequired, signed transaction hash (double SHA256 BE hex string)
+
+```ts
+txid?: string
 ```
 
 </details>
@@ -1820,6 +2111,16 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ---
 ### Classes
 
+| |
+| --- |
+| [Beef](#class-beef) |
+| [BeefTx](#class-beeftx) |
+| [Communicator](#class-communicator) |
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+
 #### Class: Communicator
 
 ```ts
@@ -1838,6 +2139,148 @@ export class Communicator {
     }): Promise<unknown> 
 }
 ```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Class: BeefTx
+
+```ts
+export class BeefTx {
+    _bumpIndex?: number;
+    _tx?: Transaction;
+    _rawTx?: number[];
+    _txid?: string;
+    known: boolean;
+    inputTxids: string[] = [];
+    degree: number = 0;
+    get bumpIndex(): number | undefined 
+    set bumpIndex(v: number | undefined) 
+    get txid() 
+    get tx() 
+    get rawTx() 
+    constructor(tx: Transaction | number[] | string, bumpIndex?: number) 
+    updateInputTxids() 
+    toWriter(writer: Utils.Writer): void 
+    static fromReader(br: Utils.Reader): BeefTx 
+}
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Class: Beef
+
+```ts
+export class Beef {
+    bumps: MerklePath[] = [];
+    txs: BeefTx[] = [];
+    constructor() 
+    mergeBump(bump: MerklePath): number 
+    mergeRawTx(rawTx: number[]) 
+    mergeTransaction(tx: Transaction) 
+    removeExistingTxid(txid: string) 
+    mergeKnownTxid(txid: string) 
+    mergeBeef(beef: number[] | Beef) 
+    isValid() 
+    toBinary(): number[] 
+    toHex(): string 
+    static fromReader(br: Utils.Reader): Beef 
+    static fromBinary(bin: number[]): Beef 
+    static fromString(s: string, enc?: "hex" | "utf8" | "base64"): Beef 
+    tryToValidateBumpIndex(newTx: BeefTx): boolean 
+    sortTxs(): string[] 
+    toLogString(): string 
+}
+```
+
+<details>
+
+<summary>Class Beef Details</summary>
+
+##### Method isValid
+
+Sorts `txs` and checks validity of beef.
+
+DOES NOT VERIFY VALIDITY OF BUMPS OR MERKLEROOTS (YET)
+ 
+Validity requirements:
+1. No 'known' txids.
+2. All transactions have bumps or their inputs chain back to bumps.
+3. Order of transactions satisfies dependencies before dependents.
+4. No transaction duplicate txids.
+
+```ts
+isValid() 
+```
+
+##### Method mergeBump
+
+Merge a MerklePath that is assumed to be fully valid.
+
+```ts
+mergeBump(bump: MerklePath): number 
+```
+
+Returns
+
+index of merged bump
+
+##### Method mergeRawTx
+
+Merge a serialized transaction.
+
+Checks that a transaction with the same txid hasn't already been merged.
+
+Replaces existing transaction with same txid.
+
+```ts
+mergeRawTx(rawTx: number[]) 
+```
+
+##### Method mergeTransaction
+
+Merge a `Transaction` and any referenced `merklePath` and `sourceTransaction`, recursifely.
+
+Replaces existing transaction with same txid.
+
+Attempts to match an existing bump to the new transaction.
+
+```ts
+mergeTransaction(tx: Transaction) 
+```
+
+##### Method sortTxs
+
+Sort the `txs` by input txid dependency order.
+
+```ts
+sortTxs(): string[] 
+```
+
+Returns
+
+array of input txids of unproven transactions that aren't included in txs.
+
+##### Method tryToValidateBumpIndex
+
+Try to validate newTx.bumpIndex by looking for an existing bump
+that proves newTx.txid
+
+```ts
+tryToValidateBumpIndex(newTx: BeefTx): boolean 
+```
+
+Returns
+
+true if a bump was found, false otherwise
+
+Argument Details
+
++ **newTx**
+  + A new `BeefTx` that has been added to this.txs
+
+</details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -3099,6 +3542,12 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ---
 #### Function: toEnvelopeFromBEEF
 
+BEEF standard: BRC-62: Background Evaluation Extended Format (BEEF) Transactions
+https://github.com/bitcoin-sv/BRCs/blob/master/transactions/0062.md
+
+BUMP standard: BRC-74: BSV Unified Merkle Path (BUMP) Format
+https://github.com/bitcoin-sv/BRCs/blob/master/transactions/0074.md
+
 ```ts
 export function toEnvelopeFromBEEF(input: Transaction | number[]): EnvelopeEvidenceApi 
 ```
@@ -3308,6 +3757,34 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ---
 ### Variables
 
+| |
+| --- |
+| [BEEF_MAGIC](#variable-beef_magic) |
+| [BEEF_MAGIC_KNOWN_TXID_EXTENSION](#variable-beef_magic_known_txid_extension) |
+| [BabbageSDK](#variable-babbagesdk) |
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+
+#### Variable: BEEF_MAGIC
+
+```ts
+BEEF_MAGIC = 4022206465
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Variable: BEEF_MAGIC_KNOWN_TXID_EXTENSION
+
+```ts
+BEEF_MAGIC_KNOWN_TXID_EXTENSION = 4022206465
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Variable: BabbageSDK
 
 ```ts

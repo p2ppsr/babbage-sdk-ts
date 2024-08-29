@@ -252,6 +252,10 @@ export class Beef {
     }
 
     /**
+     * Sorts `txs` and checks validity of beef.
+     *
+     * DOES NOT VERIFY VALIDITY OF BUMPS OR MERKLEROOTS (YET)
+     *  
      * Validity requirements:
      * 1. No 'known' txids.
      * 2. All transactions have bumps or their inputs chain back to bumps.
@@ -259,6 +263,8 @@ export class Beef {
      * 4. No transaction duplicate txids.
      */
     isValid() {
+        this.sortTxs()
+
         for (const tx of this.txs)
             if (tx.known) return false
 
@@ -278,8 +284,6 @@ export class Beef {
     }
 
     toBinary() : number[] {
-
-        this.sortTxs()
 
         const writer = new Utils.Writer()
         writer.writeUInt32LE(BEEF_MAGIC)
