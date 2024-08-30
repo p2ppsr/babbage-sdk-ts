@@ -1580,7 +1580,7 @@ export interface DojoSendWithResultsApi {
     txid: string;
     transactionId: number;
     reference: string;
-    status: "unproven" | "failed";
+    status: "unproven" | "failed" | "sending";
 }
 ```
 
@@ -2177,7 +2177,7 @@ export class Beef {
     txs: BeefTx[] = [];
     constructor() 
     mergeBump(bump: MerklePath): number 
-    mergeRawTx(rawTx: number[]) 
+    mergeRawTx(rawTx: number[]): string 
     mergeTransaction(tx: Transaction) 
     removeExistingTxid(txid: string) 
     mergeKnownTxid(txid: string) 
@@ -2235,8 +2235,12 @@ Checks that a transaction with the same txid hasn't already been merged.
 Replaces existing transaction with same txid.
 
 ```ts
-mergeRawTx(rawTx: number[]) 
+mergeRawTx(rawTx: number[]): string 
 ```
+
+Returns
+
+txid of rawTx
 
 ##### Method mergeTransaction
 
@@ -2249,6 +2253,10 @@ Attempts to match an existing bump to the new transaction.
 ```ts
 mergeTransaction(tx: Transaction) 
 ```
+
+Returns
+
+txid of tx
 
 ##### Method sortTxs
 

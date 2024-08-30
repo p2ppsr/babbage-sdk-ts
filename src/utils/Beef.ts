@@ -184,12 +184,14 @@ export class Beef {
      * Replaces existing transaction with same txid.
      * 
      * @param rawTx 
+     * @returns txid of rawTx
      */
-    mergeRawTx(rawTx: number[]) {
+    mergeRawTx(rawTx: number[]) : string {
         const newTx: BeefTx = new BeefTx(rawTx)
         this.removeExistingTxid(newTx.txid)
         this.txs.push(newTx)
         this.tryToValidateBumpIndex(newTx)
+        return newTx.txid
     }
 
     /**
@@ -199,8 +201,8 @@ export class Beef {
      * 
      * Attempts to match an existing bump to the new transaction.
      * 
-     * @param rawTx 
-     * @returns 
+     * @param tx 
+     * @returns txid of tx
      */
     mergeTransaction(tx: Transaction) {
         const txid = tx.id('hex')
@@ -218,6 +220,7 @@ export class Beef {
                     this.mergeTransaction(input.sourceTransaction)
             }
         }
+        return txid
     }
 
     removeExistingTxid(txid: string) {

@@ -656,7 +656,7 @@ export interface DojoSendWithResultsApi {
    txid: string
    transactionId: number
    reference: string
-   status: 'unproven' | 'failed'
+   status: 'unproven' | 'failed' | 'sending'
 }
 
 export interface CreateActionResult {
