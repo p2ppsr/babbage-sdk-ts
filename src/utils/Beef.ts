@@ -1,14 +1,6 @@
 import { MerklePath, Transaction, Utils } from "@bsv/sdk";
 import { asString, doubleSha256BE, ERR_INTERNAL, ERR_INVALID_PARAMETER } from "cwi-base";
 
-/*
- * BEEF standard: BRC-62: Background Evaluation Extended Format (BEEF) Transactions
- * https://github.com/bitcoin-sv/BRCs/blob/master/transactions/0062.md
- * 
- * BUMP standard: BRC-74: BSV Unified Merkle Path (BUMP) Format
- * https://github.com/bitcoin-sv/BRCs/blob/master/transactions/0074.md
- */
-
 export const BEEF_MAGIC = 4022206465 // 0100BEEF in LE order
 export const BEEF_MAGIC_KNOWN_TXID_EXTENSION = 4022206465 // 0100BEEF in LE order
 
@@ -114,6 +106,45 @@ export class BeefTx {
 
 }
 
+/*
+ * BEEF standard: BRC-62: Background Evaluation Extended Format (BEEF) Transactions
+ * https://github.com/bitcoin-sv/BRCs/blob/master/transactions/0062.md
+ * 
+ * BUMP standard: BRC-74: BSV Unified Merkle Path (BUMP) Format
+ * https://github.com/bitcoin-sv/BRCs/blob/master/transactions/0074.md
+ * 
+ * A valid serialized BEEF is the cornerstone of Simple Payment Validation (SPV)
+ * where they are exchanged between two non-trusting parties to establish the
+ * validity of a newly constructed bitcoin transaction and its inputs from prior
+ * transactions.
+ * 
+ * A `Beef` is fundamentally an list of `BUMP`s and a list of transactions.
+ * 
+ * A `BUMP` is a partial merkle tree for a 'mined' bitcoin block.
+ * It can therefore be used to prove the validity of transaction data
+ * for each transaction txid whose merkle path is included in the tree.
+ * 
+ * To be valid, the list of transactions must be sorted in dependency order:
+ * oldest transaction first;
+ * and each transaction must either
+ * have a merkle path in one of the bumps, or
+ * have all of its input transactions included in the list of transactions.
+ * 
+ * The `Beef` class supports the construction of valid BEEFs by allowing BUMPs,
+ * merkle paths, and transactions to be merged sequentially.
+ * 
+ * The `Beef` class also extends the standard by supporting 'known' transactions.
+ * A 'known' transaction is represented solely by its txid.
+ * To become valid, all the 'known' transactions in a `Beef` must be replaced by full
+ * transactions and merkle paths, if they are mined.
+ * 
+ * The purpose of supporting 'known' transactions is that one or both parties
+ * generating and exchanging BEEFs often possess partial knowledge of valid transactions
+ * due to their history.
+ * 
+ * A valid `Beef` is only required when sent to a party with no shared history,
+ * such as a transaction processor.
+ */
 export class Beef {
     bumps: MerklePath[] = []
     txs: BeefTx[] = []
