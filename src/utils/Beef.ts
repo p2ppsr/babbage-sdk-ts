@@ -467,7 +467,7 @@ export class Beef {
         let i = -1
         for (const b of this.bumps) {
             i++
-            log += `  BUMP ${i}\n    block: ${b.blockHeight}\n    txids: [${b.path[0].filter(n => !!n.txid).map(n => `'${n.txid}'`).join(',')}]\n`
+            log += `  BUMP ${i}\n    block: ${b.blockHeight}\n    txids: [\n${b.path[0].filter(n => !!n.txid).map(n => `      '${n.hash}'`).join(',\n')}\n    ]\n`
         }
         i = -1
         for (const t of this.txs) {
@@ -477,7 +477,7 @@ export class Beef {
                 log += `    bumpIndex: ${t.bumpIndex}\n`
             }
             if (t.inputTxids.length > 0) {
-                log += `    inputs: [${t.inputTxids.map(it => `'${it}'`).join(',')}]\n`
+                log += `    inputs: [\n${t.inputTxids.map(it => `      '${it}'`).join(',\n')}\n    ]\n`
             }
         }
         return log
