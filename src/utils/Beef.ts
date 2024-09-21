@@ -1,5 +1,4 @@
-import { MerklePath, Transaction, Utils } from "@bsv/sdk";
-import { asString, doubleSha256BE, ERR_INTERNAL, ERR_INVALID_PARAMETER } from "cwi-base";
+import { MerklePath, Transaction, Utils, Hash } from "@bsv/sdk";
 
 export const BEEF_MAGIC = 4022206465 // 0100BEEF in LE order
 export const BEEF_MAGIC_KNOWN_TXID_EXTENSION = 4022206465 // 0100BEEF in LE order
@@ -24,7 +23,7 @@ export class BeefTx {
         if (this._txid) return this._txid
         if (this._tx) return this._txid = this._tx.id('hex')
         if (this._rawTx) return this._txid = asString(doubleSha256BE(Buffer.from(this._rawTx)))
-        throw new ERR_INTERNAL()
+        throw new Error('Internal')
     }
 
     get tx() {
@@ -80,7 +79,7 @@ export class BeefTx {
         else if (this._tx)
             writer.write(this._tx.toBinary())
         else
-            throw new ERR_INTERNAL('a valid serialized Transaction is expected')
+            throw new Error('a valid serialized Transaction is expected')
         if (this.bumpIndex === undefined) {
             writer.writeUInt8(0)
         } else {
@@ -187,7 +186,7 @@ export class Beef {
         }
 
         if (bumpIndex === undefined) 
-            throw new ERR_INTERNAL()
+            throw new Error('bumpIndex is undefined')
 
         // review if any transactions are proven by this bump
         const b = this.bumps[bumpIndex]
@@ -342,7 +341,7 @@ export class Beef {
     static fromReader (br: Utils.Reader): Beef {
         const version = br.readUInt32LE()
         if (version !== BEEF_MAGIC)
-            throw new ERR_INVALID_PARAMETER('binary Beef data', 'start with ${BEEF_MAGIC} but starts with ${version}')
+            throw new Error(`Serialized BEEF must start with ${BEEF_MAGIC} but starts with ${version}`)
         const beef = new Beef()
         const bumpsLength = br.readVarIntNum()
         for (let i = 0; i < bumpsLength; i++) {
@@ -482,4 +481,58 @@ export class Beef {
         }
         return log
     }
+}
+
+function asBuffer(val: Buffer | string | number[], encoding?: BufferEncoding): Buffer {
+  let b: Buffer
+  if (Buffer.isBuffer(val)) b = val
+  else if (typeof val === 'string') b = Buffer.from(val, encoding ?? 'hex')
+  else b = Buffer.from(val)
+  return b
+}
+
+function asString (val: Buffer | string, encoding?: BufferEncoding): string {
+  return Buffer.isBuffer(val) ? val.toString(encoding ?? 'hex') : val
+}
+
+/**
+ * Calculate the SHA256 hash of a Buffer.
+ * @returns sha256 hash of buffer contents.
+ * @publicbody
+ */
+function sha256Hash(buffer: Buffer): Buffer {
+    const msg = asArray(buffer)
+    const first = new Hash.SHA256().update(msg).digest()
+    return asBuffer(first)
+}
+
+/**
+ * Calculate the SHA256 hash of the SHA256 hash of a Buffer.
+ * @param data is Buffer or hex encoded string
+ * @returns double sha256 hash of buffer contents, byte 0 of hash first.
+ * @publicbody
+ */
+function doubleSha256HashLE (data: string | Buffer, encoding?: BufferEncoding): Buffer {
+    const msg = asArray(data, encoding)
+    const first = new Hash.SHA256().update(msg).digest()
+    const second = new Hash.SHA256().update(first).digest()
+    return asBuffer(second)
+}
+
+/**
+ * Calculate the SHA256 hash of the SHA256 hash of a Buffer.
+ * @param data is Buffer or hex encoded string
+ * @returns reversed (big-endian) double sha256 hash of data, byte 31 of hash first.
+ * @publicbody
+ */
+function doubleSha256BE (data: string | Buffer, encoding?: BufferEncoding): Buffer {
+    return doubleSha256HashLE(data, encoding).reverse()
+}
+
+function asArray(val: Buffer | string | number[], encoding?: BufferEncoding): number[] {
+  let a: number[]
+  if (Array.isArray(val)) a = val
+  else if (Buffer.isBuffer(val)) a = Array.from(val)
+  else a = Array.from(Buffer.from(val, encoding || 'hex'))
+  return a
 }
