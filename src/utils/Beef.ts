@@ -475,6 +475,9 @@ export class Beef {
             if (t.bumpIndex !== undefined) {
                 log += `    bumpIndex: ${t.bumpIndex}\n`
             }
+            if (t.known) {
+                log += `    known\n`
+            }
             if (t.inputTxids.length > 0) {
                 log += `    inputs: [\n${t.inputTxids.map(it => `      '${it}'`).join(',\n')}\n    ]\n`
             }
