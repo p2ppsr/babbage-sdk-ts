@@ -1,4 +1,4 @@
-import { MerklePath, Transaction, Utils, Hash } from "@bsv/sdk";
+import { MerklePath, Transaction, Utils, Hash, ChainTracker } from "@bsv/sdk";
 
 export const BEEF_MAGIC = 4022206465 // 0100BEEF in LE order
 export const BEEF_MAGIC_KNOWN_TXID_EXTENSION = 4022206465 // 0100BEEF in LE order
@@ -285,35 +285,96 @@ export class Beef {
     }
 
     /**
-     * Sorts `txs` and checks validity of beef.
+     * Sorts `txs` and checks structural validity of beef.
      *
-     * DOES NOT VERIFY VALIDITY OF BUMPS OR MERKLEROOTS (YET)
-     *  
      * Validity requirements:
-     * 1. No 'known' txids.
-     * 2. All transactions have bumps or their inputs chain back to bumps.
+     * 1. No 'known' txids, unless `allowKnown` is true.
+     * 2. All transactions have bumps or their inputs chain back to bumps (or are known).
      * 3. Order of transactions satisfies dependencies before dependents.
-     * 4. No transaction duplicate txids.
+     * 4. No transactions with duplicate txids.
+     * 
+     * @param allowKnown optional. If true, transaction txid is assumed valid
+     * @param chainTracker optional. If defined, used to verify computed merkle path roots for all bump txids.
      */
-    isValid() {
-        this.sortTxs()
+    isValid(allowKnown?: boolean) : boolean {
+        return this.verifyValid(allowKnown).valid
+    }
 
-        for (const tx of this.txs)
-            if (tx.known) return false
+    /**
+     * Sorts `txs` and confirms validity of transaction data contained in beef
+     * by validating structure of this beef and confirming computed merkle roots
+     * using `chainTracker`.
+     *
+     * Validity requirements:
+     * 1. No 'known' txids, unless `allowKnown` is true.
+     * 2. All transactions have bumps or their inputs chain back to bumps (or are known).
+     * 3. Order of transactions satisfies dependencies before dependents.
+     * 4. No transactions with duplicate txids.
+     * 
+     * @param chainTracker Used to verify computed merkle path roots for all bump txids.
+     * @param allowKnown optional. If true, transaction txid is assumed valid
+     */
+    async verify(chainTracker: ChainTracker, allowKnown?: boolean) : Promise<boolean> {
+        const r = this.verifyValid(allowKnown)
+        if (!r.valid) return false
 
-        const txids: Record<string, boolean> = {}
-
-        for (const b of this.bumps)
-            for (const n of b.path[0])
-                if (n.txid && n.hash) txids[n.hash] = true
-
-        for (const t of this.txs) {
-            for (const i of t.inputTxids)
-                if (!txids[i]) return false
-            txids[t.txid] = true
+        for (const height in Object.keys(r.roots)) {
+            const isValid = await chainTracker.isValidRootForHeight(r.roots[height], Number(height))
+            if (!isValid)
+                return false
         }
 
         return true
+    }
+
+    private verifyValid(allowKnown?: boolean, chainTracker?: ChainTracker)
+    : { valid: boolean, roots: Record<number, string> } {
+
+        const r: { valid: boolean, roots: Record<number, string> } = { valid: false, roots: {} }
+
+        this.sortTxs()
+
+        // valid txids: known txids, bump txids, then txids with input's in txids
+        const txids: Record<string, boolean> = {}
+
+        for (const tx of this.txs) {
+            if (tx.known) {
+                if (!allowKnown) return r
+                txids[tx.txid] = true
+            }
+        }
+
+        const confirmComputedRoot = (b: MerklePath, txid: string) : boolean => {
+            const root = b.computeRoot(txid)
+            if (!r.roots[b.blockHeight]) {
+                // accept the root as valid for this block and reuse for subsequent txids
+                r.roots[b.blockHeight] = root
+            }
+            if (r.roots[b.blockHeight] !== root)
+                return false
+            return true
+        }
+
+        for (const b of this.bumps) {
+            for (const n of b.path[0]) {
+                if (n.txid && n.hash) {
+                    txids[n.hash] = true
+                    // all txid hashes in all bumps must have agree on computed merkle path roots
+                    if (!confirmComputedRoot(b, n.hash))
+                        return r
+                }
+            }
+        }
+
+        for (const t of this.txs) {
+            for (const i of t.inputTxids)
+                // all input txids must be included before they are referenced
+                if (!txids[i]) return r
+            txids[t.txid] = true
+        }
+
+        r.valid = true
+        return r
     }
 
     toBinary() : number[] {

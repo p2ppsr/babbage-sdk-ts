@@ -1,7 +1,7 @@
 import { abortAction } from './abortAction'
 export { abortAction }
-import { createAction } from './createAction'
-export { createAction }
+import { createAction, validateCreateActionOptions } from './createAction'
+export { createAction, validateCreateActionOptions }
 import { createHmac } from './createHmac'
 export { createHmac }
 import { createCertificate } from './createCertificate'

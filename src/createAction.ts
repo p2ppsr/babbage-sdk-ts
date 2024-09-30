@@ -1,4 +1,4 @@
-import { CreateActionInput, CreateActionOutput, CreateActionParams, CreateActionResult } from './types'
+import { CreateActionInput, CreateActionOptions, CreateActionOutput, CreateActionParams, CreateActionResult } from './types'
 import connectToSubstrate from './utils/connectToSubstrate'
 import { stampLog } from './utils/stampLog'
 
@@ -22,9 +22,8 @@ export async function createAction(args: CreateActionParams)
 {
   const connection = await connectToSubstrate()
   let log = stampLog('', 'start sdk-ts createAction')
-  const options = args.options || {}
+  const options = validateCreateActionOptions(args.options)
   if (args.acceptDelayedBroadcast !== undefined) options.acceptDelayedBroadcast = args.acceptDelayedBroadcast
-  if (options.acceptDelayedBroadcast === undefined) options.acceptDelayedBroadcast = true
   const r = <CreateActionResult>await connection.dispatch({
     name: 'createAction',
     params: {
@@ -43,6 +42,12 @@ export async function createAction(args: CreateActionParams)
   if (typeof args.log === 'string')
     r.log = args.log + r.log
   return r
+}
+
+export function validateCreateActionOptions(options?: CreateActionOptions) : CreateActionOptions {
+  options ||= {}
+  if (options.acceptDelayedBroadcast === undefined) options.acceptDelayedBroadcast = true
+  return options
 }
 
 export default createAction
