@@ -2182,7 +2182,8 @@ export class Beef {
     removeExistingTxid(txid: string) 
     mergeKnownTxid(txid: string) 
     mergeBeef(beef: number[] | Beef) 
-    isValid() 
+    isValid(allowKnown?: boolean): boolean 
+    async verify(chainTracker: ChainTracker, allowKnown?: boolean): Promise<boolean> 
     toBinary(): number[] 
     toHex(): string 
     static fromReader(br: Utils.Reader): Beef 
@@ -2200,19 +2201,24 @@ export class Beef {
 
 ##### Method isValid
 
-Sorts `txs` and checks validity of beef.
+Sorts `txs` and checks structural validity of beef.
 
-DOES NOT VERIFY VALIDITY OF BUMPS OR MERKLEROOTS (YET)
- 
 Validity requirements:
-1. No 'known' txids.
-2. All transactions have bumps or their inputs chain back to bumps.
+1. No 'known' txids, unless `allowKnown` is true.
+2. All transactions have bumps or their inputs chain back to bumps (or are known).
 3. Order of transactions satisfies dependencies before dependents.
-4. No transaction duplicate txids.
+4. No transactions with duplicate txids.
 
 ```ts
-isValid() 
+isValid(allowKnown?: boolean): boolean 
 ```
+
+Argument Details
+
++ **allowKnown**
+  + optional. If true, transaction txid is assumed valid
++ **chainTracker**
+  + optional. If defined, used to verify computed merkle path roots for all bump txids.
 
 ##### Method mergeBump
 
@@ -2288,6 +2294,29 @@ Argument Details
 + **newTx**
   + A new `BeefTx` that has been added to this.txs
 
+##### Method verify
+
+Sorts `txs` and confirms validity of transaction data contained in beef
+by validating structure of this beef and confirming computed merkle roots
+using `chainTracker`.
+
+Validity requirements:
+1. No 'known' txids, unless `allowKnown` is true.
+2. All transactions have bumps or their inputs chain back to bumps (or are known).
+3. Order of transactions satisfies dependencies before dependents.
+4. No transactions with duplicate txids.
+
+```ts
+async verify(chainTracker: ChainTracker, allowKnown?: boolean): Promise<boolean> 
+```
+
+Argument Details
+
++ **chainTracker**
+  + Used to verify computed merkle path roots for all bump txids.
++ **allowKnown**
+  + optional. If true, transaction txid is assumed valid
+
 </details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
@@ -2308,12 +2337,12 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 | [createSignature](#function-createsignature) | [getRandomID](#function-getrandomid) | [toBEEFfromEnvelope](#function-tobeeffromenvelope) |
 | [decrypt](#function-decrypt) | [getTransactionOutputs](#function-gettransactionoutputs) | [toEnvelopeFromBEEF](#function-toenvelopefrombeef) |
 | [decryptAsArray](#function-decryptasarray) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
-| [decryptAsString](#function-decryptasstring) | [isAuthenticated](#function-isauthenticated) | [validateOptionalEnvelopeEvidence](#function-validateoptionalenvelopeevidence) |
-| [discoverByAttributes](#function-discoverbyattributes) | [listActions](#function-listactions) | [verifyHmac](#function-verifyhmac) |
-| [discoverByIdentityKey](#function-discoverbyidentitykey) | [makeHttpRequest](#function-makehttprequest) | [verifySignature](#function-verifysignature) |
-| [encrypt](#function-encrypt) | [promiseWithTimeout](#function-promisewithtimeout) | [verifyTruthy](#function-verifytruthy) |
-| [encryptAsArray](#function-encryptasarray) | [proveCertificate](#function-provecertificate) | [waitForAuthentication](#function-waitforauthentication) |
-| [encryptAsString](#function-encryptasstring) | [requestGroupPermission](#function-requestgrouppermission) |  |
+| [decryptAsString](#function-decryptasstring) | [isAuthenticated](#function-isauthenticated) | [validateCreateActionOptions](#function-validatecreateactionoptions) |
+| [discoverByAttributes](#function-discoverbyattributes) | [listActions](#function-listactions) | [validateOptionalEnvelopeEvidence](#function-validateoptionalenvelopeevidence) |
+| [discoverByIdentityKey](#function-discoverbyidentitykey) | [makeHttpRequest](#function-makehttprequest) | [verifyHmac](#function-verifyhmac) |
+| [encrypt](#function-encrypt) | [promiseWithTimeout](#function-promisewithtimeout) | [verifySignature](#function-verifysignature) |
+| [encryptAsArray](#function-encryptasarray) | [proveCertificate](#function-provecertificate) | [verifyTruthy](#function-verifytruthy) |
+| [encryptAsString](#function-encryptasstring) | [requestGroupPermission](#function-requestgrouppermission) | [waitForAuthentication](#function-waitforauthentication) |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -2479,6 +2508,15 @@ Argument Details
   + All parameters for this function are provided in an object
 
 </details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: validateCreateActionOptions
+
+```ts
+export function validateCreateActionOptions(options?: CreateActionOptions): CreateActionOptions 
+```
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
