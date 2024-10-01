@@ -1,5 +1,6 @@
 import { Script, Transaction, TransactionInput, TransactionOutput } from '@bsv/sdk';
 import { CreateActionInput, DojoCreateTransactionResultApi } from '../types';
+import { asBsvSdkScript, asBsvSdkTx, asString } from './Helpers';
 
 /**
  * Constructs a @bsv/sdk `Transaction` from Ninja inputs and Dojo create transaction results. 
@@ -104,28 +105,5 @@ export async function buildTransactionForSignActionUnlocking(
     }
   }
 
-  return tx
-}
-
-function asBsvSdkScript(script: string | Buffer | Script): Script {
-  if (Buffer.isBuffer(script)) {
-    script = Script.fromHex(asString(script))
-  } else if (typeof script === 'string') {
-    script = Script.fromHex(script)
-  }
-  return script
-}
-
-function asString(val: Buffer | string | number[], encoding?: BufferEncoding): string {
-  if (Array.isArray(val)) val = Buffer.from(val)
-  return Buffer.isBuffer(val) ? val.toString(encoding ?? 'hex') : val
-}
-
-function asBsvSdkTx(tx: string | Buffer | Transaction): Transaction {
-  if (Buffer.isBuffer(tx)) {
-    tx = Transaction.fromHex(asString(tx))
-  } else if (typeof tx === 'string') {
-    tx = Transaction.fromHex(tx)
-  }
   return tx
 }

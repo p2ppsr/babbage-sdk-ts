@@ -1,5 +1,6 @@
 import { Hash, Utils, MerklePath, Transaction } from "@bsv/sdk";
 import { EnvelopeEvidenceApi, OptionalEnvelopeEvidenceApi, TscMerkleProofApi } from "../types";
+import { verifyTruthy } from "./Helpers";
 
 /**
  * BEEF standard: BRC-62: Background Evaluation Extended Format (BEEF) Transactions
@@ -208,11 +209,6 @@ export function convertProofToMerklePath(txid: string, proof: TscMerkleProofApi)
         index = index >> 1
     }
     return new MerklePath(blockHeight, path)
-}
-
-export function verifyTruthy<T> (v: T | null | undefined, description?: string): T {
-  if (v == null) throw new Error(description ?? 'A truthy value is required.')
-  return v
 }
 
 /**

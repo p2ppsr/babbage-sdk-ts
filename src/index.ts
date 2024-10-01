@@ -68,6 +68,7 @@ import { toBEEFfromEnvelope, convertProofToMerklePath, validateOptionalEnvelopeE
 export { toBEEFfromEnvelope, convertProofToMerklePath, validateOptionalEnvelopeEvidence, resolveOptionalEnvelopeEvidence }
 
 export * from './types'
+export * as Helpers from './utils/Helpers'
 
 export const BabbageSDK = {
   abortAction,
