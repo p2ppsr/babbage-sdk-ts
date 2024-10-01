@@ -1,6 +1,6 @@
 import { Script, Transaction, TransactionInput, TransactionOutput } from '@bsv/sdk';
 import { CreateActionInput, DojoCreateTransactionResultApi } from '../types';
-import { asBsvSdkScript, asBsvSdkTx, asString } from './Helpers';
+import { asBsvSdkScript, asBsvSdkTx } from './Helpers';
 
 /**
  * Constructs a @bsv/sdk `Transaction` from Ninja inputs and Dojo create transaction results. 
