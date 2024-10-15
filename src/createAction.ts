@@ -28,6 +28,7 @@ export async function createAction(args: CreateActionParams)
     name: 'createAction',
     params: {
       inputs: args.inputs,
+      beef: Array.isArray(args.beef) ? args.beef : args.beef ? args.beef.toBinary() : undefined,
       outputs: args.outputs,
       lockTime: args.lockTime || 0,
       version: args.version || 1,
