@@ -64,8 +64,8 @@ import { Beef, BeefTx } from './utils/Beef'
 export { Beef, BeefTx }
 import { buildTransactionForSignActionUnlocking } from './utils/buildTransactionForSignActionUnlocking'
 export { buildTransactionForSignActionUnlocking }
-import { toBEEFfromEnvelope, convertProofToMerklePath, validateOptionalEnvelopeEvidence, resolveOptionalEnvelopeEvidence } from './utils/toBEEF'
-export { toBEEFfromEnvelope, convertProofToMerklePath, validateOptionalEnvelopeEvidence, resolveOptionalEnvelopeEvidence }
+import { toBEEFfromEnvelope, convertMerklePathToProof, convertProofToMerklePath, validateOptionalEnvelopeEvidence, resolveOptionalEnvelopeEvidence } from './utils/toBEEF'
+export { toBEEFfromEnvelope, convertMerklePathToProof, convertProofToMerklePath, validateOptionalEnvelopeEvidence, resolveOptionalEnvelopeEvidence }
 
 export * from './types'
 export * as Helpers from './utils/Helpers'
