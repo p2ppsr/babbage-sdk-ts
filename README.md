@@ -1456,6 +1456,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 export interface CreateActionParams {
     description: string;
     inputs?: Record<string, CreateActionInput>;
+    beef?: Beef | number[];
     outputs?: CreateActionOutput[];
     lockTime?: number;
     version?: number;
@@ -1487,6 +1488,15 @@ DEPRECATED: Use options.acceptDelayedBroadcast instead.
 acceptDelayedBroadcast?: boolean
 ```
 
+##### Property beef
+
+Optional. Alternate source of validity proof data for `inputs`.
+If `number[]` it must be serialized `Beef`.
+
+```ts
+beef?: Beef | number[]
+```
+
 ##### Property description
 
 Human readable string giving the purpose of this transaction.
@@ -1499,7 +1509,7 @@ description: string
 
 ##### Property inputs
 
-If an input is self-provided (known to user's Dojo),
+If an input is self-provided (known to user's Dojo), or if beef is used,
 envelope evidence can be ommitted, reducing data
 size and processing time.
 
@@ -2122,28 +2132,6 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 ---
 
-#### Class: Communicator
-
-```ts
-export class Communicator {
-    static setCached(substrate: string, version: string): Communicator 
-    static getCached(): Communicator | undefined 
-    async dispatch<P extends object>(args: {
-        name: string;
-        params: P;
-        isGet?: boolean;
-        bodyParamKey?: string;
-        bodyJsonParams?: boolean;
-        contentType?: string;
-        nameHttp?: string;
-        isNinja?: boolean;
-    }): Promise<unknown> 
-}
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
 #### Class: BeefTx
 
 A single bitcoin transaction associated with a `Beef` validity proof set.
@@ -2365,6 +2353,28 @@ knownTo: Record<string, string[]> = {}
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Class: Communicator
+
+```ts
+export class Communicator {
+    static setCached(substrate: string, version: string): Communicator 
+    static getCached(): Communicator | undefined 
+    async dispatch<P extends object>(args: {
+        name: string;
+        params: P;
+        isGet?: boolean;
+        bodyParamKey?: string;
+        bodyJsonParams?: boolean;
+        contentType?: string;
+        nameHttp?: string;
+        isNinja?: boolean;
+    }): Promise<unknown> 
+}
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 ### Functions
 
 | | | |
@@ -2394,6 +2404,155 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 ---
 
+#### Function: asBuffer
+
+```ts
+export function asBuffer(val: Buffer | string | number[], encoding?: BufferEncoding): Buffer 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asString
+
+```ts
+export function asString(val: Buffer | string, encoding?: BufferEncoding): string 
+```
+
+<details>
+
+<summary>Function asString Details</summary>
+
+Argument Details
+
++ **val**
+  + Value to convert to encoded string if not already a string.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asArray
+
+```ts
+export function asArray(val: Buffer | string | number[], encoding?: BufferEncoding): number[] 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: sha256Hash
+
+Calculate the SHA256 hash of a Buffer.
+
+```ts
+export function sha256Hash(buffer: Buffer): Buffer {
+    const msg = asArray(buffer);
+    const first = new Hash.SHA256().update(msg).digest();
+    return asBuffer(first);
+}
+```
+
+<details>
+
+<summary>Function sha256Hash Details</summary>
+
+Returns
+
+sha256 hash of buffer contents.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: doubleSha256HashLE
+
+Calculate the SHA256 hash of the SHA256 hash of a Buffer.
+
+```ts
+export function doubleSha256HashLE(data: string | Buffer, encoding?: BufferEncoding): Buffer {
+    const msg = asArray(data, encoding);
+    const first = new Hash.SHA256().update(msg).digest();
+    const second = new Hash.SHA256().update(first).digest();
+    return asBuffer(second);
+}
+```
+
+<details>
+
+<summary>Function doubleSha256HashLE Details</summary>
+
+Returns
+
+double sha256 hash of buffer contents, byte 0 of hash first.
+
+Argument Details
+
++ **data**
+  + is Buffer or hex encoded string
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: doubleSha256BE
+
+Calculate the SHA256 hash of the SHA256 hash of a Buffer.
+
+```ts
+export function doubleSha256BE(data: string | Buffer, encoding?: BufferEncoding): Buffer {
+    return doubleSha256HashLE(data, encoding).reverse();
+}
+```
+
+<details>
+
+<summary>Function doubleSha256BE Details</summary>
+
+Returns
+
+reversed (big-endian) double sha256 hash of data, byte 31 of hash first.
+
+Argument Details
+
++ **data**
+  + is Buffer or hex encoded string
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: verifyTruthy
+
+```ts
+export function verifyTruthy<T>(v: T | null | undefined, description?: string): T 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asBsvSdkScript
+
+```ts
+export function asBsvSdkScript(script: string | Buffer | Script): Script 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asBsvSdkTx
+
+```ts
+export function asBsvSdkTx(tx: string | Buffer | Transaction): Transaction 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: makeHttpRequest
 
 ```ts
@@ -3602,155 +3761,6 @@ Returns
 Always returns true
 
 </details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: asBuffer
-
-```ts
-export function asBuffer(val: Buffer | string | number[], encoding?: BufferEncoding): Buffer 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: asString
-
-```ts
-export function asString(val: Buffer | string, encoding?: BufferEncoding): string 
-```
-
-<details>
-
-<summary>Function asString Details</summary>
-
-Argument Details
-
-+ **val**
-  + Value to convert to encoded string if not already a string.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: asArray
-
-```ts
-export function asArray(val: Buffer | string | number[], encoding?: BufferEncoding): number[] 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: sha256Hash
-
-Calculate the SHA256 hash of a Buffer.
-
-```ts
-export function sha256Hash(buffer: Buffer): Buffer {
-    const msg = asArray(buffer);
-    const first = new Hash.SHA256().update(msg).digest();
-    return asBuffer(first);
-}
-```
-
-<details>
-
-<summary>Function sha256Hash Details</summary>
-
-Returns
-
-sha256 hash of buffer contents.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: doubleSha256HashLE
-
-Calculate the SHA256 hash of the SHA256 hash of a Buffer.
-
-```ts
-export function doubleSha256HashLE(data: string | Buffer, encoding?: BufferEncoding): Buffer {
-    const msg = asArray(data, encoding);
-    const first = new Hash.SHA256().update(msg).digest();
-    const second = new Hash.SHA256().update(first).digest();
-    return asBuffer(second);
-}
-```
-
-<details>
-
-<summary>Function doubleSha256HashLE Details</summary>
-
-Returns
-
-double sha256 hash of buffer contents, byte 0 of hash first.
-
-Argument Details
-
-+ **data**
-  + is Buffer or hex encoded string
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: doubleSha256BE
-
-Calculate the SHA256 hash of the SHA256 hash of a Buffer.
-
-```ts
-export function doubleSha256BE(data: string | Buffer, encoding?: BufferEncoding): Buffer {
-    return doubleSha256HashLE(data, encoding).reverse();
-}
-```
-
-<details>
-
-<summary>Function doubleSha256BE Details</summary>
-
-Returns
-
-reversed (big-endian) double sha256 hash of data, byte 31 of hash first.
-
-Argument Details
-
-+ **data**
-  + is Buffer or hex encoded string
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: verifyTruthy
-
-```ts
-export function verifyTruthy<T>(v: T | null | undefined, description?: string): T 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: asBsvSdkScript
-
-```ts
-export function asBsvSdkScript(script: string | Buffer | Script): Script 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: asBsvSdkTx
-
-```ts
-export function asBsvSdkTx(tx: string | Buffer | Transaction): Transaction 
-```
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
