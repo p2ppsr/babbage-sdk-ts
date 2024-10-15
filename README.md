@@ -136,9 +136,9 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [AbortActionResult](#interface-abortactionresult) | [DojoCreatingTxInputsApi](#interface-dojocreatingtxinputsapi) | [ListActionsTransactionInput](#interface-listactionstransactioninput) |
-| [CertificateApi](#interface-certificateapi) | [DojoCreatingTxInstructionsApi](#interface-dojocreatingtxinstructionsapi) | [ListActionsTransactionOutput](#interface-listactionstransactionoutput) |
-| [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult) | [DojoCreatingTxOutputApi](#interface-dojocreatingtxoutputapi) | [MapiResponseApi](#interface-mapiresponseapi) |
+| [AbortActionResult](#interface-abortactionresult) | [DojoCreateTxResultInstructionsApi](#interface-dojocreatetxresultinstructionsapi) | [ListActionsTransactionInput](#interface-listactionstransactioninput) |
+| [CertificateApi](#interface-certificateapi) | [DojoCreateTxResultOutputApi](#interface-dojocreatetxresultoutputapi) | [ListActionsTransactionOutput](#interface-listactionstransactionoutput) |
+| [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult) | [DojoCreatingTxInputsApi](#interface-dojocreatingtxinputsapi) | [MapiResponseApi](#interface-mapiresponseapi) |
 | [CreateActionInput](#interface-createactioninput) | [DojoOutputToRedeemApi](#interface-dojooutputtoredeemapi) | [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi) |
 | [CreateActionOptions](#interface-createactionoptions) | [DojoSendWithResultsApi](#interface-dojosendwithresultsapi) | [OutPoint](#interface-outpoint) |
 | [CreateActionOutput](#interface-createactionoutput) | [EnvelopeApi](#interface-envelopeapi) | [ProveCertificateResult](#interface-provecertificateresult) |
@@ -1778,10 +1778,10 @@ unlockingScriptLength: number
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Interface: DojoCreatingTxInstructionsApi
+#### Interface: DojoCreateTxResultInstructionsApi
 
 ```ts
-export interface DojoCreatingTxInstructionsApi {
+export interface DojoCreateTxResultInstructionsApi {
     type: string;
     derivationPrefix?: string;
     derivationSuffix?: string;
@@ -1799,7 +1799,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 export interface DojoCreatingTxInputsApi extends EnvelopeEvidenceApi {
     outputsToRedeem: DojoOutputToRedeemApi[];
     providedBy: DojoProvidedByApi;
-    instructions: Record<number, DojoCreatingTxInstructionsApi>;
+    instructions: Record<number, DojoCreateTxResultInstructionsApi>;
 }
 ```
 
@@ -1879,10 +1879,10 @@ tags?: string[]
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Interface: DojoCreatingTxOutputApi
+#### Interface: DojoCreateTxResultOutputApi
 
 ```ts
-export interface DojoCreatingTxOutputApi extends DojoCreateTxOutputApi {
+export interface DojoCreateTxResultOutputApi extends DojoCreateTxOutputApi {
     providedBy: DojoProvidedByApi;
     purpose?: string;
     destinationBasket?: string;
@@ -1899,7 +1899,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ```ts
 export interface DojoCreateTransactionResultApi {
     inputs: Record<string, DojoCreatingTxInputsApi>;
-    outputs: DojoCreatingTxOutputApi[];
+    outputs: DojoCreateTxResultOutputApi[];
     derivationPrefix: string;
     version: number;
     lockTime: number;
@@ -2114,6 +2114,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 | |
 | --- |
 | [Beef](#class-beef) |
+| [BeefParty](#class-beefparty) |
 | [BeefTx](#class-beeftx) |
 | [Communicator](#class-communicator) |
 
@@ -2145,22 +2146,29 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ---
 #### Class: BeefTx
 
+A single bitcoin transaction associated with a `Beef` validity proof set.
+
+Simple case is transaction data included directly, either as raw bytes or fully parsed data, or both.
+
+Also supports 'known' transactions which are represented by just their txid.
+It can be assumed that an external party already has validity proof for this transaction.
+
 ```ts
 export class BeefTx {
     _bumpIndex?: number;
     _tx?: Transaction;
     _rawTx?: number[];
     _txid?: string;
-    known: boolean;
     inputTxids: string[] = [];
     degree: number = 0;
     get bumpIndex(): number | undefined 
     set bumpIndex(v: number | undefined) 
+    get hasProof(): boolean 
+    get isTxidOnly(): boolean 
     get txid() 
     get tx() 
     get rawTx() 
     constructor(tx: Transaction | number[] | string, bumpIndex?: number) 
-    updateInputTxids() 
     toWriter(writer: Utils.Writer): void 
     static fromReader(br: Utils.Reader): BeefTx 
 }
@@ -2176,20 +2184,21 @@ export class Beef {
     bumps: MerklePath[] = [];
     txs: BeefTx[] = [];
     constructor() 
+    findTxid(txid: string): BeefTx | undefined 
     mergeBump(bump: MerklePath): number 
-    mergeRawTx(rawTx: number[]): string 
-    mergeTransaction(tx: Transaction) 
+    mergeRawTx(rawTx: number[]): BeefTx 
+    mergeTransaction(tx: Transaction): BeefTx 
     removeExistingTxid(txid: string) 
-    mergeKnownTxid(txid: string) 
+    mergeTxidOnly(txid: string): BeefTx 
+    mergeBeefTx(btx: BeefTx): BeefTx 
     mergeBeef(beef: number[] | Beef) 
-    isValid(allowKnown?: boolean): boolean 
-    async verify(chainTracker: ChainTracker, allowKnown?: boolean): Promise<boolean> 
+    isValid(allowTxidOnly?: boolean): boolean 
+    async verify(chainTracker: ChainTracker, allowTxidOnly?: boolean): Promise<boolean> 
     toBinary(): number[] 
     toHex(): string 
     static fromReader(br: Utils.Reader): Beef 
     static fromBinary(bin: number[]): Beef 
     static fromString(s: string, enc?: "hex" | "utf8" | "base64"): Beef 
-    tryToValidateBumpIndex(newTx: BeefTx): boolean 
     sortTxs(): string[] 
     toLogString(): string 
 }
@@ -2199,24 +2208,39 @@ export class Beef {
 
 <summary>Class Beef Details</summary>
 
+##### Method findTxid
+
+```ts
+findTxid(txid: string): BeefTx | undefined 
+```
+
+Returns
+
+`BeefTx` in `txs` with `txid`.
+
+Argument Details
+
++ **txid**
+  + of `beefTx` to find
+
 ##### Method isValid
 
 Sorts `txs` and checks structural validity of beef.
 
 Validity requirements:
-1. No 'known' txids, unless `allowKnown` is true.
+1. No 'known' txids, unless `allowTxidOnly` is true.
 2. All transactions have bumps or their inputs chain back to bumps (or are known).
 3. Order of transactions satisfies dependencies before dependents.
 4. No transactions with duplicate txids.
 
 ```ts
-isValid(allowKnown?: boolean): boolean 
+isValid(allowTxidOnly?: boolean): boolean 
 ```
 
 Argument Details
 
-+ **allowKnown**
-  + optional. If true, transaction txid is assumed valid
++ **allowTxidOnly**
+  + optional. If true, transaction txid only is assumed valid
 + **chainTracker**
   + optional. If defined, used to verify computed merkle path roots for all bump txids.
 
@@ -2241,7 +2265,7 @@ Checks that a transaction with the same txid hasn't already been merged.
 Replaces existing transaction with same txid.
 
 ```ts
-mergeRawTx(rawTx: number[]): string 
+mergeRawTx(rawTx: number[]): BeefTx 
 ```
 
 Returns
@@ -2257,7 +2281,7 @@ Replaces existing transaction with same txid.
 Attempts to match an existing bump to the new transaction.
 
 ```ts
-mergeTransaction(tx: Transaction) 
+mergeTransaction(tx: Transaction): BeefTx 
 ```
 
 Returns
@@ -2276,23 +2300,15 @@ Returns
 
 array of input txids of unproven transactions that aren't included in txs.
 
-##### Method tryToValidateBumpIndex
-
-Try to validate newTx.bumpIndex by looking for an existing bump
-that proves newTx.txid
+##### Method toLogString
 
 ```ts
-tryToValidateBumpIndex(newTx: BeefTx): boolean 
+toLogString(): string 
 ```
 
 Returns
 
-true if a bump was found, false otherwise
-
-Argument Details
-
-+ **newTx**
-  + A new `BeefTx` that has been added to this.txs
+Summary of `Beef` contents as multi-line string.
 
 ##### Method verify
 
@@ -2301,21 +2317,48 @@ by validating structure of this beef and confirming computed merkle roots
 using `chainTracker`.
 
 Validity requirements:
-1. No 'known' txids, unless `allowKnown` is true.
+1. No 'known' txids, unless `allowTxidOnly` is true.
 2. All transactions have bumps or their inputs chain back to bumps (or are known).
 3. Order of transactions satisfies dependencies before dependents.
 4. No transactions with duplicate txids.
 
 ```ts
-async verify(chainTracker: ChainTracker, allowKnown?: boolean): Promise<boolean> 
+async verify(chainTracker: ChainTracker, allowTxidOnly?: boolean): Promise<boolean> 
 ```
 
 Argument Details
 
 + **chainTracker**
   + Used to verify computed merkle path roots for all bump txids.
-+ **allowKnown**
++ **allowTxidOnly**
   + optional. If true, transaction txid is assumed valid
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Class: BeefParty
+
+```ts
+export class BeefParty extends Beef {
+    knownTo: Record<string, string[]> = {};
+    constructor() 
+}
+```
+
+<details>
+
+<summary>Class BeefParty Details</summary>
+
+##### Property knownTo
+
+keys are party identifiers, each must be unique
+values are arrays of txids for which we have evidence that the party already has the rawTx
+
+```ts
+knownTo: Record<string, string[]> = {}
+```
 
 </details>
 
@@ -2326,23 +2369,26 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [abortAction](#function-abortaction) | [getCertificates](#function-getcertificates) | [resolveOptionalEnvelopeEvidence](#function-resolveoptionalenvelopeevidence) |
-| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getEnvelopeForTransaction](#function-getenvelopefortransaction) | [revealKeyLinkage](#function-revealkeylinkage) |
-| [connectToSubstrate](#function-connecttosubstrate) | [getHeight](#function-getheight) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
-| [convertMerklePathToProof](#function-convertmerklepathtoproof) | [getInfo](#function-getinfo) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
-| [convertProofToMerklePath](#function-convertprooftomerklepath) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [signAction](#function-signaction) |
-| [createAction](#function-createaction) | [getNetwork](#function-getnetwork) | [stampLog](#function-stamplog) |
-| [createCertificate](#function-createcertificate) | [getPreferredCurrency](#function-getpreferredcurrency) | [stampLogFormat](#function-stamplogformat) |
-| [createHmac](#function-createhmac) | [getPublicKey](#function-getpublickey) | [submitDirectTransaction](#function-submitdirecttransaction) |
-| [createSignature](#function-createsignature) | [getRandomID](#function-getrandomid) | [toBEEFfromEnvelope](#function-tobeeffromenvelope) |
-| [decrypt](#function-decrypt) | [getTransactionOutputs](#function-gettransactionoutputs) | [toEnvelopeFromBEEF](#function-toenvelopefrombeef) |
-| [decryptAsArray](#function-decryptasarray) | [getVersion](#function-getversion) | [unbasketOutput](#function-unbasketoutput) |
-| [decryptAsString](#function-decryptasstring) | [isAuthenticated](#function-isauthenticated) | [validateCreateActionOptions](#function-validatecreateactionoptions) |
-| [discoverByAttributes](#function-discoverbyattributes) | [listActions](#function-listactions) | [validateOptionalEnvelopeEvidence](#function-validateoptionalenvelopeevidence) |
-| [discoverByIdentityKey](#function-discoverbyidentitykey) | [makeHttpRequest](#function-makehttprequest) | [verifyHmac](#function-verifyhmac) |
-| [encrypt](#function-encrypt) | [promiseWithTimeout](#function-promisewithtimeout) | [verifySignature](#function-verifysignature) |
-| [encryptAsArray](#function-encryptasarray) | [proveCertificate](#function-provecertificate) | [verifyTruthy](#function-verifytruthy) |
-| [encryptAsString](#function-encryptasstring) | [requestGroupPermission](#function-requestgrouppermission) | [waitForAuthentication](#function-waitforauthentication) |
+| [abortAction](#function-abortaction) | [doubleSha256HashLE](#function-doublesha256hashle) | [requestGroupPermission](#function-requestgrouppermission) |
+| [asArray](#function-asarray) | [encrypt](#function-encrypt) | [resolveOptionalEnvelopeEvidence](#function-resolveoptionalenvelopeevidence) |
+| [asBsvSdkScript](#function-asbsvsdkscript) | [encryptAsArray](#function-encryptasarray) | [revealKeyLinkage](#function-revealkeylinkage) |
+| [asBsvSdkTx](#function-asbsvsdktx) | [encryptAsString](#function-encryptasstring) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
+| [asBuffer](#function-asbuffer) | [getCertificates](#function-getcertificates) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
+| [asString](#function-asstring) | [getEnvelopeForTransaction](#function-getenvelopefortransaction) | [sha256Hash](#function-sha256hash) |
+| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getHeight](#function-getheight) | [signAction](#function-signaction) |
+| [connectToSubstrate](#function-connecttosubstrate) | [getInfo](#function-getinfo) | [stampLog](#function-stamplog) |
+| [convertMerklePathToProof](#function-convertmerklepathtoproof) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [stampLogFormat](#function-stamplogformat) |
+| [convertProofToMerklePath](#function-convertprooftomerklepath) | [getNetwork](#function-getnetwork) | [submitDirectTransaction](#function-submitdirecttransaction) |
+| [createAction](#function-createaction) | [getPreferredCurrency](#function-getpreferredcurrency) | [toBEEFfromEnvelope](#function-tobeeffromenvelope) |
+| [createCertificate](#function-createcertificate) | [getPublicKey](#function-getpublickey) | [toEnvelopeFromBEEF](#function-toenvelopefrombeef) |
+| [createHmac](#function-createhmac) | [getRandomID](#function-getrandomid) | [unbasketOutput](#function-unbasketoutput) |
+| [createSignature](#function-createsignature) | [getTransactionOutputs](#function-gettransactionoutputs) | [validateCreateActionOptions](#function-validatecreateactionoptions) |
+| [decrypt](#function-decrypt) | [getVersion](#function-getversion) | [validateOptionalEnvelopeEvidence](#function-validateoptionalenvelopeevidence) |
+| [decryptAsArray](#function-decryptasarray) | [isAuthenticated](#function-isauthenticated) | [verifyHmac](#function-verifyhmac) |
+| [decryptAsString](#function-decryptasstring) | [listActions](#function-listactions) | [verifySignature](#function-verifysignature) |
+| [discoverByAttributes](#function-discoverbyattributes) | [makeHttpRequest](#function-makehttprequest) | [verifyTruthy](#function-verifytruthy) |
+| [discoverByIdentityKey](#function-discoverbyidentitykey) | [promiseWithTimeout](#function-promisewithtimeout) | [waitForAuthentication](#function-waitforauthentication) |
+| [doubleSha256BE](#function-doublesha256be) | [proveCertificate](#function-provecertificate) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -3560,6 +3606,155 @@ Always returns true
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: asBuffer
+
+```ts
+export function asBuffer(val: Buffer | string | number[], encoding?: BufferEncoding): Buffer 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asString
+
+```ts
+export function asString(val: Buffer | string, encoding?: BufferEncoding): string 
+```
+
+<details>
+
+<summary>Function asString Details</summary>
+
+Argument Details
+
++ **val**
+  + Value to convert to encoded string if not already a string.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asArray
+
+```ts
+export function asArray(val: Buffer | string | number[], encoding?: BufferEncoding): number[] 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: sha256Hash
+
+Calculate the SHA256 hash of a Buffer.
+
+```ts
+export function sha256Hash(buffer: Buffer): Buffer {
+    const msg = asArray(buffer);
+    const first = new Hash.SHA256().update(msg).digest();
+    return asBuffer(first);
+}
+```
+
+<details>
+
+<summary>Function sha256Hash Details</summary>
+
+Returns
+
+sha256 hash of buffer contents.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: doubleSha256HashLE
+
+Calculate the SHA256 hash of the SHA256 hash of a Buffer.
+
+```ts
+export function doubleSha256HashLE(data: string | Buffer, encoding?: BufferEncoding): Buffer {
+    const msg = asArray(data, encoding);
+    const first = new Hash.SHA256().update(msg).digest();
+    const second = new Hash.SHA256().update(first).digest();
+    return asBuffer(second);
+}
+```
+
+<details>
+
+<summary>Function doubleSha256HashLE Details</summary>
+
+Returns
+
+double sha256 hash of buffer contents, byte 0 of hash first.
+
+Argument Details
+
++ **data**
+  + is Buffer or hex encoded string
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: doubleSha256BE
+
+Calculate the SHA256 hash of the SHA256 hash of a Buffer.
+
+```ts
+export function doubleSha256BE(data: string | Buffer, encoding?: BufferEncoding): Buffer {
+    return doubleSha256HashLE(data, encoding).reverse();
+}
+```
+
+<details>
+
+<summary>Function doubleSha256BE Details</summary>
+
+Returns
+
+reversed (big-endian) double sha256 hash of data, byte 31 of hash first.
+
+Argument Details
+
++ **data**
+  + is Buffer or hex encoded string
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: verifyTruthy
+
+```ts
+export function verifyTruthy<T>(v: T | null | undefined, description?: string): T 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asBsvSdkScript
+
+```ts
+export function asBsvSdkScript(script: string | Buffer | Script): Script 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asBsvSdkTx
+
+```ts
+export function asBsvSdkTx(tx: string | Buffer | Transaction): Transaction 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: buildTransactionForSignActionUnlocking
 
 Constructs a
@@ -3701,15 +3896,6 @@ Argument Details
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Function: verifyTruthy
-
-```ts
-export function verifyTruthy<T>(v: T | null | undefined, description?: string): T 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
 #### Function: resolveOptionalEnvelopeEvidence
 
 Convert OptionalEnvelopeEvidenceApi to EnvelopeEvidenceApi.
@@ -3806,7 +3992,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 | |
 | --- |
 | [BEEF_MAGIC](#variable-beef_magic) |
-| [BEEF_MAGIC_KNOWN_TXID_EXTENSION](#variable-beef_magic_known_txid_extension) |
+| [BEEF_MAGIC_TXID_ONLY_EXTENSION](#variable-beef_magic_txid_only_extension) |
 | [BabbageSDK](#variable-babbagesdk) |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
@@ -3822,10 +4008,10 @@ BEEF_MAGIC = 4022206465
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Variable: BEEF_MAGIC_KNOWN_TXID_EXTENSION
+#### Variable: BEEF_MAGIC_TXID_ONLY_EXTENSION
 
 ```ts
-BEEF_MAGIC_KNOWN_TXID_EXTENSION = 4022206465
+BEEF_MAGIC_TXID_ONLY_EXTENSION = 4022206465
 ```
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
