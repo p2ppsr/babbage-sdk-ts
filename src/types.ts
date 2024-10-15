@@ -752,7 +752,7 @@ export interface DojoOutputToRedeemApi {
    spendingDescription?: string
 }
 
-export interface DojoCreatingTxInstructionsApi {
+export interface DojoCreateTxResultInstructionsApi {
    type: string
    derivationPrefix?: string
    derivationSuffix?: string
@@ -763,7 +763,7 @@ export interface DojoCreatingTxInstructionsApi {
 export interface DojoCreatingTxInputsApi extends EnvelopeEvidenceApi {
    outputsToRedeem: DojoOutputToRedeemApi[]
    providedBy: DojoProvidedByApi
-   instructions: Record<number, DojoCreatingTxInstructionsApi>
+   instructions: Record<number, DojoCreateTxResultInstructionsApi>
 }
 
 /**
@@ -798,7 +798,7 @@ export interface DojoCreateTxOutputApi {
    tags?: string[]
 }
 
-export interface DojoCreatingTxOutputApi extends DojoCreateTxOutputApi {
+export interface DojoCreateTxResultOutputApi extends DojoCreateTxOutputApi {
    providedBy: DojoProvidedByApi
    purpose?: string
    destinationBasket?: string
@@ -808,7 +808,7 @@ export interface DojoCreatingTxOutputApi extends DojoCreateTxOutputApi {
 
 export interface DojoCreateTransactionResultApi {
    inputs: Record<string, DojoCreatingTxInputsApi>
-   outputs: DojoCreatingTxOutputApi[]
+   outputs: DojoCreateTxResultOutputApi[]
    derivationPrefix: string
    version: number
    lockTime: number
