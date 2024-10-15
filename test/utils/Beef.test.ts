@@ -9,10 +9,13 @@ describe('Beef tests', () => {
         const log1 = `BEEF with 1 BUMPS and 1 Transactions, isValid true
   BUMP 0
     block: 1631619
-    txids: ['true']
+    txids: [
+      'bd4a39c6dce3bdd982be3c67eb04b83934fd431f8bcb64f9da4413c91c634d07'
+    ]
   TX 0
     txid: bd4a39c6dce3bdd982be3c67eb04b83934fd431f8bcb64f9da4413c91c634d07
     bumpIndex: 0
+    rawTx length=12719
 `
         expect(beef.toLogString()).toBe(log1)
 
@@ -21,13 +24,19 @@ describe('Beef tests', () => {
         const log2 = `BEEF with 1 BUMPS and 2 Transactions, isValid true
   BUMP 0
     block: 1631619
-    txids: ['true']
+    txids: [
+      'bd4a39c6dce3bdd982be3c67eb04b83934fd431f8bcb64f9da4413c91c634d07'
+    ]
   TX 0
     txid: bd4a39c6dce3bdd982be3c67eb04b83934fd431f8bcb64f9da4413c91c634d07
     bumpIndex: 0
+    rawTx length=12719
   TX 1
     txid: e002e4b69ab071c42796c0e92241d5ce7c16749ae8f41427d19007044bcb55f3
-    inputs: ['bd4a39c6dce3bdd982be3c67eb04b83934fd431f8bcb64f9da4413c91c634d07']
+    rawTx length=1455
+    inputs: [
+      'bd4a39c6dce3bdd982be3c67eb04b83934fd431f8bcb64f9da4413c91c634d07'
+    ]
 `
         expect(beef.toLogString()).toBe(log2)
 
