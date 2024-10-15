@@ -1,3 +1,5 @@
+import { Beef } from "./utils/Beef"
+
 /**
  * As defined in https://github.com/bitcoin-sv-specs/brfc-merchantapi/blob/master/README.md
  */
@@ -595,7 +597,7 @@ export interface CreateActionParams {
     */
    description: string,
    /**
-    * If an input is self-provided (known to user's Dojo),
+    * If an input is self-provided (known to user's Dojo), or if beef is used,
     * envelope evidence can be ommitted, reducing data
     * size and processing time.
     * 
@@ -605,6 +607,11 @@ export interface CreateActionParams {
     *   - unlockingScript is max byte length for `signActionRequired` mode, otherwise hex string.
     */
    inputs?: Record<string, CreateActionInput>,
+   /**
+    * Optional. Alternate source of validity proof data for `inputs`.
+    * If `number[]` it must be serialized `Beef`.
+    */
+   beef?: Beef | number[],
    /**
     * each output:
     *   - description length limit is 50, values are encrypted before leaving this device
