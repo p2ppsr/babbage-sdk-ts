@@ -1,6 +1,5 @@
 import { MerklePath, Transaction, Utils, ChainTracker } from "@bsv/sdk";
 import { asString, doubleSha256BE } from "./Helpers";
-import { ERR_INTERNAL } from "cwi-base";
 
 export const BEEF_MAGIC = 4022206465 // 0100BEEF in LE order
 export const BEEF_MAGIC_TXID_ONLY_EXTENSION = 4022206465 // 0100BEEF in LE order
@@ -299,7 +298,7 @@ export class Beef {
             else if (btx._rawTx)
                 beefTx = this.mergeRawTx(btx._rawTx)
             else
-                throw new ERR_INTERNAL('logic error')
+                throw new Error('logic error')
         }
         return beefTx
     }
