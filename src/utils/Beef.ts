@@ -610,9 +610,25 @@ export class BeefTx {
 }
 
 /**
- * When beefs are used to exchange transaction validity data with more than one external party.
+ * Extends `Beef` that is used to exchange transaction validity data with more than one external party.
  * 
- * Keeps track of who knows what to reduce re-transmission of potentially large transactions.
+ * Use `addKnownTxidsForParty` to keep track of who knows what to reduce re-transmission of potentially large transactions.
+ * 
+ * Use `getTrimmedBeefForParty` to obtain a `Beef` trimmed of transaction validity data known to a specific party.
+ * 
+ * Typical usage scenario:
+ * 
+ * 1. Query a wallet storage provider for spendable outputs.
+ * 2. The provider replies with a Beef validating the returned outputs.
+ * 3. Construct a new transaction using some of the queried outputs as inputs, including Beef validating all the inputs.
+ * 4. Receive new valid raw transaction after processing and Beef validating change outputs added to original inputs.
+ * 5. Return to step 1, continuing to build on old and new spendable outputs.
+ * 
+ * By default, each Beef is required to be complete and valid: All transactions appear as full serialized bitcoin transactions and
+ * each transaction either has a merkle path proof (it has been mined) or all of its input transactions are included.
+ * 
+ * The size and redundancy of these Beefs becomes a problem when chained transaction creation out-paces the block mining rate.
+ * 
  */
 export class BeefParty extends Beef {
     /**
