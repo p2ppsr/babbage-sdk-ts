@@ -121,10 +121,11 @@ export class Beef {
      * Replaces existing transaction with same txid.
      * 
      * @param rawTx 
+     * @param bumpIndex Optional. If a number, must be valid index into bumps array.
      * @returns txid of rawTx
      */
-    mergeRawTx(rawTx: number[]) : BeefTx {
-        const newTx: BeefTx = new BeefTx(rawTx)
+    mergeRawTx(rawTx: number[], bumpIndex?: number) : BeefTx {
+        const newTx: BeefTx = new BeefTx(rawTx, bumpIndex)
         this.removeExistingTxid(newTx.txid)
         this.txs.push(newTx)
         this.tryToValidateBumpIndex(newTx)
@@ -452,10 +453,12 @@ export class Beef {
      * @param knownTxids 
      */
     trimKnownTxids(knownTxids: string[]) {
-        for (let i = 0; i < this.txs.length; i++) {
+        for (let i = 0; i < this.txs.length; ) {
             const tx = this.txs[i]
-            if (!tx.isTxidOnly && -1 < knownTxids.indexOf(tx.txid)) {
-                this.txs[i] = new BeefTx(tx.txid)
+            if (tx.isTxidOnly && -1 < knownTxids.indexOf(tx.txid)) {
+                this.txs.splice(i, 1)
+            } else {
+                i++
             }
         }
         // TODO: bumps could be trimmed to eliminate unreferenced proofs.
@@ -672,7 +675,7 @@ export class BeefParty extends Beef {
      * @param party 
      * @returns Array of txids "known" to `party`.
      */
-    getPartyKnownTxids(party: string) : string[] {
+    getKnownTxidsForParty(party: string) : string[] {
         const knownTxids = this.knownTo[party]
         if (!knownTxids)
             throw new Error(`Party ${party} is unknown.`)
@@ -684,7 +687,7 @@ export class BeefParty extends Beef {
      * @returns trimmed beef of unknown transactions and proofs for `party`
      */
     getTrimmedBeefForParty(party: string) : Beef {
-        const knownTxids = this.getPartyKnownTxids(party)
+        const knownTxids = this.getKnownTxidsForParty(party)
         const prunedBeef = this.clone()
         prunedBeef.trimKnownTxids(knownTxids)
         return prunedBeef
@@ -699,7 +702,9 @@ export class BeefParty extends Beef {
         if (!this.isParty(party))
             this.addParty(party)
         const kts = this.knownTo[party]
-        for (const txid of knownTxids)
+        for (const txid of knownTxids) {
             kts[txid] = true
+            this.mergeTxidOnly(txid)
+        }
     }
 }
