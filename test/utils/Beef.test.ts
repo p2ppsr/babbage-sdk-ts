@@ -1,9 +1,18 @@
-import { Transaction } from "@bsv/sdk"
+import { Transaction, ChainTracker } from "@bsv/sdk"
 import { Beef } from "../../src"
 import { BEEF_MAGIC, BeefParty, BeefTx } from "../../src/utils/Beef"
 
 describe('Beef tests', () => {
     jest.setTimeout(99999999)
+
+    const chainTracker: ChainTracker = {
+      isValidRootForHeight: async (root: string, height: number) => {
+        switch (height) {
+          case 1631619: return root === "b3975a6b69b5ce7fa200649d879f79a11f4d95c054cfe024570be7d60306ecf6"
+          default: throw new Error(`unknown height ${height}`)
+        }
+      }
+    }
 
     test('0_mergeTransaction', async () => {
         const beef = Beef.fromString(beefs[0])
@@ -24,16 +33,16 @@ describe('Beef tests', () => {
         beef.mergeTransaction(tx)
         expect(beef.toLogString()).toBe(log2)
 
-        /* WIP
         {
           const beef = Beef.fromString(beefs[0])
           beef.mergeTransaction(Transaction.fromHex(txs[0]))
           beef.bumps[0].path[0][1].hash = '36ebdb404ec59871c8e2b00e41d8090d28a0d8a190d44606e895dd0d013bca00'
           expect(beef.isValid()).toBe(true)
+          expect(await beef.verify(chainTracker)).toBe(true)
           beef.bumps[0].path[0][1].hash = '46ebdb404ec59871c8e2b00e41d8090d28a0d8a190d44606e895dd0d013bca00'
-          expect(beef.isValid()).toBe(false)
+          expect(beef.isValid()).toBe(true)
+          expect(await beef.verify(chainTracker)).toBe(false)
         }
-          */
 
         {
           const btx = new BeefTx(tx.toBinary())
@@ -79,7 +88,99 @@ describe('Beef tests', () => {
           const version = 4290641921
           expect(() => Beef.fromString(beefs[1])).toThrow(`Serialized BEEF must start with ${BEEF_MAGIC} but starts with ${version}`)
         }
+    })
 
+    test('4_all merkleRoots equal', async () => {
+        {
+          const beef = Beef.fromString(beefs[0])
+          expect(beef.isValid()).toBe(true)
+          const mp = beef.bumps[0]
+          mp.path[0].push({ offset: 2, hash: 'd0ae03111611f04a4c6e45a0a93f62f69c5594b64b369c0262289695feb2f991', txid: true, duplicate: false })
+          mp.path[0].push({ offset: 3, hash: undefined, txid: false, duplicate: true })
+          expect(beef.isValid()).toBe(true)
+          mp.path[0][2].hash = 'ffae03111611f04a4c6e45a0a93f62f69c5594b64b369c0262289695feb2f991'
+          expect(beef.isValid()).toBe(false)
+        }
+    })
+
+    test('4_allowTxidOnly', async () => {
+        {
+          const beef = Beef.fromString(beefs[0])
+          expect(beef.isValid()).toBe(true)
+          beef.mergeTxidOnly('d0ae03111611f04a4c6e45a0a93f62f69c5594b64b369c0262289695feb2f991')
+          expect(beef.isValid()).toBe(false)
+          expect(beef.isValid(true)).toBe(true)
+        }
+    })
+
+    test('4_removeExistingTxid', async () => {
+        {
+          const beef = Beef.fromString(beefs[0])
+          expect(beef.isValid()).toBe(true)
+          expect(beef.txs.length).toBe(1)
+          beef.removeExistingTxid('bd4a39c6dce3bdd982be3c67eb04b83934fd431f8bcb64f9da4413c91c634d07')
+          expect(beef.isValid()).toBe(true)
+          expect(beef.txs.length).toBe(0)
+        }
+    })
+
+    test('4_mergeTransaction with parent txs', async () => {
+        {
+          const beef = Beef.fromString(beefs[0])
+          const tx1 = beef.txs[0].tx
+          const tx2 = Transaction.fromHex(txs[0])
+          const input = tx2.inputs.find(i => i.sourceTXID === tx1!.id('hex'))
+          input!.sourceTransaction = tx1
+          const beefB = new Beef()
+          beefB.mergeTransaction(tx2)
+          expect(beefB.isValid()).toBe(false)
+          expect(beefB.txs.length).toBe(2)
+          beefB.mergeBump(beef.bumps[0])
+          beefB.mergeBump(beef.bumps[0])
+          expect(beefB.isValid()).toBe(true)
+        }
+        {
+          const beef = Beef.fromString(beefs[0])
+          const tx1 = beef.txs[0].tx!
+          tx1.merklePath = beef.bumps[0]
+          const tx2 = Transaction.fromHex(txs[0])
+          const input = tx2.inputs.find(i => i.sourceTXID === tx1!.id('hex'))
+          input!.sourceTransaction = tx1
+          const beefB = new Beef()
+          beefB.mergeTransaction(tx2)
+          expect(beefB.isValid()).toBe(true)
+          expect(beefB.txs.length).toBe(2)
+        }
+    })
+
+    test('4_mergeBeef', async () => {
+        {
+          const beef = Beef.fromString(beefs[0])
+          const beefB = Beef.fromString(beefs[0])
+          beef.mergeBeef(beefB)
+          expect(beef.isValid()).toBe(true)
+        }
+        {
+          const beef = Beef.fromString(beefs[0])
+          const beefB = new Beef()
+          beefB.mergeRawTx(Transaction.fromHex(txs[0]).toBinary(), 0)
+          beef.mergeBeef(beefB)
+          expect(beef.isValid()).toBe(true)
+        }
+        {
+          const beef = Beef.fromString(beefs[0])
+          const beefB = new Beef()
+          beefB.mergeTransaction(Transaction.fromHex(txs[0]))
+          beef.mergeBeef(beefB)
+          expect(beef.isValid()).toBe(true)
+        }
+        {
+          const beef = Beef.fromString(beefs[0])
+          const beefB = new Beef()
+          beefB.mergeTxidOnly('d0ae03111611f04a4c6e45a0a93f62f69c5594b64b369c0262289695feb2f991')
+          beef.mergeBeef(beefB)
+          expect(beef.isValid(true)).toBe(true)
+        }
     })
 
     test('4_BeefParty', async () => {

@@ -64,7 +64,6 @@ export class Beef {
      * @returns index of merged bump
      */
     mergeBump(bump: MerklePath) : number {
-        let added = false
         let bumpIndex: number | undefined = undefined
         // If this proof is identical to another one previously added, we use that first. Otherwise, we try to merge it with proofs from the same block.
         for (let i = 0; i < this.bumps.length; i++) {
@@ -80,20 +79,16 @@ export class Beef {
               // Definitely the same... combine them to save space
               b.combine(bump)
               bumpIndex = i
-              added = true
               break
             }
           }
         }
 
         // if the proof is not yet added, add a new path.
-        if (!added) {
+        if (bumpIndex === undefined) {
           bumpIndex = this.bumps.length
           this.bumps.push(bump)
         }
-
-        if (bumpIndex === undefined) 
-            throw new Error('bumpIndex is undefined')
 
         // review if any transactions are proven by this bump
         const b = this.bumps[bumpIndex]
@@ -184,10 +179,8 @@ export class Beef {
         else if (!beefTx || beefTx.isTxidOnly) {
             if (btx._tx)
                 beefTx = this.mergeTransaction(btx._tx)
-            else if (btx._rawTx)
-                beefTx = this.mergeRawTx(btx._rawTx)
             else
-                throw new Error('logic error')
+                beefTx = this.mergeRawTx(btx._rawTx!)
         }
         return beefTx
     }
@@ -203,6 +196,8 @@ export class Beef {
 
     /**
      * Sorts `txs` and checks structural validity of beef.
+     * 
+     * Does NOT verify merkle roots.
      *
      * Validity requirements:
      * 1. No 'known' txids, unless `allowTxidOnly` is true.
@@ -211,7 +206,6 @@ export class Beef {
      * 4. No transactions with duplicate txids.
      * 
      * @param allowTxidOnly optional. If true, transaction txid only is assumed valid
-     * @param chainTracker optional. If defined, used to verify computed merkle path roots for all bump txids.
      */
     isValid(allowTxidOnly?: boolean) : boolean {
         return this.verifyValid(allowTxidOnly).valid
@@ -244,7 +238,7 @@ export class Beef {
         return true
     }
 
-    private verifyValid(allowTxidOnly?: boolean, chainTracker?: ChainTracker)
+    private verifyValid(allowTxidOnly?: boolean)
     : { valid: boolean, roots: Record<number, string> } {
 
         const r: { valid: boolean, roots: Record<number, string> } = { valid: false, roots: {} }
