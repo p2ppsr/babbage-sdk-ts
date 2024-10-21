@@ -100,6 +100,7 @@ describe('Beef tests', () => {
           expect(beef.isValid()).toBe(true)
           mp.path[0][2].hash = 'ffae03111611f04a4c6e45a0a93f62f69c5594b64b369c0262289695feb2f991'
           expect(beef.isValid()).toBe(false)
+          expect(await beef.verify(chainTracker)).toBe(false)
         }
     })
 
@@ -158,6 +159,12 @@ describe('Beef tests', () => {
           const beef = Beef.fromString(beefs[0])
           const beefB = Beef.fromString(beefs[0])
           beef.mergeBeef(beefB)
+          expect(beef.isValid()).toBe(true)
+        }
+        {
+          const beef = Beef.fromString(beefs[0])
+          const beefB = Beef.fromString(beefs[0])
+          beef.mergeBeef(beefB.toBinary())
           expect(beef.isValid()).toBe(true)
         }
         {

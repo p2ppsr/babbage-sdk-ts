@@ -479,7 +479,7 @@ export class Beef {
             if (t.isTxidOnly) {
                 log += `    txidOnly\n`
             } else {
-                log += `    rawTx length=${t.rawTx?.length}\n`
+                log += `    rawTx length=${t.rawTx!.length}\n`
             }
             if (t.inputTxids.length > 0) {
                 log += `    inputs: [\n${t.inputTxids.map(it => `      '${it}'`).join(',\n')}\n    ]\n`
