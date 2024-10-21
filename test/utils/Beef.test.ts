@@ -1,6 +1,6 @@
 import { Transaction, ChainTracker } from "@bsv/sdk"
 import { Beef } from "../../src"
-import { BEEF_MAGIC, BeefParty, BeefTx } from "../../src/utils/Beef"
+import { BEEF_MAGIC, BEEF_MAGIC_V2, BeefParty, BeefTx } from "../../src/utils/Beef"
 
 describe('Beef tests', () => {
     jest.setTimeout(99999999)
@@ -86,7 +86,8 @@ describe('Beef tests', () => {
 
         {
           const version = 4290641921
-          expect(() => Beef.fromString(beefs[1])).toThrow(`Serialized BEEF must start with ${BEEF_MAGIC} but starts with ${version}`)
+          expect(() => Beef.fromString(beefs[1]))
+          .toThrow(`Serialized BEEF must start with ${BEEF_MAGIC} or ${BEEF_MAGIC_V2} but starts with ${version}`)
         }
     })
 

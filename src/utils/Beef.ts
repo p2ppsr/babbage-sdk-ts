@@ -1,7 +1,8 @@
 import { MerklePath, Transaction, Utils, ChainTracker } from "@bsv/sdk";
 import { asString, doubleSha256BE } from "./Helpers";
 
-export const BEEF_MAGIC = 4022206465 // 0100BEEF in LE order
+export const BEEF_MAGIC = 4022206465    // 0100BEEF in LE order
+export const BEEF_MAGIC_V2 = 4022206466 // 0200BEEF in LE order
 export const BEEF_MAGIC_TXID_ONLY_EXTENSION = 4022206465 // 0100BEEF in LE order
 
 /*
@@ -48,6 +49,19 @@ export class Beef {
     txs: BeefTx[] = []
 
     constructor () {
+    }
+
+    /**
+     * BEEF_MAGIC is the original V1 version.
+     * BEEF_MAGIC_V2 includes support for txidOnly transactions in serialized beefs.
+     * @returns version based on current contents.
+     */
+    get version() : number {
+        const hasTxidOnly = !this.txs.every(tx => !tx.isTxidOnly)
+        if (hasTxidOnly)
+            return BEEF_MAGIC_V2
+        else
+            return BEEF_MAGIC
     }
 
     /**
@@ -291,7 +305,7 @@ export class Beef {
     toBinary() : number[] {
 
         const writer = new Utils.Writer()
-        writer.writeUInt32LE(BEEF_MAGIC)
+        writer.writeUInt32LE(this.version)
 
         writer.writeVarIntNum(this.bumps.length)
         for (const b of this.bumps) {
@@ -312,8 +326,8 @@ export class Beef {
 
     static fromReader (br: Utils.Reader): Beef {
         const version = br.readUInt32LE()
-        if (version !== BEEF_MAGIC)
-            throw new Error(`Serialized BEEF must start with ${BEEF_MAGIC} but starts with ${version}`)
+        if (version !== BEEF_MAGIC && version !== BEEF_MAGIC_V2)
+            throw new Error(`Serialized BEEF must start with ${BEEF_MAGIC} or ${BEEF_MAGIC_V2} but starts with ${version}`)
         const beef = new Beef()
         const bumpsLength = br.readVarIntNum()
         for (let i = 0; i < bumpsLength; i++) {
