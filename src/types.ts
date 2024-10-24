@@ -1,4 +1,4 @@
-import { Beef } from "./utils/Beef"
+import { Beef } from "@bsv/sdk"
 
 /**
  * As defined in https://github.com/bitcoin-sv-specs/brfc-merchantapi/blob/master/README.md

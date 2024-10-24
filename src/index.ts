@@ -60,8 +60,8 @@ import { waitForAuthentication } from './waitForAuthentication'
 export { waitForAuthentication }
 import { stampLog, stampLogFormat } from './utils/stampLog'
 export { stampLog, stampLogFormat }
-import { Beef, BeefTx } from './utils/Beef'
-export { Beef, BeefTx }
+import { Beef, BeefTx, BeefParty } from '@bsv/sdk'
+export { Beef, BeefTx, BeefParty }
 import { buildTransactionForSignActionUnlocking } from './utils/buildTransactionForSignActionUnlocking'
 export { buildTransactionForSignActionUnlocking }
 import { toBEEFfromEnvelope, convertMerklePathToProof, convertProofToMerklePath, validateOptionalEnvelopeEvidence, resolveOptionalEnvelopeEvidence } from './utils/toBEEF'

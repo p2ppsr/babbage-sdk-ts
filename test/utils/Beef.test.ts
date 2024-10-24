@@ -1,6 +1,6 @@
-import { Transaction, ChainTracker } from "@bsv/sdk"
-import { Beef } from "../../src"
-import { BEEF_MAGIC, BEEF_MAGIC_V2, BeefParty, BeefTx } from "../../src/utils/Beef"
+import { Transaction, ChainTracker, Beef, BeefParty, BeefTx } from "@bsv/sdk"
+export const BEEF_MAGIC = 4022206465    // 0100BEEF in LE order
+export const BEEF_MAGIC_V2 = 4022206466 // 0200BEEF in LE order
 
 describe('Beef tests', () => {
     jest.setTimeout(99999999)
