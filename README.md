@@ -2121,238 +2121,6 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ---
 ### Classes
 
-| |
-| --- |
-| [Beef](#class-beef) |
-| [BeefParty](#class-beefparty) |
-| [BeefTx](#class-beeftx) |
-| [Communicator](#class-communicator) |
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-
-#### Class: BeefTx
-
-A single bitcoin transaction associated with a `Beef` validity proof set.
-
-Simple case is transaction data included directly, either as raw bytes or fully parsed data, or both.
-
-Also supports 'known' transactions which are represented by just their txid.
-It can be assumed that an external party already has validity proof for this transaction.
-
-```ts
-export class BeefTx {
-    _bumpIndex?: number;
-    _tx?: Transaction;
-    _rawTx?: number[];
-    _txid?: string;
-    inputTxids: string[] = [];
-    degree: number = 0;
-    get bumpIndex(): number | undefined 
-    set bumpIndex(v: number | undefined) 
-    get hasProof(): boolean 
-    get isTxidOnly(): boolean 
-    get txid() 
-    get tx() 
-    get rawTx() 
-    constructor(tx: Transaction | number[] | string, bumpIndex?: number) 
-    toWriter(writer: Utils.Writer): void 
-    static fromReader(br: Utils.Reader): BeefTx 
-}
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Class: Beef
-
-```ts
-export class Beef {
-    bumps: MerklePath[] = [];
-    txs: BeefTx[] = [];
-    constructor() 
-    findTxid(txid: string): BeefTx | undefined 
-    mergeBump(bump: MerklePath): number 
-    mergeRawTx(rawTx: number[]): BeefTx 
-    mergeTransaction(tx: Transaction): BeefTx 
-    removeExistingTxid(txid: string) 
-    mergeTxidOnly(txid: string): BeefTx 
-    mergeBeefTx(btx: BeefTx): BeefTx 
-    mergeBeef(beef: number[] | Beef) 
-    isValid(allowTxidOnly?: boolean): boolean 
-    async verify(chainTracker: ChainTracker, allowTxidOnly?: boolean): Promise<boolean> 
-    toBinary(): number[] 
-    toHex(): string 
-    static fromReader(br: Utils.Reader): Beef 
-    static fromBinary(bin: number[]): Beef 
-    static fromString(s: string, enc?: "hex" | "utf8" | "base64"): Beef 
-    sortTxs(): string[] 
-    toLogString(): string 
-}
-```
-
-<details>
-
-<summary>Class Beef Details</summary>
-
-##### Method findTxid
-
-```ts
-findTxid(txid: string): BeefTx | undefined 
-```
-
-Returns
-
-`BeefTx` in `txs` with `txid`.
-
-Argument Details
-
-+ **txid**
-  + of `beefTx` to find
-
-##### Method isValid
-
-Sorts `txs` and checks structural validity of beef.
-
-Validity requirements:
-1. No 'known' txids, unless `allowTxidOnly` is true.
-2. All transactions have bumps or their inputs chain back to bumps (or are known).
-3. Order of transactions satisfies dependencies before dependents.
-4. No transactions with duplicate txids.
-
-```ts
-isValid(allowTxidOnly?: boolean): boolean 
-```
-
-Argument Details
-
-+ **allowTxidOnly**
-  + optional. If true, transaction txid only is assumed valid
-+ **chainTracker**
-  + optional. If defined, used to verify computed merkle path roots for all bump txids.
-
-##### Method mergeBump
-
-Merge a MerklePath that is assumed to be fully valid.
-
-```ts
-mergeBump(bump: MerklePath): number 
-```
-
-Returns
-
-index of merged bump
-
-##### Method mergeRawTx
-
-Merge a serialized transaction.
-
-Checks that a transaction with the same txid hasn't already been merged.
-
-Replaces existing transaction with same txid.
-
-```ts
-mergeRawTx(rawTx: number[]): BeefTx 
-```
-
-Returns
-
-txid of rawTx
-
-##### Method mergeTransaction
-
-Merge a `Transaction` and any referenced `merklePath` and `sourceTransaction`, recursifely.
-
-Replaces existing transaction with same txid.
-
-Attempts to match an existing bump to the new transaction.
-
-```ts
-mergeTransaction(tx: Transaction): BeefTx 
-```
-
-Returns
-
-txid of tx
-
-##### Method sortTxs
-
-Sort the `txs` by input txid dependency order.
-
-```ts
-sortTxs(): string[] 
-```
-
-Returns
-
-array of input txids of unproven transactions that aren't included in txs.
-
-##### Method toLogString
-
-```ts
-toLogString(): string 
-```
-
-Returns
-
-Summary of `Beef` contents as multi-line string.
-
-##### Method verify
-
-Sorts `txs` and confirms validity of transaction data contained in beef
-by validating structure of this beef and confirming computed merkle roots
-using `chainTracker`.
-
-Validity requirements:
-1. No 'known' txids, unless `allowTxidOnly` is true.
-2. All transactions have bumps or their inputs chain back to bumps (or are known).
-3. Order of transactions satisfies dependencies before dependents.
-4. No transactions with duplicate txids.
-
-```ts
-async verify(chainTracker: ChainTracker, allowTxidOnly?: boolean): Promise<boolean> 
-```
-
-Argument Details
-
-+ **chainTracker**
-  + Used to verify computed merkle path roots for all bump txids.
-+ **allowTxidOnly**
-  + optional. If true, transaction txid is assumed valid
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Class: BeefParty
-
-```ts
-export class BeefParty extends Beef {
-    knownTo: Record<string, string[]> = {};
-    constructor() 
-}
-```
-
-<details>
-
-<summary>Class BeefParty Details</summary>
-
-##### Property knownTo
-
-keys are party identifiers, each must be unique
-values are arrays of txids for which we have evidence that the party already has the rawTx
-
-```ts
-knownTo: Record<string, string[]> = {}
-```
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
 #### Class: Communicator
 
 ```ts
@@ -2404,155 +2172,6 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 ---
 
-#### Function: asBuffer
-
-```ts
-export function asBuffer(val: Buffer | string | number[], encoding?: BufferEncoding): Buffer 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: asString
-
-```ts
-export function asString(val: Buffer | string, encoding?: BufferEncoding): string 
-```
-
-<details>
-
-<summary>Function asString Details</summary>
-
-Argument Details
-
-+ **val**
-  + Value to convert to encoded string if not already a string.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: asArray
-
-```ts
-export function asArray(val: Buffer | string | number[], encoding?: BufferEncoding): number[] 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: sha256Hash
-
-Calculate the SHA256 hash of a Buffer.
-
-```ts
-export function sha256Hash(buffer: Buffer): Buffer {
-    const msg = asArray(buffer);
-    const first = new Hash.SHA256().update(msg).digest();
-    return asBuffer(first);
-}
-```
-
-<details>
-
-<summary>Function sha256Hash Details</summary>
-
-Returns
-
-sha256 hash of buffer contents.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: doubleSha256HashLE
-
-Calculate the SHA256 hash of the SHA256 hash of a Buffer.
-
-```ts
-export function doubleSha256HashLE(data: string | Buffer, encoding?: BufferEncoding): Buffer {
-    const msg = asArray(data, encoding);
-    const first = new Hash.SHA256().update(msg).digest();
-    const second = new Hash.SHA256().update(first).digest();
-    return asBuffer(second);
-}
-```
-
-<details>
-
-<summary>Function doubleSha256HashLE Details</summary>
-
-Returns
-
-double sha256 hash of buffer contents, byte 0 of hash first.
-
-Argument Details
-
-+ **data**
-  + is Buffer or hex encoded string
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: doubleSha256BE
-
-Calculate the SHA256 hash of the SHA256 hash of a Buffer.
-
-```ts
-export function doubleSha256BE(data: string | Buffer, encoding?: BufferEncoding): Buffer {
-    return doubleSha256HashLE(data, encoding).reverse();
-}
-```
-
-<details>
-
-<summary>Function doubleSha256BE Details</summary>
-
-Returns
-
-reversed (big-endian) double sha256 hash of data, byte 31 of hash first.
-
-Argument Details
-
-+ **data**
-  + is Buffer or hex encoded string
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: verifyTruthy
-
-```ts
-export function verifyTruthy<T>(v: T | null | undefined, description?: string): T 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: asBsvSdkScript
-
-```ts
-export function asBsvSdkScript(script: string | Buffer | Script): Script 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: asBsvSdkTx
-
-```ts
-export function asBsvSdkTx(tx: string | Buffer | Transaction): Transaction 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
 #### Function: makeHttpRequest
 
 ```ts
@@ -3765,6 +3384,155 @@ Always returns true
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: asBuffer
+
+```ts
+export function asBuffer(val: Buffer | string | number[], encoding?: BufferEncoding): Buffer 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asString
+
+```ts
+export function asString(val: Buffer | string, encoding?: BufferEncoding): string 
+```
+
+<details>
+
+<summary>Function asString Details</summary>
+
+Argument Details
+
++ **val**
+  + Value to convert to encoded string if not already a string.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asArray
+
+```ts
+export function asArray(val: Buffer | string | number[], encoding?: BufferEncoding): number[] 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: sha256Hash
+
+Calculate the SHA256 hash of a Buffer.
+
+```ts
+export function sha256Hash(buffer: Buffer): Buffer {
+    const msg = asArray(buffer);
+    const first = new Hash.SHA256().update(msg).digest();
+    return asBuffer(first);
+}
+```
+
+<details>
+
+<summary>Function sha256Hash Details</summary>
+
+Returns
+
+sha256 hash of buffer contents.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: doubleSha256HashLE
+
+Calculate the SHA256 hash of the SHA256 hash of a Buffer.
+
+```ts
+export function doubleSha256HashLE(data: string | Buffer, encoding?: BufferEncoding): Buffer {
+    const msg = asArray(data, encoding);
+    const first = new Hash.SHA256().update(msg).digest();
+    const second = new Hash.SHA256().update(first).digest();
+    return asBuffer(second);
+}
+```
+
+<details>
+
+<summary>Function doubleSha256HashLE Details</summary>
+
+Returns
+
+double sha256 hash of buffer contents, byte 0 of hash first.
+
+Argument Details
+
++ **data**
+  + is Buffer or hex encoded string
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: doubleSha256BE
+
+Calculate the SHA256 hash of the SHA256 hash of a Buffer.
+
+```ts
+export function doubleSha256BE(data: string | Buffer, encoding?: BufferEncoding): Buffer {
+    return doubleSha256HashLE(data, encoding).reverse();
+}
+```
+
+<details>
+
+<summary>Function doubleSha256BE Details</summary>
+
+Returns
+
+reversed (big-endian) double sha256 hash of data, byte 31 of hash first.
+
+Argument Details
+
++ **data**
+  + is Buffer or hex encoded string
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: verifyTruthy
+
+```ts
+export function verifyTruthy<T>(v: T | null | undefined, description?: string): T 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asBsvSdkScript
+
+```ts
+export function asBsvSdkScript(script: string | Buffer | Script): Script 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asBsvSdkTx
+
+```ts
+export function asBsvSdkTx(tx: string | Buffer | Transaction): Transaction 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: buildTransactionForSignActionUnlocking
 
 Constructs a
@@ -3999,34 +3767,6 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ---
 ### Variables
 
-| |
-| --- |
-| [BEEF_MAGIC](#variable-beef_magic) |
-| [BEEF_MAGIC_TXID_ONLY_EXTENSION](#variable-beef_magic_txid_only_extension) |
-| [BabbageSDK](#variable-babbagesdk) |
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-
-#### Variable: BEEF_MAGIC
-
-```ts
-BEEF_MAGIC = 4022206465
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Variable: BEEF_MAGIC_TXID_ONLY_EXTENSION
-
-```ts
-BEEF_MAGIC_TXID_ONLY_EXTENSION = 4022206465
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
 #### Variable: BabbageSDK
 
 ```ts
