@@ -2147,16 +2147,17 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [abortAction](#function-abortaction) | [doubleSha256HashLE](#function-doublesha256hashle) | [requestGroupPermission](#function-requestgrouppermission) |
-| [asArray](#function-asarray) | [encrypt](#function-encrypt) | [resolveOptionalEnvelopeEvidence](#function-resolveoptionalenvelopeevidence) |
-| [asBsvSdkScript](#function-asbsvsdkscript) | [encryptAsArray](#function-encryptasarray) | [revealKeyLinkage](#function-revealkeylinkage) |
-| [asBsvSdkTx](#function-asbsvsdktx) | [encryptAsString](#function-encryptasstring) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
-| [asBuffer](#function-asbuffer) | [getCertificates](#function-getcertificates) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
-| [asString](#function-asstring) | [getEnvelopeForTransaction](#function-getenvelopefortransaction) | [sha256Hash](#function-sha256hash) |
-| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getHeight](#function-getheight) | [signAction](#function-signaction) |
-| [connectToSubstrate](#function-connecttosubstrate) | [getInfo](#function-getinfo) | [stampLog](#function-stamplog) |
-| [convertMerklePathToProof](#function-convertmerklepathtoproof) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [stampLogFormat](#function-stamplogformat) |
-| [convertProofToMerklePath](#function-convertprooftomerklepath) | [getNetwork](#function-getnetwork) | [submitDirectTransaction](#function-submitdirecttransaction) |
+| [abortAction](#function-abortaction) | [doubleSha256BE](#function-doublesha256be) | [proveCertificate](#function-provecertificate) |
+| [asArray](#function-asarray) | [doubleSha256HashLE](#function-doublesha256hashle) | [requestGroupPermission](#function-requestgrouppermission) |
+| [asBsvSdkScript](#function-asbsvsdkscript) | [encrypt](#function-encrypt) | [resolveOptionalEnvelopeEvidence](#function-resolveoptionalenvelopeevidence) |
+| [asBsvSdkTx](#function-asbsvsdktx) | [encryptAsArray](#function-encryptasarray) | [revealKeyLinkage](#function-revealkeylinkage) |
+| [asBuffer](#function-asbuffer) | [encryptAsString](#function-encryptasstring) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) |
+| [asString](#function-asstring) | [getCertificates](#function-getcertificates) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) |
+| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getEnvelopeForTransaction](#function-getenvelopefortransaction) | [sha256Hash](#function-sha256hash) |
+| [connectToSubstrate](#function-connecttosubstrate) | [getHeight](#function-getheight) | [signAction](#function-signaction) |
+| [convertMerklePathToProof](#function-convertmerklepathtoproof) | [getInfo](#function-getinfo) | [stampLog](#function-stamplog) |
+| [convertProofToMerklePath](#function-convertprooftomerklepath) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [stampLogFormat](#function-stamplogformat) |
+| [convertProofToMerklePathWithLookup](#function-convertprooftomerklepathwithlookup) | [getNetwork](#function-getnetwork) | [submitDirectTransaction](#function-submitdirecttransaction) |
 | [createAction](#function-createaction) | [getPreferredCurrency](#function-getpreferredcurrency) | [toBEEFfromEnvelope](#function-tobeeffromenvelope) |
 | [createCertificate](#function-createcertificate) | [getPublicKey](#function-getpublickey) | [toEnvelopeFromBEEF](#function-toenvelopefrombeef) |
 | [createHmac](#function-createhmac) | [getRandomID](#function-getrandomid) | [unbasketOutput](#function-unbasketoutput) |
@@ -2166,7 +2167,6 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 | [decryptAsString](#function-decryptasstring) | [listActions](#function-listactions) | [verifySignature](#function-verifysignature) |
 | [discoverByAttributes](#function-discoverbyattributes) | [makeHttpRequest](#function-makehttprequest) | [verifyTruthy](#function-verifytruthy) |
 | [discoverByIdentityKey](#function-discoverbyidentitykey) | [promiseWithTimeout](#function-promisewithtimeout) | [waitForAuthentication](#function-waitforauthentication) |
-| [doubleSha256BE](#function-doublesha256be) | [proveCertificate](#function-provecertificate) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -3642,6 +3642,15 @@ Argument Details
   + MerklePath
 
 </details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: convertProofToMerklePathWithLookup
+
+```ts
+export async function convertProofToMerklePathWithLookup(txid: string, proof: TscMerkleProofApi, lookupHeight: (targetType: "hash" | "header" | "merkleRoot" | "height", target: string | Buffer) => Promise<number>): Promise<MerklePath> 
+```
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
