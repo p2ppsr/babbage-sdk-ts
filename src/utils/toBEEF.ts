@@ -160,6 +160,22 @@ export function convertMerklePathToProof(txid: string, mp: MerklePath) : TscMerk
     return r
 }
 
+export async function convertProofToMerklePathWithLookup(
+    txid: string,
+    proof: TscMerkleProofApi,
+    lookupHeight: (targetType: 'hash' | 'header' | 'merkleRoot' | 'height', target: string | Buffer) => Promise<number>
+): Promise<MerklePath> {
+    if (proof.height === undefined) {
+        if (proof.targetType === 'height')
+            proof.height = Number(proof.target)
+        else if (proof.targetType && proof.target)
+            proof.height = await lookupHeight(proof.targetType, proof.target)
+        else
+            throw new Error('Merkle proofs must include height or targetType and target.')
+    }
+    return convertProofToMerklePath(txid, proof)
+}
+
 /**
  * Convert a single BRC-10 proof to a MerklePath
  * @param txid transaction hash as big endian hex string
