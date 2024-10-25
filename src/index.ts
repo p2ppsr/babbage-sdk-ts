@@ -64,8 +64,8 @@ import { Beef, BeefTx, BeefParty } from '@bsv/sdk'
 export { Beef, BeefTx, BeefParty }
 import { buildTransactionForSignActionUnlocking } from './utils/buildTransactionForSignActionUnlocking'
 export { buildTransactionForSignActionUnlocking }
-import { toBEEFfromEnvelope, convertMerklePathToProof, convertProofToMerklePath, validateOptionalEnvelopeEvidence, resolveOptionalEnvelopeEvidence } from './utils/toBEEF'
-export { toBEEFfromEnvelope, convertMerklePathToProof, convertProofToMerklePath, validateOptionalEnvelopeEvidence, resolveOptionalEnvelopeEvidence }
+import { toBEEFfromEnvelope, convertMerklePathToProof, convertProofToMerklePath, convertProofToMerklePathWithLookup, validateOptionalEnvelopeEvidence, resolveOptionalEnvelopeEvidence } from './utils/toBEEF'
+export { toBEEFfromEnvelope, convertMerklePathToProof, convertProofToMerklePath, convertProofToMerklePathWithLookup, validateOptionalEnvelopeEvidence, resolveOptionalEnvelopeEvidence }
 
 export * from './types'
 export * as Helpers from './utils/Helpers'
