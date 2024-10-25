@@ -148,7 +148,7 @@ export function convertMerklePathToProof(txid: string, mp: MerklePath) : TscMerk
     for (let h = 0; h < mp.path.length; h++) {
         const isOdd = index % 2 === 1
         const offset = isOdd ? index - 1 : index + 1
-        const l = mp.path[h].find(l => l.offset === offset)
+        const l = mp.findOrComputeLeaf(h, offset)
         if (l === undefined) {
             console.log(`txid: ${txid}\nmp: ${JSON.stringify(mp)}`)
             throw new Error(`Invalid MerklePath for txid ${txid}`)
