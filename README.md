@@ -153,363 +153,14 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 ---
 
-#### Interface: TscMerkleProofApi
-
-As defined in https://github.com/bitcoin-sv-specs/brfc-merchantapi/blob/master/README.md
+#### Interface: AbortActionResult
 
 ```ts
-export interface TscMerkleProofApi {
-    height?: number;
-    index: number;
-    txOrId: string | Buffer;
-    target: string | Buffer;
-    nodes: string[] | Buffer;
-    targetType?: "hash" | "header" | "merkleRoot" | "height";
-    proofType?: "branch" | "tree";
-    composite?: boolean;
+export interface AbortActionResult {
+    referenceNumber: string;
+    log?: string;
 }
 ```
-
-<details>
-
-<summary>Interface TscMerkleProofApi Details</summary>
-
-##### Property height
-
-The most efficient way of confirming a proof should also be the most common,
-when the containing block's height is known.
-
-```ts
-height?: number
-```
-
-##### Property index
-
-Index of transaction in its block. First transaction is index zero.
-
-```ts
-index: number
-```
-
-##### Property nodes
-
-Merkle tree sibling hash values required to compute root from txid.
-Duplicates (sibling hash === computed hash) are indicated by "*" or type byte === 1.
-type byte === 2...
-Strings are encoded as hex.
-
-```ts
-nodes: string[] | Buffer
-```
-
-##### Property target
-
-Merkle root (length === 32) or serialized block header containing it (length === 80).
-If string, encoding is hex.
-
-```ts
-target: string | Buffer
-```
-
-##### Property txOrId
-
-Full transaction (length > 32 bytes) or just its double SHA256 hash (length === 32 bytes).
-If string, encoding is hex.
-
-```ts
-txOrId: string | Buffer
-```
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: MapiResponseApi
-
-```ts
-export interface MapiResponseApi {
-    payload: string;
-    signature: string;
-    publicKey: string;
-    encoding?: string;
-    mimetype?: string;
-}
-```
-
-<details>
-
-<summary>Interface MapiResponseApi Details</summary>
-
-##### Property encoding
-
-encoding of the payload data
-
-```ts
-encoding?: string
-```
-
-##### Property mimetype
-
-mime type of the payload data
-
-```ts
-mimetype?: string
-```
-
-##### Property payload
-
-Contents of the envelope.
-Validate using signature and publicKey.
-encoding and mimetype may assist with decoding validated payload.
-
-```ts
-payload: string
-```
-
-##### Property publicKey
-
-public key to use to verify signature of payload data
-
-```ts
-publicKey: string
-```
-
-##### Property signature
-
-signature producted by correpsonding private key on payload data
-
-```ts
-signature: string
-```
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: EnvelopeApi
-
-Simplest case of an envelope is a `rawTx` and merkle `proof` that ties the transaction to a known block header.
-This will be the case for any sufficiently old transaction.
-
-If the transaction has been mined but for some reason the block headers may not be known, an array of `headers` linking
-known headers to the one needed by the `proof` may be provided. They must be in height order and need to overlap
-a known header.
-
-If the transaction has not been minded yet but it has been submitted to one or more miners then the mapi responses
-received, proving that specific miners have received the transaction for processing, are included in the
-mapiResponses array.
-Note that the miner reputations must be checked to give weight to these responses.
-
-Additionally, when the transaction hasn't been mined or a `proof` is unavailable and mapi responses proving miner
-acceptance are unavailable, then all the transactions providing inputs can be submitted in an inputs object.
-
-The keys of the inputs object are the transaction hashes (txids) of each of the input transactions.
-The value of each inputs object property is another envelope object.
-
-References:
-Section 2 of https://projectbabbage.com/assets/simplified-payments.pdf
-https://gist.github.com/ty-everett/44b6a0e7f3d6c48439f9ff26068f8d8b
-
-```ts
-export interface EnvelopeApi extends EnvelopeEvidenceApi {
-    headers?: string[];
-    reference?: string;
-}
-```
-
-<details>
-
-<summary>Interface EnvelopeApi Details</summary>
-
-##### Property headers
-
-For root nodes only.
-Array of 80 byte block headers encoded as 160 character hex strings
-Include headers the envelope creator is aware of but which the resipient may not have.
-
-```ts
-headers?: string[]
-```
-
-##### Property reference
-
-Arbitrary reference string associated with the envelope, typically root node only.
-
-```ts
-reference?: string
-```
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: EnvelopeEvidenceApi
-
-Either inputs or proof are required.
-
-```ts
-export interface EnvelopeEvidenceApi {
-    rawTx: string;
-    proof?: TscMerkleProofApi | Buffer;
-    inputs?: Record<string, EnvelopeEvidenceApi>;
-    txid?: string;
-    mapiResponses?: MapiResponseApi[];
-    depth?: number;
-}
-```
-
-<details>
-
-<summary>Interface EnvelopeEvidenceApi Details</summary>
-
-##### Property depth
-
-count of maximum number of chained unproven transactions before a proven leaf node
-proof nodes have depth zero.
-
-```ts
-depth?: number
-```
-
-##### Property inputs
-
-Only one of proof or inputs must be valid.
-Branching nodes have inputs with a sub envelope (values) for every input transaction txid (keys)
-
-```ts
-inputs?: Record<string, EnvelopeEvidenceApi>
-```
-
-##### Property mapiResponses
-
-Array of mapi transaction status update responses
-Only the payload, signature, and publicKey properties are relevant.
-
-Branching inputs nodes only.
-Array of mapi transaction status update responses confirming
-unproven transctions have at least been submitted for processing.
-
-```ts
-mapiResponses?: MapiResponseApi[]
-```
-
-##### Property proof
-
-Either proof, or inputs, must have a value.
-Leaf nodes have proofs.
-
-If value is a Buffer, content is binary encoded serialized proof
-see: chaintracks-spv.utils.serializeTscMerkleProof
-
-```ts
-proof?: TscMerkleProofApi | Buffer
-```
-
-##### Property rawTx
-
-A valid bitcoin transaction encoded as a hex string.
-
-```ts
-rawTx: string
-```
-
-##### Property txid
-
-double SHA256 hash of serialized rawTx. Optional.
-
-```ts
-txid?: string
-```
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: OptionalEnvelopeEvidenceApi
-
-Either rawTx or txid are required. If txid, then it must be a known transaction.
-
-If not a known trxid, either inputs or proof are required.
-
-```ts
-export interface OptionalEnvelopeEvidenceApi {
-    rawTx?: string;
-    proof?: TscMerkleProofApi | Buffer;
-    inputs?: Record<string, OptionalEnvelopeEvidenceApi>;
-    txid?: string;
-    mapiResponses?: MapiResponseApi[];
-    depth?: number;
-}
-```
-
-<details>
-
-<summary>Interface OptionalEnvelopeEvidenceApi Details</summary>
-
-##### Property depth
-
-count of maximum number of chained unproven transactions before a proven leaf node
-proof nodes have depth zero.
-
-```ts
-depth?: number
-```
-
-##### Property inputs
-
-Only one of proof or inputs must be valid.
-Branching nodes have inputs with a sub envelope (values) for every input transaction txid (keys)
-
-```ts
-inputs?: Record<string, OptionalEnvelopeEvidenceApi>
-```
-
-##### Property mapiResponses
-
-Array of mapi transaction status update responses
-Only the payload, signature, and publicKey properties are relevant.
-
-Branching inputs nodes only.
-Array of mapi transaction status update responses confirming
-unproven transctions have at least been submitted for processing.
-
-```ts
-mapiResponses?: MapiResponseApi[]
-```
-
-##### Property proof
-
-Either proof, or inputs, must have a value.
-Leaf nodes have proofs.
-
-If value is a Buffer, content is binary encoded serialized proof
-see: chaintracks-spv.utils.serializeTscMerkleProof
-
-```ts
-proof?: TscMerkleProofApi | Buffer
-```
-
-##### Property rawTx
-
-A valid bitcoin transaction encoded as a hex string.
-
-```ts
-rawTx?: string
-```
-
-##### Property txid
-
-double SHA256 hash of serialized rawTx. Optional.
-
-```ts
-txid?: string
-```
-
-</details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -602,6 +253,550 @@ validationKey: string
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Interface: CounterpartyKeyLinkageResult
+
+```ts
+export interface CounterpartyKeyLinkageResult {
+    type: "counterparty-revelation";
+    prover: string;
+    verifier: string;
+    counterparty: string;
+    revelationTime: string;
+    encryptedLinkage: string;
+}
+```
+
+<details>
+
+<summary>Interface CounterpartyKeyLinkageResult Details</summary>
+
+##### Property revelationTime
+
+ISO date string
+
+```ts
+revelationTime: string
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: CreateActionInput
+
+```ts
+export interface CreateActionInput extends OptionalEnvelopeEvidenceApi {
+    outputsToRedeem: CreateActionOutputToRedeem[];
+}
+```
+
+See also: [CreateActionOutputToRedeem](#interface-createactionoutputtoredeem), [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: CreateActionOptions
+
+```ts
+export interface CreateActionOptions {
+    acceptDelayedBroadcast?: boolean;
+    trustSelf?: TrustSelf;
+    knownTxids?: string[];
+    resultFormat?: "beef" | "none";
+    noSend?: boolean;
+    noSendChange?: OutPoint[];
+    sendWith?: string[];
+}
+```
+
+See also: [OutPoint](#interface-outpoint), [TrustSelf](#type-trustself)
+
+<details>
+
+<summary>Interface CreateActionOptions Details</summary>
+
+##### Property acceptDelayedBroadcast
+
+true if local validation and self-signed mapi response is sufficient.
+Upon return, transaction will have `sending` status. Watchman will proceed to send the transaction asynchronously.
+
+false if a valid mapi response from the bitcoin transaction processing network is required.
+Upon return, transaction will have `unproven` status. Watchman will proceed to prove transaction.
+
+default true
+
+```ts
+acceptDelayedBroadcast?: boolean
+```
+
+##### Property knownTxids
+
+If the caller already has envelopes or BUMPS for certain txids, pass them in this
+array and they will be assumed to be valid and not returned again in the results.
+
+```ts
+knownTxids?: string[]
+```
+
+##### Property noSend
+
+If true, successfully created transactions remain in the `nosend` state.
+A proof will be sought but it will not be considered an error if the txid remains unknown.
+
+Supports testing, user control over broadcasting of transactions, and batching.
+
+```ts
+noSend?: boolean
+```
+
+##### Property noSendChange
+
+Available transaction fee payment output(s) belonging to the user.
+
+Only change outputs previously created by a noSend transaction.
+
+Supports chained noSend transactions by minimizing the consumption
+and non-replenishment of change outputs.
+
+```ts
+noSendChange?: OutPoint[]
+```
+See also: [OutPoint](#interface-outpoint)
+
+##### Property resultFormat
+
+If 'beef', the results will format new transaction and supporting input proofs in BEEF format.
+If 'none', the results will include only the txid of the new transaction.
+Otherwise, the results will use `EnvelopeEvidenceApi` format.
+
+```ts
+resultFormat?: "beef" | "none"
+```
+
+##### Property sendWith
+
+Setting `sendWith` to an array of `txid` values for previously created `noSend` transactions
+causes all of them to be sent to the bitcoin network as a single batch of transactions.
+
+When using `sendWith`, `createAction` can be called without inputs or outputs,
+in which case previously created `noSend` transactions will be sent
+without creating a new transaction.
+
+```ts
+sendWith?: string[]
+```
+
+##### Property trustSelf
+
+If undefined, normal case, all inputs must be provably valid by chain of rawTx and merkle proof values,
+and results will include new rawTx and proof chains for new outputs.
+
+If 'known', any input txid corresponding to a previously processed transaction may ommit its rawTx and proofs,
+and results will exclude new rawTx and proof chains for new outputs.
+
+```ts
+trustSelf?: TrustSelf
+```
+See also: [TrustSelf](#type-trustself)
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: CreateActionOutput
+
+A specific output to be created as part of a new transactions.
+These outputs can contain custom scripts as specified by recipients.
+
+```ts
+export interface CreateActionOutput {
+    script: string;
+    satoshis: number;
+    description?: string;
+    basket?: string;
+    customInstructions?: string;
+    tags?: string[];
+}
+```
+
+<details>
+
+<summary>Interface CreateActionOutput Details</summary>
+
+##### Property basket
+
+Destination output basket name for the new UTXO
+
+```ts
+basket?: string
+```
+
+##### Property customInstructions
+
+Custom spending instructions (metadata, string, optional)
+
+```ts
+customInstructions?: string
+```
+
+##### Property description
+
+Human-readable output line-item description
+
+```ts
+description?: string
+```
+
+##### Property satoshis
+
+The amount of the output in satoshis
+
+```ts
+satoshis: number
+```
+
+##### Property script
+
+The output script that will be included, hex encoded
+
+```ts
+script: string
+```
+
+##### Property tags
+
+Optional array of output tags to assign to this output.
+
+```ts
+tags?: string[]
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: CreateActionOutputToRedeem
+
+```ts
+export interface CreateActionOutputToRedeem {
+    index: number;
+    unlockingScript: string | number;
+    spendingDescription?: string;
+    sequenceNumber?: number;
+}
+```
+
+<details>
+
+<summary>Interface CreateActionOutputToRedeem Details</summary>
+
+##### Property index
+
+Zero based output index within its transaction to spend, vout.
+
+```ts
+index: number
+```
+
+##### Property sequenceNumber
+
+Sequence number to use when spending
+
+```ts
+sequenceNumber?: number
+```
+
+##### Property unlockingScript
+
+Hex scriptcode that unlocks the satoshis or the maximum script length (in bytes) if using `signAction`.
+
+Note that you should create any signatures with `SIGHASH_NONE | ANYONECANPAY` or similar
+so that the additional Dojo outputs can be added afterward without invalidating your signature.
+
+```ts
+unlockingScript: string | number
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: CreateActionParams
+
+```ts
+export interface CreateActionParams {
+    description: string;
+    inputs?: Record<string, CreateActionInput>;
+    beef?: Beef | number[];
+    outputs?: CreateActionOutput[];
+    lockTime?: number;
+    version?: number;
+    labels?: string[];
+    originator?: string;
+    options?: CreateActionOptions;
+    acceptDelayedBroadcast?: boolean;
+    log?: string;
+}
+```
+
+See also: [CreateActionInput](#interface-createactioninput), [CreateActionOptions](#interface-createactionoptions), [CreateActionOutput](#interface-createactionoutput)
+
+<details>
+
+<summary>Interface CreateActionParams Details</summary>
+
+##### Property acceptDelayedBroadcast
+
+true if local validation and self-signed mapi response is sufficient.
+Upon return, transaction will have `sending` status. Watchman will proceed to send the transaction asynchronously.
+
+false if a valid mapi response from the bitcoin transaction processing network is required.
+Upon return, transaction will have `unproven` status. Watchman will proceed to prove transaction.
+
+default true
+
+DEPRECATED: Use options.acceptDelayedBroadcast instead.
+
+```ts
+acceptDelayedBroadcast?: boolean
+```
+
+##### Property beef
+
+Optional. Alternate source of validity proof data for `inputs`.
+If `number[]` it must be serialized `Beef`.
+
+```ts
+beef?: Beef | number[]
+```
+
+##### Property description
+
+Human readable string giving the purpose of this transaction.
+Value will be encrypted prior to leaving this device.
+Encrypted length limit is 500 characters.
+
+```ts
+description: string
+```
+
+##### Property inputs
+
+If an input is self-provided (known to user's Dojo), or if beef is used,
+envelope evidence can be ommitted, reducing data
+size and processing time.
+
+each input's outputsToRedeem:
+  - satoshis must be greater than zero, must match output's value.
+  - spendingDescription length limit is 50, values are encrypted before leaving this device
+  - unlockingScript is max byte length for `signActionRequired` mode, otherwise hex string.
+
+```ts
+inputs?: Record<string, CreateActionInput>
+```
+See also: [CreateActionInput](#interface-createactioninput)
+
+##### Property labels
+
+transaction labels to apply to this transaction
+default []
+
+```ts
+labels?: string[]
+```
+
+##### Property lockTime
+
+Optional. Default is zero.
+When the transaction can be processed into a block:
+>= 500,000,000 values are interpreted as minimum required unix time stamps in seconds
+< 500,000,000 values are interpreted as minimum required block height
+
+```ts
+lockTime?: number
+```
+
+##### Property options
+
+Processing options.
+
+```ts
+options?: CreateActionOptions
+```
+See also: [CreateActionOptions](#interface-createactionoptions)
+
+##### Property originator
+
+Reserved Admin originators
+  'projectbabbage.com'
+  'staging-satoshiframe.babbage.systems'
+  'satoshiframe.babbage.systems'
+
+```ts
+originator?: string
+```
+
+##### Property outputs
+
+each output:
+  - description length limit is 50, values are encrypted before leaving this device
+
+```ts
+outputs?: CreateActionOutput[]
+```
+See also: [CreateActionOutput](#interface-createactionoutput)
+
+##### Property version
+
+Optional. Transaction version number, default is current standard transaction version value.
+
+```ts
+version?: number
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: CreateActionResult
+
+```ts
+export interface CreateActionResult {
+    signActionRequired?: boolean;
+    createResult?: DojoCreateTransactionResultApi;
+    txid?: string;
+    rawTx?: string;
+    inputs?: Record<string, OptionalEnvelopeEvidenceApi>;
+    beef?: number[];
+    noSendChange?: OutPoint[];
+    mapiResponses?: MapiResponseApi[];
+    sendWithResults?: DojoSendWithResultsApi[];
+    options?: CreateActionOptions;
+    log?: string;
+}
+```
+
+See also: [CreateActionOptions](#interface-createactionoptions), [DojoCreateTransactionResultApi](#interface-dojocreatetransactionresultapi), [DojoSendWithResultsApi](#interface-dojosendwithresultsapi), [MapiResponseApi](#interface-mapiresponseapi), [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi), [OutPoint](#interface-outpoint)
+
+<details>
+
+<summary>Interface CreateActionResult Details</summary>
+
+##### Property beef
+
+Valid for options.resultFormat 'beef',
+in which case `rawTx` and `inputs` will be undefined.
+
+Change output(s) that may be forwarded to chained noSend transactions.
+
+```ts
+beef?: number[]
+```
+
+##### Property createResult
+
+if signActionRequired, the dojo createTransaction results to be forwarded to signAction
+
+```ts
+createResult?: DojoCreateTransactionResultApi
+```
+See also: [DojoCreateTransactionResultApi](#interface-dojocreatetransactionresultapi)
+
+##### Property inputs
+
+This is the fully-formed `inputs` field of this transaction, as per the SPV Envelope specification.
+
+```ts
+inputs?: Record<string, OptionalEnvelopeEvidenceApi>
+```
+See also: [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi)
+
+##### Property log
+
+operational and performance logging if enabled.
+
+```ts
+log?: string
+```
+
+##### Property mapiResponses
+
+If not `signActionRequired`, at least one valid mapi response.
+may be a self-signed response if `acceptDelayedBroadcast` is true.
+
+If `signActionRequired`, empty array.
+
+```ts
+mapiResponses?: MapiResponseApi[]
+```
+See also: [MapiResponseApi](#interface-mapiresponseapi)
+
+##### Property noSendChange
+
+Valid for options.noSend true.
+
+Change output(s) that may be forwarded to chained noSend transactions.
+
+```ts
+noSendChange?: OutPoint[]
+```
+See also: [OutPoint](#interface-outpoint)
+
+##### Property options
+
+Processing options.
+
+```ts
+options?: CreateActionOptions
+```
+See also: [CreateActionOptions](#interface-createactionoptions)
+
+##### Property rawTx
+
+if not signActionRequired, fully signed transaction as LE hex string
+
+if signActionRequired:
+  - All length specified unlocking scripts are zero bytes
+  - All SABPPP template unlocking scripts have zero byte signatures
+  - All custom provided unlocking scripts fully copied.
+
+```ts
+rawTx?: string
+```
+
+##### Property signActionRequired
+
+true if at least one input's outputsToRedeem uses numeric max script byte length for unlockingScript
+
+If true, in-process transaction will have status `unsigned`. An `unsigned` transaction must be completed
+by signing all remaining unsigned inputs and calling `signAction`. Failure to complete the process in
+a timely manner will cause the transaction to transition to `failed`.
+
+If false or undefined, completed transaction will have status of `sending`, `nosend` or `unproven`,
+depending on `acceptDelayedBroadcast` and `noSend`.
+
+```ts
+signActionRequired?: boolean
+```
+
+##### Property txid
+
+if not signActionRequired, signed transaction hash (double SHA256 BE hex string)
+
+```ts
+txid?: string
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Interface: CreateCertificateResult
 
 ```ts
@@ -617,6 +812,8 @@ export interface CreateCertificateResult extends CertificateApi {
     masterKeyring?: Record<string, string>;
 }
 ```
+
+See also: [CertificateApi](#interface-certificateapi)
 
 <details>
 
@@ -699,97 +896,531 @@ validationKey: string
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Interface: ProveCertificateResult
+#### Interface: DojoCreateTransactionResultApi
 
 ```ts
-export interface ProveCertificateResult extends CertificateApi {
-    type: string;
-    subject: string;
-    validationKey: string;
-    serialNumber: string;
-    certifier: string;
-    revocationOutpoint: string;
-    signature: string;
-    fields?: Record<string, string>;
-    keyring: Record<string, string>;
+export interface DojoCreateTransactionResultApi {
+    inputs: Record<string, DojoCreatingTxInputsApi>;
+    outputs: DojoCreateTxResultOutputApi[];
+    derivationPrefix: string;
+    version: number;
+    lockTime: number;
+    referenceNumber: string;
+    paymailHandle: string;
+    note?: string;
+    log?: string;
+}
+```
+
+See also: [DojoCreateTxResultOutputApi](#interface-dojocreatetxresultoutputapi), [DojoCreatingTxInputsApi](#interface-dojocreatingtxinputsapi)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: DojoCreateTxOutputApi
+
+A specific output to be created as part of a new transactions.
+These outputs can contain custom scripts as specified by recipients.
+
+```ts
+export interface DojoCreateTxOutputApi {
+    script: string;
+    satoshis: number;
+    description?: string;
+    basket?: string;
+    customInstructions?: string;
+    tags?: string[];
 }
 ```
 
 <details>
 
-<summary>Interface ProveCertificateResult Details</summary>
+<summary>Interface DojoCreateTxOutputApi Details</summary>
 
-##### Property certifier
+##### Property basket
 
-max length of 255
+Destination output basket name for the new UTXO
 
 ```ts
-certifier: string
+basket?: string
 ```
 
-##### Property fields
+##### Property customInstructions
 
-Plaintext field names and values of only those fields requested in `fieldsToReveal`
+Custom spending instructions (metadata, string, optional)
 
 ```ts
-fields?: Record<string, string>
+customInstructions?: string
 ```
 
-##### Property keyring
+##### Property description
 
-field revelation keyring for the given verifier
+Human-readable output line-item description
 
 ```ts
-keyring: Record<string, string>
+description?: string
 ```
 
-##### Property revocationOutpoint
+##### Property satoshis
 
-max length of 255
+The amount of the output in satoshis
 
 ```ts
-revocationOutpoint: string
+satoshis: number
 ```
 
-##### Property serialNumber
+##### Property script
 
-max length of 255
+The output script that will be included, hex encoded
 
 ```ts
-serialNumber: string
+script: string
 ```
 
-##### Property signature
+##### Property tags
 
-max length of 255
+Optional array of output tags to assign to this output.
 
 ```ts
-signature: string
+tags?: string[]
 ```
 
-##### Property subject
+</details>
 
-max length of 255
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: DojoCreateTxResultInstructionsApi
 
 ```ts
-subject: string
+export interface DojoCreateTxResultInstructionsApi {
+    type: string;
+    derivationPrefix?: string;
+    derivationSuffix?: string;
+    senderIdentityKey?: string;
+    paymailHandle?: string;
+}
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: DojoCreateTxResultOutputApi
+
+```ts
+export interface DojoCreateTxResultOutputApi extends DojoCreateTxOutputApi {
+    providedBy: DojoProvidedByApi;
+    purpose?: string;
+    destinationBasket?: string;
+    derivationSuffix?: string;
+    keyOffset?: string;
+}
+```
+
+See also: [DojoCreateTxOutputApi](#interface-dojocreatetxoutputapi), [DojoProvidedByApi](#type-dojoprovidedbyapi)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: DojoCreatingTxInputsApi
+
+```ts
+export interface DojoCreatingTxInputsApi extends EnvelopeEvidenceApi {
+    outputsToRedeem: DojoOutputToRedeemApi[];
+    providedBy: DojoProvidedByApi;
+    instructions: Record<number, DojoCreateTxResultInstructionsApi>;
+}
+```
+
+See also: [DojoCreateTxResultInstructionsApi](#interface-dojocreatetxresultinstructionsapi), [DojoOutputToRedeemApi](#interface-dojooutputtoredeemapi), [DojoProvidedByApi](#type-dojoprovidedbyapi), [EnvelopeEvidenceApi](#interface-envelopeevidenceapi)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: DojoOutputToRedeemApi
+
+```ts
+export interface DojoOutputToRedeemApi {
+    index: number;
+    unlockingScriptLength: number;
+    spendingDescription?: string;
+}
+```
+
+<details>
+
+<summary>Interface DojoOutputToRedeemApi Details</summary>
+
+##### Property index
+
+Zero based output index within its transaction to spend.
+
+```ts
+index: number
+```
+
+##### Property unlockingScriptLength
+
+byte length of unlocking script
+
+Note: To protect client keys and utxo control, unlocking scripts are never shared with Dojo.
+
+```ts
+unlockingScriptLength: number
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: DojoSendWithResultsApi
+
+```ts
+export interface DojoSendWithResultsApi {
+    txid: string;
+    transactionId: number;
+    reference: string;
+    status: "unproven" | "failed" | "sending";
+}
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: EnvelopeApi
+
+Simplest case of an envelope is a `rawTx` and merkle `proof` that ties the transaction to a known block header.
+This will be the case for any sufficiently old transaction.
+
+If the transaction has been mined but for some reason the block headers may not be known, an array of `headers` linking
+known headers to the one needed by the `proof` may be provided. They must be in height order and need to overlap
+a known header.
+
+If the transaction has not been minded yet but it has been submitted to one or more miners then the mapi responses
+received, proving that specific miners have received the transaction for processing, are included in the
+mapiResponses array.
+Note that the miner reputations must be checked to give weight to these responses.
+
+Additionally, when the transaction hasn't been mined or a `proof` is unavailable and mapi responses proving miner
+acceptance are unavailable, then all the transactions providing inputs can be submitted in an inputs object.
+
+The keys of the inputs object are the transaction hashes (txids) of each of the input transactions.
+The value of each inputs object property is another envelope object.
+
+References:
+Section 2 of https://projectbabbage.com/assets/simplified-payments.pdf
+https://gist.github.com/ty-everett/44b6a0e7f3d6c48439f9ff26068f8d8b
+
+```ts
+export interface EnvelopeApi extends EnvelopeEvidenceApi {
+    headers?: string[];
+    reference?: string;
+}
+```
+
+See also: [EnvelopeEvidenceApi](#interface-envelopeevidenceapi)
+
+<details>
+
+<summary>Interface EnvelopeApi Details</summary>
+
+##### Property headers
+
+For root nodes only.
+Array of 80 byte block headers encoded as 160 character hex strings
+Include headers the envelope creator is aware of but which the resipient may not have.
+
+```ts
+headers?: string[]
+```
+
+##### Property reference
+
+Arbitrary reference string associated with the envelope, typically root node only.
+
+```ts
+reference?: string
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: EnvelopeEvidenceApi
+
+Either inputs or proof are required.
+
+```ts
+export interface EnvelopeEvidenceApi {
+    rawTx: string;
+    proof?: TscMerkleProofApi | Buffer;
+    inputs?: Record<string, EnvelopeEvidenceApi>;
+    txid?: string;
+    mapiResponses?: MapiResponseApi[];
+    depth?: number;
+}
+```
+
+See also: [MapiResponseApi](#interface-mapiresponseapi), [TscMerkleProofApi](#interface-tscmerkleproofapi)
+
+<details>
+
+<summary>Interface EnvelopeEvidenceApi Details</summary>
+
+##### Property depth
+
+count of maximum number of chained unproven transactions before a proven leaf node
+proof nodes have depth zero.
+
+```ts
+depth?: number
+```
+
+##### Property inputs
+
+Only one of proof or inputs must be valid.
+Branching nodes have inputs with a sub envelope (values) for every input transaction txid (keys)
+
+```ts
+inputs?: Record<string, EnvelopeEvidenceApi>
+```
+See also: [EnvelopeEvidenceApi](#interface-envelopeevidenceapi)
+
+##### Property mapiResponses
+
+Array of mapi transaction status update responses
+Only the payload, signature, and publicKey properties are relevant.
+
+Branching inputs nodes only.
+Array of mapi transaction status update responses confirming
+unproven transctions have at least been submitted for processing.
+
+```ts
+mapiResponses?: MapiResponseApi[]
+```
+See also: [MapiResponseApi](#interface-mapiresponseapi)
+
+##### Property proof
+
+Either proof, or inputs, must have a value.
+Leaf nodes have proofs.
+
+If value is a Buffer, content is binary encoded serialized proof
+see: chaintracks-spv.utils.serializeTscMerkleProof
+
+```ts
+proof?: TscMerkleProofApi | Buffer
+```
+See also: [TscMerkleProofApi](#interface-tscmerkleproofapi)
+
+##### Property rawTx
+
+A valid bitcoin transaction encoded as a hex string.
+
+```ts
+rawTx: string
+```
+
+##### Property txid
+
+double SHA256 hash of serialized rawTx. Optional.
+
+```ts
+txid?: string
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: GetInfoParams
+
+```ts
+export interface GetInfoParams {
+    description?: string;
+}
+```
+
+<details>
+
+<summary>Interface GetInfoParams Details</summary>
+
+##### Property description
+
+Describe the high-level operation being performed, so that the user can make an informed decision if permission is needed.
+
+```ts
+description?: string
+```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: GetInfoResult
+
+```ts
+export interface GetInfoResult {
+    metanetClientVersion: string;
+    chain: Chain;
+    height: number;
+    userId: number;
+    userIdentityKey: string;
+    dojoIdentityKey: string;
+    dojoIdentityName?: string;
+    perferredCurrency: string;
+}
+```
+
+See also: [Chain](#type-chain)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: GetTransactionOutputResult
+
+```ts
+export interface GetTransactionOutputResult {
+    txid: string;
+    vout: number;
+    amount: number;
+    outputScript: string;
+    type: string;
+    spendable: boolean;
+    envelope?: EnvelopeApi;
+    customInstructions?: string;
+    basket?: string;
+    tags?: string[];
+}
+```
+
+See also: [EnvelopeApi](#interface-envelopeapi)
+
+<details>
+
+<summary>Interface GetTransactionOutputResult Details</summary>
+
+##### Property amount
+
+Number of satoshis in the output
+
+```ts
+amount: number
+```
+
+##### Property basket
+
+If `includeBasket` option is true, name of basket to which this output belongs.
+
+```ts
+basket?: string
+```
+
+##### Property customInstructions
+
+When envelope requested, any custom instructions associated with this output.
+
+```ts
+customInstructions?: string
+```
+
+##### Property envelope
+
+When requested and available, output validity support envelope.
+
+```ts
+envelope?: EnvelopeApi
+```
+See also: [EnvelopeApi](#interface-envelopeapi)
+
+##### Property outputScript
+
+Hex representation of output locking script
+
+```ts
+outputScript: string
+```
+
+##### Property spendable
+
+Whether this output is free to be spent
+
+```ts
+spendable: boolean
+```
+
+##### Property tags
+
+If `includeTags` option is true, tags assigned to this output.
+
+```ts
+tags?: string[]
+```
+
+##### Property txid
+
+Transaction ID of transaction that created the output
+
+```ts
+txid: string
 ```
 
 ##### Property type
 
-max length of 255
+The type of output, for example "P2PKH" or "P2RPH"
 
 ```ts
 type: string
 ```
 
-##### Property validationKey
+##### Property vout
 
-max length of 255
+Index in the transaction of the output
 
 ```ts
-validationKey: string
+vout: number
 ```
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: ListActionsResult
+
+```ts
+export interface ListActionsResult {
+    totalTransactions: number;
+    transactions: ListActionsTransaction[];
+}
+```
+
+See also: [ListActionsTransaction](#interface-listactionstransaction)
+
+<details>
+
+<summary>Interface ListActionsResult Details</summary>
+
+##### Property totalTransactions
+
+The number of transactions in the complete set
+
+```ts
+totalTransactions: number
+```
+
+##### Property transactions
+
+The specific transactions from the set that were requested, based on `limit` and `offset`
+
+```ts
+transactions: ListActionsTransaction[]
+```
+See also: [ListActionsTransaction](#interface-listactionstransaction)
 
 </details>
 
@@ -814,6 +1445,8 @@ export interface ListActionsTransaction {
     outputs?: ListActionsTransactionOutput[];
 }
 ```
+
+See also: [ListActionsTransactionInput](#interface-listactionstransactioninput), [ListActionsTransactionOutput](#interface-listactionstransactionoutput), [TransactionStatusApi](#type-transactionstatusapi)
 
 <details>
 
@@ -890,6 +1523,7 @@ The current state of the transaction. Common statuses are `completed` and `unpro
 ```ts
 status: TransactionStatusApi
 ```
+See also: [TransactionStatusApi](#type-transactionstatusapi)
 
 ##### Property txid
 
@@ -1098,33 +1732,62 @@ vout: number
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Interface: ListActionsResult
+#### Interface: MapiResponseApi
 
 ```ts
-export interface ListActionsResult {
-    totalTransactions: number;
-    transactions: ListActionsTransaction[];
+export interface MapiResponseApi {
+    payload: string;
+    signature: string;
+    publicKey: string;
+    encoding?: string;
+    mimetype?: string;
 }
 ```
 
 <details>
 
-<summary>Interface ListActionsResult Details</summary>
+<summary>Interface MapiResponseApi Details</summary>
 
-##### Property totalTransactions
+##### Property encoding
 
-The number of transactions in the complete set
+encoding of the payload data
 
 ```ts
-totalTransactions: number
+encoding?: string
 ```
 
-##### Property transactions
+##### Property mimetype
 
-The specific transactions from the set that were requested, based on `limit` and `offset`
+mime type of the payload data
 
 ```ts
-transactions: ListActionsTransaction[]
+mimetype?: string
+```
+
+##### Property payload
+
+Contents of the envelope.
+Validate using signature and publicKey.
+encoding and mimetype may assist with decoding validated payload.
+
+```ts
+payload: string
+```
+
+##### Property publicKey
+
+public key to use to verify signature of payload data
+
+```ts
+publicKey: string
+```
+
+##### Property signature
+
+signature producted by correpsonding private key on payload data
+
+```ts
+signature: string
 ```
 
 </details>
@@ -1132,176 +1795,89 @@ transactions: ListActionsTransaction[]
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Interface: CounterpartyKeyLinkageResult
+#### Interface: OptionalEnvelopeEvidenceApi
+
+Either rawTx or txid are required. If txid, then it must be a known transaction.
+
+If not a known trxid, either inputs or proof are required.
 
 ```ts
-export interface CounterpartyKeyLinkageResult {
-    type: "counterparty-revelation";
-    prover: string;
-    verifier: string;
-    counterparty: string;
-    revelationTime: string;
-    encryptedLinkage: string;
+export interface OptionalEnvelopeEvidenceApi {
+    rawTx?: string;
+    proof?: TscMerkleProofApi | Buffer;
+    inputs?: Record<string, OptionalEnvelopeEvidenceApi>;
+    txid?: string;
+    mapiResponses?: MapiResponseApi[];
+    depth?: number;
 }
 ```
+
+See also: [MapiResponseApi](#interface-mapiresponseapi), [TscMerkleProofApi](#interface-tscmerkleproofapi)
 
 <details>
 
-<summary>Interface CounterpartyKeyLinkageResult Details</summary>
+<summary>Interface OptionalEnvelopeEvidenceApi Details</summary>
 
-##### Property revelationTime
+##### Property depth
 
-ISO date string
+count of maximum number of chained unproven transactions before a proven leaf node
+proof nodes have depth zero.
 
 ```ts
-revelationTime: string
+depth?: number
 ```
 
-</details>
+##### Property inputs
 
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: SpecificKeyLinkageResult
+Only one of proof or inputs must be valid.
+Branching nodes have inputs with a sub envelope (values) for every input transaction txid (keys)
 
 ```ts
-export interface SpecificKeyLinkageResult {
-    type: "specific-revelation";
-    prover: string;
-    verifier: string;
-    counterparty: string;
-    protocolID: ProtocolID;
-    encryptedLinkage: string;
-}
+inputs?: Record<string, OptionalEnvelopeEvidenceApi>
+```
+See also: [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi)
+
+##### Property mapiResponses
+
+Array of mapi transaction status update responses
+Only the payload, signature, and publicKey properties are relevant.
+
+Branching inputs nodes only.
+Array of mapi transaction status update responses confirming
+unproven transctions have at least been submitted for processing.
+
+```ts
+mapiResponses?: MapiResponseApi[]
+```
+See also: [MapiResponseApi](#interface-mapiresponseapi)
+
+##### Property proof
+
+Either proof, or inputs, must have a value.
+Leaf nodes have proofs.
+
+If value is a Buffer, content is binary encoded serialized proof
+see: chaintracks-spv.utils.serializeTscMerkleProof
+
+```ts
+proof?: TscMerkleProofApi | Buffer
+```
+See also: [TscMerkleProofApi](#interface-tscmerkleproofapi)
+
+##### Property rawTx
+
+A valid bitcoin transaction encoded as a hex string.
+
+```ts
+rawTx?: string
 ```
 
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+##### Property txid
 
----
-#### Interface: CreateActionOutputToRedeem
-
-```ts
-export interface CreateActionOutputToRedeem {
-    index: number;
-    unlockingScript: string | number;
-    spendingDescription?: string;
-    sequenceNumber?: number;
-}
-```
-
-<details>
-
-<summary>Interface CreateActionOutputToRedeem Details</summary>
-
-##### Property index
-
-Zero based output index within its transaction to spend, vout.
+double SHA256 hash of serialized rawTx. Optional.
 
 ```ts
-index: number
-```
-
-##### Property sequenceNumber
-
-Sequence number to use when spending
-
-```ts
-sequenceNumber?: number
-```
-
-##### Property unlockingScript
-
-Hex scriptcode that unlocks the satoshis or the maximum script length (in bytes) if using `signAction`.
-
-Note that you should create any signatures with `SIGHASH_NONE | ANYONECANPAY` or similar
-so that the additional Dojo outputs can be added afterward without invalidating your signature.
-
-```ts
-unlockingScript: string | number
-```
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: CreateActionInput
-
-```ts
-export interface CreateActionInput extends OptionalEnvelopeEvidenceApi {
-    outputsToRedeem: CreateActionOutputToRedeem[];
-}
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: CreateActionOutput
-
-A specific output to be created as part of a new transactions.
-These outputs can contain custom scripts as specified by recipients.
-
-```ts
-export interface CreateActionOutput {
-    script: string;
-    satoshis: number;
-    description?: string;
-    basket?: string;
-    customInstructions?: string;
-    tags?: string[];
-}
-```
-
-<details>
-
-<summary>Interface CreateActionOutput Details</summary>
-
-##### Property basket
-
-Destination output basket name for the new UTXO
-
-```ts
-basket?: string
-```
-
-##### Property customInstructions
-
-Custom spending instructions (metadata, string, optional)
-
-```ts
-customInstructions?: string
-```
-
-##### Property description
-
-Human-readable output line-item description
-
-```ts
-description?: string
-```
-
-##### Property satoshis
-
-The amount of the output in satoshis
-
-```ts
-satoshis: number
-```
-
-##### Property script
-
-The output script that will be included, hex encoded
-
-```ts
-script: string
-```
-
-##### Property tags
-
-Optional array of output tags to assign to this output.
-
-```ts
-tags?: string[]
+txid?: string
 ```
 
 </details>
@@ -1345,378 +1921,98 @@ vout: number
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Interface: CreateActionOptions
+#### Interface: ProveCertificateResult
 
 ```ts
-export interface CreateActionOptions {
-    acceptDelayedBroadcast?: boolean;
-    trustSelf?: TrustSelf;
-    knownTxids?: string[];
-    resultFormat?: "beef" | "none";
-    noSend?: boolean;
-    noSendChange?: OutPoint[];
-    sendWith?: string[];
+export interface ProveCertificateResult extends CertificateApi {
+    type: string;
+    subject: string;
+    validationKey: string;
+    serialNumber: string;
+    certifier: string;
+    revocationOutpoint: string;
+    signature: string;
+    fields?: Record<string, string>;
+    keyring: Record<string, string>;
 }
 ```
+
+See also: [CertificateApi](#interface-certificateapi)
 
 <details>
 
-<summary>Interface CreateActionOptions Details</summary>
+<summary>Interface ProveCertificateResult Details</summary>
 
-##### Property acceptDelayedBroadcast
+##### Property certifier
 
-true if local validation and self-signed mapi response is sufficient.
-Upon return, transaction will have `sending` status. Watchman will proceed to send the transaction asynchronously.
-
-false if a valid mapi response from the bitcoin transaction processing network is required.
-Upon return, transaction will have `unproven` status. Watchman will proceed to prove transaction.
-
-default true
+max length of 255
 
 ```ts
-acceptDelayedBroadcast?: boolean
+certifier: string
 ```
 
-##### Property knownTxids
+##### Property fields
 
-If the caller already has envelopes or BUMPS for certain txids, pass them in this
-array and they will be assumed to be valid and not returned again in the results.
+Plaintext field names and values of only those fields requested in `fieldsToReveal`
 
 ```ts
-knownTxids?: string[]
+fields?: Record<string, string>
 ```
 
-##### Property noSend
+##### Property keyring
 
-If true, successfully created transactions remain in the `nosend` state.
-A proof will be sought but it will not be considered an error if the txid remains unknown.
-
-Supports testing, user control over broadcasting of transactions, and batching.
+field revelation keyring for the given verifier
 
 ```ts
-noSend?: boolean
+keyring: Record<string, string>
 ```
 
-##### Property noSendChange
+##### Property revocationOutpoint
 
-Available transaction fee payment output(s) belonging to the user.
-
-Only change outputs previously created by a noSend transaction.
-
-Supports chained noSend transactions by minimizing the consumption
-and non-replenishment of change outputs.
+max length of 255
 
 ```ts
-noSendChange?: OutPoint[]
+revocationOutpoint: string
 ```
 
-##### Property resultFormat
+##### Property serialNumber
 
-If 'beef', the results will format new transaction and supporting input proofs in BEEF format.
-If 'none', the results will include only the txid of the new transaction.
-Otherwise, the results will use `EnvelopeEvidenceApi` format.
+max length of 255
 
 ```ts
-resultFormat?: "beef" | "none"
+serialNumber: string
 ```
 
-##### Property sendWith
+##### Property signature
 
-Setting `sendWith` to an array of `txid` values for previously created `noSend` transactions
-causes all of them to be sent to the bitcoin network as a single batch of transactions.
-
-When using `sendWith`, `createAction` can be called without inputs or outputs,
-in which case previously created `noSend` transactions will be sent
-without creating a new transaction.
+max length of 255
 
 ```ts
-sendWith?: string[]
+signature: string
 ```
 
-##### Property trustSelf
+##### Property subject
 
-If undefined, normal case, all inputs must be provably valid by chain of rawTx and merkle proof values,
-and results will include new rawTx and proof chains for new outputs.
-
-If 'known', any input txid corresponding to a previously processed transaction may ommit its rawTx and proofs,
-and results will exclude new rawTx and proof chains for new outputs.
+max length of 255
 
 ```ts
-trustSelf?: TrustSelf
+subject: string
 ```
 
-</details>
+##### Property type
 
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: CreateActionParams
+max length of 255
 
 ```ts
-export interface CreateActionParams {
-    description: string;
-    inputs?: Record<string, CreateActionInput>;
-    beef?: Beef | number[];
-    outputs?: CreateActionOutput[];
-    lockTime?: number;
-    version?: number;
-    labels?: string[];
-    originator?: string;
-    options?: CreateActionOptions;
-    acceptDelayedBroadcast?: boolean;
-    log?: string;
-}
+type: string
 ```
 
-<details>
+##### Property validationKey
 
-<summary>Interface CreateActionParams Details</summary>
-
-##### Property acceptDelayedBroadcast
-
-true if local validation and self-signed mapi response is sufficient.
-Upon return, transaction will have `sending` status. Watchman will proceed to send the transaction asynchronously.
-
-false if a valid mapi response from the bitcoin transaction processing network is required.
-Upon return, transaction will have `unproven` status. Watchman will proceed to prove transaction.
-
-default true
-
-DEPRECATED: Use options.acceptDelayedBroadcast instead.
+max length of 255
 
 ```ts
-acceptDelayedBroadcast?: boolean
-```
-
-##### Property beef
-
-Optional. Alternate source of validity proof data for `inputs`.
-If `number[]` it must be serialized `Beef`.
-
-```ts
-beef?: Beef | number[]
-```
-
-##### Property description
-
-Human readable string giving the purpose of this transaction.
-Value will be encrypted prior to leaving this device.
-Encrypted length limit is 500 characters.
-
-```ts
-description: string
-```
-
-##### Property inputs
-
-If an input is self-provided (known to user's Dojo), or if beef is used,
-envelope evidence can be ommitted, reducing data
-size and processing time.
-
-each input's outputsToRedeem:
-  - satoshis must be greater than zero, must match output's value.
-  - spendingDescription length limit is 50, values are encrypted before leaving this device
-  - unlockingScript is max byte length for `signActionRequired` mode, otherwise hex string.
-
-```ts
-inputs?: Record<string, CreateActionInput>
-```
-
-##### Property labels
-
-transaction labels to apply to this transaction
-default []
-
-```ts
-labels?: string[]
-```
-
-##### Property lockTime
-
-Optional. Default is zero.
-When the transaction can be processed into a block:
->= 500,000,000 values are interpreted as minimum required unix time stamps in seconds
-< 500,000,000 values are interpreted as minimum required block height
-
-```ts
-lockTime?: number
-```
-
-##### Property options
-
-Processing options.
-
-```ts
-options?: CreateActionOptions
-```
-
-##### Property originator
-
-Reserved Admin originators
-  'projectbabbage.com'
-  'staging-satoshiframe.babbage.systems'
-  'satoshiframe.babbage.systems'
-
-```ts
-originator?: string
-```
-
-##### Property outputs
-
-each output:
-  - description length limit is 50, values are encrypted before leaving this device
-
-```ts
-outputs?: CreateActionOutput[]
-```
-
-##### Property version
-
-Optional. Transaction version number, default is current standard transaction version value.
-
-```ts
-version?: number
-```
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: DojoSendWithResultsApi
-
-```ts
-export interface DojoSendWithResultsApi {
-    txid: string;
-    transactionId: number;
-    reference: string;
-    status: "unproven" | "failed" | "sending";
-}
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: CreateActionResult
-
-```ts
-export interface CreateActionResult {
-    signActionRequired?: boolean;
-    createResult?: DojoCreateTransactionResultApi;
-    txid?: string;
-    rawTx?: string;
-    inputs?: Record<string, OptionalEnvelopeEvidenceApi>;
-    beef?: number[];
-    noSendChange?: OutPoint[];
-    mapiResponses?: MapiResponseApi[];
-    sendWithResults?: DojoSendWithResultsApi[];
-    options?: CreateActionOptions;
-    log?: string;
-}
-```
-
-<details>
-
-<summary>Interface CreateActionResult Details</summary>
-
-##### Property beef
-
-Valid for options.resultFormat 'beef',
-in which case `rawTx` and `inputs` will be undefined.
-
-Change output(s) that may be forwarded to chained noSend transactions.
-
-```ts
-beef?: number[]
-```
-
-##### Property createResult
-
-if signActionRequired, the dojo createTransaction results to be forwarded to signAction
-
-```ts
-createResult?: DojoCreateTransactionResultApi
-```
-
-##### Property inputs
-
-This is the fully-formed `inputs` field of this transaction, as per the SPV Envelope specification.
-
-```ts
-inputs?: Record<string, OptionalEnvelopeEvidenceApi>
-```
-
-##### Property log
-
-operational and performance logging if enabled.
-
-```ts
-log?: string
-```
-
-##### Property mapiResponses
-
-If not `signActionRequired`, at least one valid mapi response.
-may be a self-signed response if `acceptDelayedBroadcast` is true.
-
-If `signActionRequired`, empty array.
-
-```ts
-mapiResponses?: MapiResponseApi[]
-```
-
-##### Property noSendChange
-
-Valid for options.noSend true.
-
-Change output(s) that may be forwarded to chained noSend transactions.
-
-```ts
-noSendChange?: OutPoint[]
-```
-
-##### Property options
-
-Processing options.
-
-```ts
-options?: CreateActionOptions
-```
-
-##### Property rawTx
-
-if not signActionRequired, fully signed transaction as LE hex string
-
-if signActionRequired:
-  - All length specified unlocking scripts are zero bytes
-  - All SABPPP template unlocking scripts have zero byte signatures
-  - All custom provided unlocking scripts fully copied.
-
-```ts
-rawTx?: string
-```
-
-##### Property signActionRequired
-
-true if at least one input's outputsToRedeem uses numeric max script byte length for unlockingScript
-
-If true, in-process transaction will have status `unsigned`. An `unsigned` transaction must be completed
-by signing all remaining unsigned inputs and calling `signAction`. Failure to complete the process in
-a timely manner will cause the transaction to transition to `failed`.
-
-If false or undefined, completed transaction will have status of `sending`, `nosend` or `unproven`,
-depending on `acceptDelayedBroadcast` and `noSend`.
-
-```ts
-signActionRequired?: boolean
-```
-
-##### Property txid
-
-if not signActionRequired, signed transaction hash (double SHA256 BE hex string)
-
-```ts
-txid?: string
+validationKey: string
 ```
 
 </details>
@@ -1736,295 +2032,44 @@ export interface SignActionResult {
 }
 ```
 
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: AbortActionResult
-
-```ts
-export interface AbortActionResult {
-    referenceNumber: string;
-    log?: string;
-}
-```
+See also: [EnvelopeEvidenceApi](#interface-envelopeevidenceapi), [MapiResponseApi](#interface-mapiresponseapi)
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Interface: DojoOutputToRedeemApi
+#### Interface: SpecificKeyLinkageResult
 
 ```ts
-export interface DojoOutputToRedeemApi {
-    index: number;
-    unlockingScriptLength: number;
-    spendingDescription?: string;
+export interface SpecificKeyLinkageResult {
+    type: "specific-revelation";
+    prover: string;
+    verifier: string;
+    counterparty: string;
+    protocolID: ProtocolID;
+    encryptedLinkage: string;
 }
 ```
 
-<details>
-
-<summary>Interface DojoOutputToRedeemApi Details</summary>
-
-##### Property index
-
-Zero based output index within its transaction to spend.
-
-```ts
-index: number
-```
-
-##### Property unlockingScriptLength
-
-byte length of unlocking script
-
-Note: To protect client keys and utxo control, unlocking scripts are never shared with Dojo.
-
-```ts
-unlockingScriptLength: number
-```
-
-</details>
+See also: [ProtocolID](#type-protocolid)
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Interface: DojoCreateTxResultInstructionsApi
+#### Interface: SubmitDirectTransaction
 
 ```ts
-export interface DojoCreateTxResultInstructionsApi {
-    type: string;
-    derivationPrefix?: string;
-    derivationSuffix?: string;
-    senderIdentityKey?: string;
-    paymailHandle?: string;
+export interface SubmitDirectTransaction {
+    rawTx: string;
+    txid?: string;
+    inputs?: Record<string, OptionalEnvelopeEvidenceApi>;
+    mapiResponses?: MapiResponseApi[];
+    proof?: TscMerkleProofApi;
+    outputs: SubmitDirectTransactionOutput[];
+    referenceNumber?: string;
 }
 ```
 
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: DojoCreatingTxInputsApi
-
-```ts
-export interface DojoCreatingTxInputsApi extends EnvelopeEvidenceApi {
-    outputsToRedeem: DojoOutputToRedeemApi[];
-    providedBy: DojoProvidedByApi;
-    instructions: Record<number, DojoCreateTxResultInstructionsApi>;
-}
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: DojoCreateTxOutputApi
-
-A specific output to be created as part of a new transactions.
-These outputs can contain custom scripts as specified by recipients.
-
-```ts
-export interface DojoCreateTxOutputApi {
-    script: string;
-    satoshis: number;
-    description?: string;
-    basket?: string;
-    customInstructions?: string;
-    tags?: string[];
-}
-```
-
-<details>
-
-<summary>Interface DojoCreateTxOutputApi Details</summary>
-
-##### Property basket
-
-Destination output basket name for the new UTXO
-
-```ts
-basket?: string
-```
-
-##### Property customInstructions
-
-Custom spending instructions (metadata, string, optional)
-
-```ts
-customInstructions?: string
-```
-
-##### Property description
-
-Human-readable output line-item description
-
-```ts
-description?: string
-```
-
-##### Property satoshis
-
-The amount of the output in satoshis
-
-```ts
-satoshis: number
-```
-
-##### Property script
-
-The output script that will be included, hex encoded
-
-```ts
-script: string
-```
-
-##### Property tags
-
-Optional array of output tags to assign to this output.
-
-```ts
-tags?: string[]
-```
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: DojoCreateTxResultOutputApi
-
-```ts
-export interface DojoCreateTxResultOutputApi extends DojoCreateTxOutputApi {
-    providedBy: DojoProvidedByApi;
-    purpose?: string;
-    destinationBasket?: string;
-    derivationSuffix?: string;
-    keyOffset?: string;
-}
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: DojoCreateTransactionResultApi
-
-```ts
-export interface DojoCreateTransactionResultApi {
-    inputs: Record<string, DojoCreatingTxInputsApi>;
-    outputs: DojoCreateTxResultOutputApi[];
-    derivationPrefix: string;
-    version: number;
-    lockTime: number;
-    referenceNumber: string;
-    paymailHandle: string;
-    note?: string;
-    log?: string;
-}
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: GetTransactionOutputResult
-
-```ts
-export interface GetTransactionOutputResult {
-    txid: string;
-    vout: number;
-    amount: number;
-    outputScript: string;
-    type: string;
-    spendable: boolean;
-    envelope?: EnvelopeApi;
-    customInstructions?: string;
-    basket?: string;
-    tags?: string[];
-}
-```
-
-<details>
-
-<summary>Interface GetTransactionOutputResult Details</summary>
-
-##### Property amount
-
-Number of satoshis in the output
-
-```ts
-amount: number
-```
-
-##### Property basket
-
-If `includeBasket` option is true, name of basket to which this output belongs.
-
-```ts
-basket?: string
-```
-
-##### Property customInstructions
-
-When envelope requested, any custom instructions associated with this output.
-
-```ts
-customInstructions?: string
-```
-
-##### Property envelope
-
-When requested and available, output validity support envelope.
-
-```ts
-envelope?: EnvelopeApi
-```
-
-##### Property outputScript
-
-Hex representation of output locking script
-
-```ts
-outputScript: string
-```
-
-##### Property spendable
-
-Whether this output is free to be spent
-
-```ts
-spendable: boolean
-```
-
-##### Property tags
-
-If `includeTags` option is true, tags assigned to this output.
-
-```ts
-tags?: string[]
-```
-
-##### Property txid
-
-Transaction ID of transaction that created the output
-
-```ts
-txid: string
-```
-
-##### Property type
-
-The type of output, for example "P2PKH" or "P2RPH"
-
-```ts
-type: string
-```
-
-##### Property vout
-
-Index in the transaction of the output
-
-```ts
-vout: number
-```
-
-</details>
+See also: [MapiResponseApi](#interface-mapiresponseapi), [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi), [SubmitDirectTransactionOutput](#interface-submitdirecttransactionoutput), [TscMerkleProofApi](#interface-tscmerkleproofapi)
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -2047,23 +2092,6 @@ export interface SubmitDirectTransactionOutput {
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Interface: SubmitDirectTransaction
-
-```ts
-export interface SubmitDirectTransaction {
-    rawTx: string;
-    txid?: string;
-    inputs?: Record<string, OptionalEnvelopeEvidenceApi>;
-    mapiResponses?: MapiResponseApi[];
-    proof?: TscMerkleProofApi;
-    outputs: SubmitDirectTransactionOutput[];
-    referenceNumber?: string;
-}
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
 #### Interface: SubmitDirectTransactionResult
 
 ```ts
@@ -2076,45 +2104,74 @@ export interface SubmitDirectTransactionResult {
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Interface: GetInfoParams
+#### Interface: TscMerkleProofApi
+
+As defined in https://github.com/bitcoin-sv-specs/brfc-merchantapi/blob/master/README.md
 
 ```ts
-export interface GetInfoParams {
-    description?: string;
+export interface TscMerkleProofApi {
+    height?: number;
+    index: number;
+    txOrId: string | Buffer;
+    target: string | Buffer;
+    nodes: string[] | Buffer;
+    targetType?: "hash" | "header" | "merkleRoot" | "height";
+    proofType?: "branch" | "tree";
+    composite?: boolean;
 }
 ```
 
 <details>
 
-<summary>Interface GetInfoParams Details</summary>
+<summary>Interface TscMerkleProofApi Details</summary>
 
-##### Property description
+##### Property height
 
-Describe the high-level operation being performed, so that the user can make an informed decision if permission is needed.
+The most efficient way of confirming a proof should also be the most common,
+when the containing block's height is known.
 
 ```ts
-description?: string
+height?: number
+```
+
+##### Property index
+
+Index of transaction in its block. First transaction is index zero.
+
+```ts
+index: number
+```
+
+##### Property nodes
+
+Merkle tree sibling hash values required to compute root from txid.
+Duplicates (sibling hash === computed hash) are indicated by "*" or type byte === 1.
+type byte === 2...
+Strings are encoded as hex.
+
+```ts
+nodes: string[] | Buffer
+```
+
+##### Property target
+
+Merkle root (length === 32) or serialized block header containing it (length === 80).
+If string, encoding is hex.
+
+```ts
+target: string | Buffer
+```
+
+##### Property txOrId
+
+Full transaction (length > 32 bytes) or just its double SHA256 hash (length === 32 bytes).
+If string, encoding is hex.
+
+```ts
+txOrId: string | Buffer
 ```
 
 </details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Interface: GetInfoResult
-
-```ts
-export interface GetInfoResult {
-    metanetClientVersion: string;
-    chain: Chain;
-    height: number;
-    userId: number;
-    userIdentityKey: string;
-    dojoIdentityKey: string;
-    dojoIdentityName?: string;
-    perferredCurrency: string;
-}
-```
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -2172,115 +2229,6 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 ---
 
-#### Function: makeHttpRequest
-
-```ts
-export default async function makeHttpRequest<R>(routeURL: string, requestInput: RequestInit = {}): Promise<R> 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: promiseWithTimeout
-
-Provides a timedout promise.
-
-```ts
-export default async function promiseWithTimeout<T>(obj: {
-    timeout: number;
-    promise: Promise<T>;
-    error?: Error;
-}): Promise<T> 
-```
-
-<details>
-
-<summary>Function promiseWithTimeout Details</summary>
-
-Argument Details
-
-+ **obj**
-  + All parameters for this function are provided in an object
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: getRandomID
-
-```ts
-export default function getRandomID(): string 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: connectToSubstrate
-
-```ts
-export default async function connectToSubstrate(): Promise<Communicator> 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: stampLog
-
-If a log is being kept, add a time stamped line.
-
-```ts
-export function stampLog(log: string | undefined, lineToAdd: string): string | undefined 
-```
-
-<details>
-
-<summary>Function stampLog Details</summary>
-
-Returns
-
-undefined or log extended by time stamped `lineToAdd` and new line.
-
-Argument Details
-
-+ **log**
-  + Optional time stamped log to extend
-+ **lineToAdd**
-  + Content to add to line.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: stampLogFormat
-
-Replaces individual timestamps with delta msecs.
-Looks for two network crossings and adjusts clock for clock skew if found.
-Assumes log built by repeated calls to `stampLog`
-
-```ts
-export function stampLogFormat(log?: string): string 
-```
-
-<details>
-
-<summary>Function stampLogFormat Details</summary>
-
-Returns
-
-reformated multi-line event log
-
-Argument Details
-
-+ **log**
-  + Each logged event starts with ISO time stamp, space, rest of line, terminated by `\n`.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
 #### Function: abortAction
 
 Aborts a previously created action which required custom input unlocking script signing.
@@ -2291,6 +2239,8 @@ export async function abortAction(args: {
     log?: string;
 }): Promise<AbortActionResult> 
 ```
+
+See also: [AbortActionResult](#interface-abortactionresult)
 
 <details>
 
@@ -2310,6 +2260,172 @@ Argument Details
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: asArray
+
+```ts
+export function asArray(val: Buffer | string | number[], encoding?: BufferEncoding): number[] 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asBsvSdkScript
+
+```ts
+export function asBsvSdkScript(script: string | Buffer | Script): Script 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asBsvSdkTx
+
+```ts
+export function asBsvSdkTx(tx: string | Buffer | Transaction): Transaction 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asBuffer
+
+```ts
+export function asBuffer(val: Buffer | string | number[], encoding?: BufferEncoding): Buffer 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: asString
+
+```ts
+export function asString(val: Buffer | string, encoding?: BufferEncoding): string 
+```
+
+<details>
+
+<summary>Function asString Details</summary>
+
+Argument Details
+
++ **val**
+  + Value to convert to encoded string if not already a string.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: buildTransactionForSignActionUnlocking
+
+Constructs a
+
+```ts
+export async function buildTransactionForSignActionUnlocking(ninjaInputs: Record<string, CreateActionInput>, createResult: DojoCreateTransactionResultApi): Promise<Transaction> 
+```
+
+See also: [CreateActionInput](#interface-createactioninput), [DojoCreateTransactionResultApi](#interface-dojocreatetransactionresultapi)
+
+<details>
+
+<summary>Function buildTransactionForSignActionUnlocking Details</summary>
+
+Argument Details
+
++ **ninjaInputs**
+  + Ninja inputs as passed to createAction
++ **createResult**
+  + Create transaction results returned by createAction when signActionRequires is true.
++ **changeKeys**
+  + Dummy keys can be used to create a transaction with which to generate Ninja input lockingScripts.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: connectToSubstrate
+
+```ts
+export default async function connectToSubstrate(): Promise<Communicator> 
+```
+
+See also: [Communicator](#class-communicator)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: convertMerklePathToProof
+
+Convert a MerklePath to a single BRC-10 proof
+
+```ts
+export function convertMerklePathToProof(txid: string, mp: MerklePath): TscMerkleProofApi 
+```
+
+See also: [TscMerkleProofApi](#interface-tscmerkleproofapi)
+
+<details>
+
+<summary>Function convertMerklePathToProof Details</summary>
+
+Returns
+
+transaction proof in BRC-10 string format.
+
+Argument Details
+
++ **txid**
+  + the txid in `mp` for which a BRC-10 proof is needed
++ **mp**
+  + MerklePath
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: convertProofToMerklePath
+
+Convert a single BRC-10 proof to a MerklePath
+
+```ts
+export function convertProofToMerklePath(txid: string, proof: TscMerkleProofApi): MerklePath 
+```
+
+See also: [TscMerkleProofApi](#interface-tscmerkleproofapi)
+
+<details>
+
+<summary>Function convertProofToMerklePath Details</summary>
+
+Returns
+
+corresponding MerklePath
+
+Argument Details
+
++ **txid**
+  + transaction hash as big endian hex string
++ **proof**
+  + transaction proof in BRC-10 string format.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: convertProofToMerklePathWithLookup
+
+```ts
+export async function convertProofToMerklePathWithLookup(txid: string, proof: TscMerkleProofApi, lookupHeight: (targetType: "hash" | "header" | "merkleRoot" | "height", target: string | Buffer) => Promise<number>): Promise<MerklePath> 
+```
+
+See also: [TscMerkleProofApi](#interface-tscmerkleproofapi)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: createAction
 
 Creates and broadcasts a BitCoin transaction with the provided inputs and outputs.
@@ -2317,6 +2433,8 @@ Creates and broadcasts a BitCoin transaction with the provided inputs and output
 ```ts
 export async function createAction(args: CreateActionParams): Promise<CreateActionResult> 
 ```
+
+See also: [CreateActionParams](#interface-createactionparams), [CreateActionResult](#interface-createactionresult)
 
 <details>
 
@@ -2336,11 +2454,35 @@ Argument Details
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Function: validateCreateActionOptions
+#### Function: createCertificate
+
+Creates a signed certificate
 
 ```ts
-export function validateCreateActionOptions(options?: CreateActionOptions): CreateActionOptions 
+export async function createCertificate(args: {
+    certificateType: string;
+    fieldObject: Record<string, string>;
+    certifierUrl: string;
+    certifierPublicKey: string;
+}): Promise<CreateCertificateResult> 
 ```
+
+See also: [CreateCertificateResult](#interface-createcertificateresult)
+
+<details>
+
+<summary>Function createCertificate Details</summary>
+
+Returns
+
+A signed certificate
+
+Argument Details
+
++ **args**
+  + All parameters for this function are provided in an object
+
+</details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -2360,6 +2502,8 @@ export async function createHmac(args: {
 }): Promise<Uint8Array> 
 ```
 
+See also: [ProtocolID](#type-protocolid)
+
 <details>
 
 <summary>Function createHmac Details</summary>
@@ -2372,37 +2516,6 @@ Argument Details
 
 + **args**
   + All parameters are passed in an object.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: createCertificate
-
-Creates a signed certificate
-
-```ts
-export async function createCertificate(args: {
-    certificateType: string;
-    fieldObject: Record<string, string>;
-    certifierUrl: string;
-    certifierPublicKey: string;
-}): Promise<CreateCertificateResult> 
-```
-
-<details>
-
-<summary>Function createCertificate Details</summary>
-
-Returns
-
-A signed certificate
-
-Argument Details
-
-+ **args**
-  + All parameters for this function are provided in an object
 
 </details>
 
@@ -2425,6 +2538,8 @@ export async function createSignature(args: {
     privileged?: boolean;
 }): Promise<Uint8Array> 
 ```
+
+See also: [ProtocolID](#type-protocolid)
 
 <details>
 
@@ -2462,9 +2577,48 @@ export async function decrypt(args: {
 }): Promise<string | Uint8Array> 
 ```
 
+See also: [ProtocolID](#type-protocolid)
+
 <details>
 
 <summary>Function decrypt Details</summary>
+
+Returns
+
+The decrypted plaintext.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: decryptAsArray
+
+Decrypts data with a key belonging to the user.
+The same protocolID, keyID, counterparty and privileged parameters that were used during encryption
+must be used to successfully decrypt.
+
+```ts
+export async function decryptAsArray(args: {
+    ciphertext: string | Uint8Array;
+    protocolID: ProtocolID;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+}): Promise<Uint8Array> 
+```
+
+See also: [ProtocolID](#type-protocolid)
+
+<details>
+
+<summary>Function decryptAsArray Details</summary>
 
 Returns
 
@@ -2497,6 +2651,8 @@ export async function decryptAsString(args: {
 }): Promise<string> 
 ```
 
+See also: [ProtocolID](#type-protocolid)
+
 <details>
 
 <summary>Function decryptAsString Details</summary>
@@ -2504,41 +2660,6 @@ export async function decryptAsString(args: {
 Returns
 
 The decrypted plaintext TextDecoder decoded to string.
-
-Argument Details
-
-+ **args**
-  + All parameters are passed in an object.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: decryptAsArray
-
-Decrypts data with a key belonging to the user.
-The same protocolID, keyID, counterparty and privileged parameters that were used during encryption
-must be used to successfully decrypt.
-
-```ts
-export async function decryptAsArray(args: {
-    ciphertext: string | Uint8Array;
-    protocolID: ProtocolID;
-    keyID: string;
-    description?: string;
-    counterparty?: string;
-    privileged?: boolean;
-}): Promise<Uint8Array> 
-```
-
-<details>
-
-<summary>Function decryptAsArray Details</summary>
-
-Returns
-
-The decrypted plaintext.
 
 Argument Details
 
@@ -2600,28 +2721,63 @@ Argument Details
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Function: getPreferredCurrency
+#### Function: doubleSha256BE
 
-Returns the user's preferred currency for displaying within apps
+Calculate the SHA256 hash of the SHA256 hash of a Buffer.
 
 ```ts
-export async function getPreferredCurrency(args: {
-    description?: string;
-}): Promise<string> 
+export function doubleSha256BE(data: string | Buffer, encoding?: BufferEncoding): Buffer {
+    return doubleSha256HashLE(data, encoding).reverse();
+}
 ```
+
+See also: [doubleSha256HashLE](#function-doublesha256hashle)
 
 <details>
 
-<summary>Function getPreferredCurrency Details</summary>
+<summary>Function doubleSha256BE Details</summary>
 
 Returns
 
-The user's preferred currency
+reversed (big-endian) double sha256 hash of data, byte 31 of hash first.
 
 Argument Details
 
-+ **args**
-  + All parameters are passed in an object.
++ **data**
+  + is Buffer or hex encoded string
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: doubleSha256HashLE
+
+Calculate the SHA256 hash of the SHA256 hash of a Buffer.
+
+```ts
+export function doubleSha256HashLE(data: string | Buffer, encoding?: BufferEncoding): Buffer {
+    const msg = asArray(data, encoding);
+    const first = new Hash.SHA256().update(msg).digest();
+    const second = new Hash.SHA256().update(first).digest();
+    return asBuffer(second);
+}
+```
+
+See also: [asArray](#function-asarray), [asBuffer](#function-asbuffer)
+
+<details>
+
+<summary>Function doubleSha256HashLE Details</summary>
+
+Returns
+
+double sha256 hash of buffer contents, byte 0 of hash first.
+
+Argument Details
+
++ **data**
+  + is Buffer or hex encoded string
 
 </details>
 
@@ -2646,6 +2802,8 @@ export async function encrypt(args: {
 }): Promise<string | Uint8Array> 
 ```
 
+See also: [ProtocolID](#type-protocolid)
+
 <details>
 
 <summary>Function encrypt Details</summary>
@@ -2653,41 +2811,6 @@ export async function encrypt(args: {
 Returns
 
 The encrypted ciphertext.
-
-Argument Details
-
-+ **args**
-  + All parameters are passed in an object.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: encryptAsString
-
-Encrypts data with a key belonging to the user.
-If a counterparty is provided, also allows the counterparty to decrypt the data.
-The same protocolID, keyID, counterparty and privileged parameters must be used when decrypting.
-
-```ts
-export async function encryptAsString(args: {
-    plaintext: string | Uint8Array;
-    protocolID: string;
-    keyID: string;
-    description?: string;
-    counterparty?: string;
-    privileged?: boolean;
-}): Promise<string> 
-```
-
-<details>
-
-<summary>Function encryptAsString Details</summary>
-
-Returns
-
-The encrypted ciphertext data as base64 encoded string.
 
 Argument Details
 
@@ -2734,6 +2857,41 @@ Argument Details
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: encryptAsString
+
+Encrypts data with a key belonging to the user.
+If a counterparty is provided, also allows the counterparty to decrypt the data.
+The same protocolID, keyID, counterparty and privileged parameters must be used when decrypting.
+
+```ts
+export async function encryptAsString(args: {
+    plaintext: string | Uint8Array;
+    protocolID: string;
+    keyID: string;
+    description?: string;
+    counterparty?: string;
+    privileged?: boolean;
+}): Promise<string> 
+```
+
+<details>
+
+<summary>Function encryptAsString Details</summary>
+
+Returns
+
+The encrypted ciphertext data as base64 encoded string.
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: getCertificates
 
 Returns found certificates
@@ -2744,6 +2902,8 @@ export async function getCertificates(args: {
     types: Record<string, string[]>;
 }): Promise<CreateCertificateResult[]> 
 ```
+
+See also: [CreateCertificateResult](#interface-createcertificateresult)
 
 <details>
 
@@ -2757,6 +2917,45 @@ Argument Details
 
 + **obj**
   + All parameters for this function are provided in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: getEnvelopeForTransaction
+
+Returns an Everett Style envelope for the given txid.
+
+A transaction envelope is a tree of inputs where all the leaves are proven transactions.
+The trivial case is a single leaf: the envelope for a proven transaction is the rawTx and its proof.
+
+Each branching level of the tree corresponds to an unmined transaction without a proof,
+in which case the envelope is:
+- rawTx
+- mapiResponses from transaction processors (optional)
+- inputs object where keys are this transaction's input txids and values are recursive envelope for those txids.
+
+```ts
+export async function getEnvelopeForTransaction(args: {
+    txid: string;
+}): Promise<EnvelopeApi | undefined> 
+```
+
+See also: [EnvelopeApi](#interface-envelopeapi)
+
+<details>
+
+<summary>Function getEnvelopeForTransaction Details</summary>
+
+Returns
+
+Undefined if the txid does not exist or an envelope can't be generated.
+
+Argument Details
+
++ **args**
+  + All parameters are given in an object
 
 </details>
 
@@ -2784,32 +2983,13 @@ The current chain height
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Function: getVersion
-
-Returns the current version of the kernel
-
-```ts
-export async function getVersion(): Promise<string> 
-```
-
-<details>
-
-<summary>Function getVersion Details</summary>
-
-Returns
-
-The current kernel version (e.g. "0.3.49")
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
 #### Function: getInfo
 
 ```ts
 export async function getInfo(args?: GetInfoParams): Promise<GetInfoResult> 
 ```
+
+See also: [GetInfoParams](#interface-getinfoparams), [GetInfoResult](#interface-getinforesult)
 
 <details>
 
@@ -2871,6 +3051,34 @@ Argument Details
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: getPreferredCurrency
+
+Returns the user's preferred currency for displaying within apps
+
+```ts
+export async function getPreferredCurrency(args: {
+    description?: string;
+}): Promise<string> 
+```
+
+<details>
+
+<summary>Function getPreferredCurrency Details</summary>
+
+Returns
+
+The user's preferred currency
+
+Argument Details
+
++ **args**
+  + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: getPublicKey
 
 Returns the public key. If identityKey is specified, returns the current user's identity key. If a counterparty is specified, derives a public key for the counterparty.
@@ -2886,6 +3094,8 @@ export async function getPublicKey(args: {
     forSelf?: boolean;
 }): Promise<string> 
 ```
+
+See also: [ProtocolID](#type-protocolid)
 
 <details>
 
@@ -2905,39 +3115,11 @@ Argument Details
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Function: getEnvelopeForTransaction
-
-Returns an Everett Style envelope for the given txid.
-
-A transaction envelope is a tree of inputs where all the leaves are proven transactions.
-The trivial case is a single leaf: the envelope for a proven transaction is the rawTx and its proof.
-
-Each branching level of the tree corresponds to an unmined transaction without a proof,
-in which case the envelope is:
-- rawTx
-- mapiResponses from transaction processors (optional)
-- inputs object where keys are this transaction's input txids and values are recursive envelope for those txids.
+#### Function: getRandomID
 
 ```ts
-export async function getEnvelopeForTransaction(args: {
-    txid: string;
-}): Promise<EnvelopeApi | undefined> 
+export default function getRandomID(): string 
 ```
-
-<details>
-
-<summary>Function getEnvelopeForTransaction Details</summary>
-
-Returns
-
-Undefined if the txid does not exist or an envelope can't be generated.
-
-Argument Details
-
-+ **args**
-  + All parameters are given in an object
-
-</details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -2963,6 +3145,8 @@ export async function getTransactionOutputs(args: {
 }): Promise<GetTransactionOutputResult[]> 
 ```
 
+See also: [GetTransactionOutputResult](#interface-gettransactionoutputresult)
+
 <details>
 
 <summary>Function getTransactionOutputs Details</summary>
@@ -2975,6 +3159,27 @@ Argument Details
 
 + **args**
   + All parameters are given in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: getVersion
+
+Returns the current version of the kernel
+
+```ts
+export async function getVersion(): Promise<string> 
+```
+
+<details>
+
+<summary>Function getVersion Details</summary>
+
+Returns
+
+The current kernel version (e.g. "0.3.49")
 
 </details>
 
@@ -3018,6 +3223,8 @@ export async function listActions(args: {
 }): Promise<ListActionsResult> 
 ```
 
+See also: [ListActionsResult](#interface-listactionsresult)
+
 <details>
 
 <summary>Function listActions Details</summary>
@@ -3036,6 +3243,41 @@ Argument Details
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: makeHttpRequest
+
+```ts
+export default async function makeHttpRequest<R>(routeURL: string, requestInput: RequestInit = {}): Promise<R> 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: promiseWithTimeout
+
+Provides a timedout promise.
+
+```ts
+export default async function promiseWithTimeout<T>(obj: {
+    timeout: number;
+    promise: Promise<T>;
+    error?: Error;
+}): Promise<T> 
+```
+
+<details>
+
+<summary>Function promiseWithTimeout Details</summary>
+
+Argument Details
+
++ **obj**
+  + All parameters for this function are provided in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: proveCertificate
 
 Creates certificate proof specifically for verifier
@@ -3047,6 +3289,8 @@ export async function proveCertificate(args: {
     verifierPublicIdentityKey: string;
 }): Promise<ProveCertificateResult> 
 ```
+
+See also: [CertificateApi](#interface-certificateapi), [ProveCertificateResult](#interface-provecertificateresult)
 
 <details>
 
@@ -3087,6 +3331,26 @@ Resolves after group permissions are completed by the user.
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: resolveOptionalEnvelopeEvidence
+
+Convert OptionalEnvelopeEvidenceApi to EnvelopeEvidenceApi.
+
+Missing data (rawTx / proofs) can be looked up if lookupMissing is provided.
+
+Any mising data will result in an Error throw.
+
+```ts
+export async function resolveOptionalEnvelopeEvidence(e: OptionalEnvelopeEvidenceApi, lookupMissing?: (txid: string) => Promise<{
+    rawTx?: string;
+    proof?: TscMerkleProofApi;
+}>): Promise<EnvelopeEvidenceApi> 
+```
+
+See also: [EnvelopeEvidenceApi](#interface-envelopeevidenceapi), [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi), [TscMerkleProofApi](#interface-tscmerkleproofapi)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: revealKeyLinkage
 
 Reveals the linkage between a key held by this user and a key held by another user.
@@ -3107,6 +3371,8 @@ export async function revealKeyLinkage(args: {
     privileged?: boolean;
 }): Promise<CounterpartyKeyLinkageResult | SpecificKeyLinkageResult> 
 ```
+
+See also: [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult), [ProtocolID](#type-protocolid), [SpecificKeyLinkageResult](#interface-specifickeylinkageresult)
 
 <details>
 
@@ -3143,6 +3409,8 @@ export async function revealKeyLinkageCounterparty(args: {
     privileged?: boolean;
 }): Promise<CounterpartyKeyLinkageResult> 
 ```
+
+See also: [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult), [ProtocolID](#type-protocolid)
 
 <details>
 
@@ -3181,6 +3449,8 @@ export async function revealKeyLinkageSpecific(args: {
 }): Promise<SpecificKeyLinkageResult> 
 ```
 
+See also: [ProtocolID](#type-protocolid), [SpecificKeyLinkageResult](#interface-specifickeylinkageresult)
+
 <details>
 
 <summary>Function revealKeyLinkageSpecific Details</summary>
@@ -3193,6 +3463,33 @@ Argument Details
 
 + **args**
   + All parameters are passed in an object.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: sha256Hash
+
+Calculate the SHA256 hash of a Buffer.
+
+```ts
+export function sha256Hash(buffer: Buffer): Buffer {
+    const msg = asArray(buffer);
+    const first = new Hash.SHA256().update(msg).digest();
+    return asBuffer(first);
+}
+```
+
+See also: [asArray](#function-asarray), [asBuffer](#function-asbuffer)
+
+<details>
+
+<summary>Function sha256Hash Details</summary>
+
+Returns
+
+sha256 hash of buffer contents.
 
 </details>
 
@@ -3212,6 +3509,8 @@ export async function signAction(args: {
 }): Promise<SignActionResult> 
 ```
 
+See also: [CreateActionInput](#interface-createactioninput), [DojoCreateTransactionResultApi](#interface-dojocreatetransactionresultapi), [SignActionResult](#interface-signactionresult)
+
 <details>
 
 <summary>Function signAction Details</summary>
@@ -3224,6 +3523,62 @@ Argument Details
 
 + **args**
   + All parameters for this function are provided in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: stampLog
+
+If a log is being kept, add a time stamped line.
+
+```ts
+export function stampLog(log: string | undefined, lineToAdd: string): string | undefined 
+```
+
+<details>
+
+<summary>Function stampLog Details</summary>
+
+Returns
+
+undefined or log extended by time stamped `lineToAdd` and new line.
+
+Argument Details
+
++ **log**
+  + Optional time stamped log to extend
++ **lineToAdd**
+  + Content to add to line.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: stampLogFormat
+
+Replaces individual timestamps with delta msecs.
+Looks for two network crossings and adjusts clock for clock skew if found.
+Assumes log built by repeated calls to `stampLog`
+
+```ts
+export function stampLogFormat(log?: string): string 
+```
+
+<details>
+
+<summary>Function stampLogFormat Details</summary>
+
+Returns
+
+reformated multi-line event log
+
+Argument Details
+
++ **log**
+  + Each logged event starts with ISO time stamp, space, rest of line, terminated by `\n`.
 
 </details>
 
@@ -3246,6 +3601,8 @@ export async function submitDirectTransaction(args: {
 }): Promise<SubmitDirectTransactionResult> 
 ```
 
+See also: [SubmitDirectTransaction](#interface-submitdirecttransaction), [SubmitDirectTransactionResult](#interface-submitdirecttransactionresult)
+
 <details>
 
 <summary>Function submitDirectTransaction Details</summary>
@@ -3258,6 +3615,69 @@ Argument Details
 
 + **args**
   + All parameters for this function are provided in an object
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: toBEEFfromEnvelope
+
+Converts a BRC-8 Everett-style Transaction Envelope 
+to a
+
+```ts
+export function toBEEFfromEnvelope(e: EnvelopeEvidenceApi): {
+    tx: Transaction;
+    beef: number[];
+} 
+```
+
+See also: [EnvelopeEvidenceApi](#interface-envelopeevidenceapi)
+
+<details>
+
+<summary>Function toBEEFfromEnvelope Details</summary>
+
+Returns
+
+tx: Transaction containing required merklePath and sourceTransaction values
+
+beef: tx.toBEEF()
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: toEnvelopeFromBEEF
+
+BEEF standard: BRC-62: Background Evaluation Extended Format (BEEF) Transactions
+https://github.com/bitcoin-sv/BRCs/blob/master/transactions/0062.md
+
+BUMP standard: BRC-74: BSV Unified Merkle Path (BUMP) Format
+https://github.com/bitcoin-sv/BRCs/blob/master/transactions/0074.md
+
+```ts
+export function toEnvelopeFromBEEF(input: Transaction | number[]): EnvelopeEvidenceApi 
+```
+
+See also: [EnvelopeEvidenceApi](#interface-envelopeevidenceapi)
+
+<details>
+
+<summary>Function toEnvelopeFromBEEF Details</summary>
+
+Returns
+
+Everett-style Envelope for the transaction.
+
+Argument Details
+
++ **input**
+  + Either a `Transaction` with sourceTransaction and merklePath,
+recursively, on inputs,
+or a serialized BEEF of the transaction.
 
 </details>
 
@@ -3294,6 +3714,28 @@ Argument Details
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: validateCreateActionOptions
+
+```ts
+export function validateCreateActionOptions(options?: CreateActionOptions): CreateActionOptions 
+```
+
+See also: [CreateActionOptions](#interface-createactionoptions)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: validateOptionalEnvelopeEvidence
+
+```ts
+export function validateOptionalEnvelopeEvidence(e: OptionalEnvelopeEvidenceApi): EnvelopeEvidenceApi 
+```
+
+See also: [EnvelopeEvidenceApi](#interface-envelopeevidenceapi), [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: verifyHmac
 
 Verifies that a SHA-256 HMAC was created with a key that belongs to the user.
@@ -3309,6 +3751,8 @@ export async function verifyHmac(args: {
     privileged?: boolean;
 }): Promise<boolean> 
 ```
+
+See also: [ProtocolID](#type-protocolid)
 
 <details>
 
@@ -3345,6 +3789,8 @@ export async function verifySignature(args: {
 }): Promise<boolean> 
 ```
 
+See also: [ProtocolID](#type-protocolid)
+
 <details>
 
 <summary>Function verifySignature Details</summary>
@@ -3359,6 +3805,15 @@ Argument Details
   + All parameters are passed in an object.
 
 </details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: verifyTruthy
+
+```ts
+export function verifyTruthy<T>(v: T | null | undefined, description?: string): T 
+```
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -3384,332 +3839,6 @@ Always returns true
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Function: asBuffer
-
-```ts
-export function asBuffer(val: Buffer | string | number[], encoding?: BufferEncoding): Buffer 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: asString
-
-```ts
-export function asString(val: Buffer | string, encoding?: BufferEncoding): string 
-```
-
-<details>
-
-<summary>Function asString Details</summary>
-
-Argument Details
-
-+ **val**
-  + Value to convert to encoded string if not already a string.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: asArray
-
-```ts
-export function asArray(val: Buffer | string | number[], encoding?: BufferEncoding): number[] 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: sha256Hash
-
-Calculate the SHA256 hash of a Buffer.
-
-```ts
-export function sha256Hash(buffer: Buffer): Buffer {
-    const msg = asArray(buffer);
-    const first = new Hash.SHA256().update(msg).digest();
-    return asBuffer(first);
-}
-```
-
-<details>
-
-<summary>Function sha256Hash Details</summary>
-
-Returns
-
-sha256 hash of buffer contents.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: doubleSha256HashLE
-
-Calculate the SHA256 hash of the SHA256 hash of a Buffer.
-
-```ts
-export function doubleSha256HashLE(data: string | Buffer, encoding?: BufferEncoding): Buffer {
-    const msg = asArray(data, encoding);
-    const first = new Hash.SHA256().update(msg).digest();
-    const second = new Hash.SHA256().update(first).digest();
-    return asBuffer(second);
-}
-```
-
-<details>
-
-<summary>Function doubleSha256HashLE Details</summary>
-
-Returns
-
-double sha256 hash of buffer contents, byte 0 of hash first.
-
-Argument Details
-
-+ **data**
-  + is Buffer or hex encoded string
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: doubleSha256BE
-
-Calculate the SHA256 hash of the SHA256 hash of a Buffer.
-
-```ts
-export function doubleSha256BE(data: string | Buffer, encoding?: BufferEncoding): Buffer {
-    return doubleSha256HashLE(data, encoding).reverse();
-}
-```
-
-<details>
-
-<summary>Function doubleSha256BE Details</summary>
-
-Returns
-
-reversed (big-endian) double sha256 hash of data, byte 31 of hash first.
-
-Argument Details
-
-+ **data**
-  + is Buffer or hex encoded string
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: verifyTruthy
-
-```ts
-export function verifyTruthy<T>(v: T | null | undefined, description?: string): T 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: asBsvSdkScript
-
-```ts
-export function asBsvSdkScript(script: string | Buffer | Script): Script 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: asBsvSdkTx
-
-```ts
-export function asBsvSdkTx(tx: string | Buffer | Transaction): Transaction 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: buildTransactionForSignActionUnlocking
-
-Constructs a
-
-```ts
-export async function buildTransactionForSignActionUnlocking(ninjaInputs: Record<string, CreateActionInput>, createResult: DojoCreateTransactionResultApi): Promise<Transaction> 
-```
-
-<details>
-
-<summary>Function buildTransactionForSignActionUnlocking Details</summary>
-
-Argument Details
-
-+ **ninjaInputs**
-  + Ninja inputs as passed to createAction
-+ **createResult**
-  + Create transaction results returned by createAction when signActionRequires is true.
-+ **changeKeys**
-  + Dummy keys can be used to create a transaction with which to generate Ninja input lockingScripts.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: toEnvelopeFromBEEF
-
-BEEF standard: BRC-62: Background Evaluation Extended Format (BEEF) Transactions
-https://github.com/bitcoin-sv/BRCs/blob/master/transactions/0062.md
-
-BUMP standard: BRC-74: BSV Unified Merkle Path (BUMP) Format
-https://github.com/bitcoin-sv/BRCs/blob/master/transactions/0074.md
-
-```ts
-export function toEnvelopeFromBEEF(input: Transaction | number[]): EnvelopeEvidenceApi 
-```
-
-<details>
-
-<summary>Function toEnvelopeFromBEEF Details</summary>
-
-Returns
-
-Everett-style Envelope for the transaction.
-
-Argument Details
-
-+ **input**
-  + Either a `Transaction` with sourceTransaction and merklePath,
-recursively, on inputs,
-or a serialized BEEF of the transaction.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: toBEEFfromEnvelope
-
-Converts a BRC-8 Everett-style Transaction Envelope 
-to a
-
-```ts
-export function toBEEFfromEnvelope(e: EnvelopeEvidenceApi): {
-    tx: Transaction;
-    beef: number[];
-} 
-```
-
-<details>
-
-<summary>Function toBEEFfromEnvelope Details</summary>
-
-Returns
-
-tx: Transaction containing required merklePath and sourceTransaction values
-
-beef: tx.toBEEF()
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: convertMerklePathToProof
-
-Convert a MerklePath to a single BRC-10 proof
-
-```ts
-export function convertMerklePathToProof(txid: string, mp: MerklePath): TscMerkleProofApi 
-```
-
-<details>
-
-<summary>Function convertMerklePathToProof Details</summary>
-
-Returns
-
-transaction proof in BRC-10 string format.
-
-Argument Details
-
-+ **txid**
-  + the txid in `mp` for which a BRC-10 proof is needed
-+ **mp**
-  + MerklePath
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: convertProofToMerklePathWithLookup
-
-```ts
-export async function convertProofToMerklePathWithLookup(txid: string, proof: TscMerkleProofApi, lookupHeight: (targetType: "hash" | "header" | "merkleRoot" | "height", target: string | Buffer) => Promise<number>): Promise<MerklePath> 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: convertProofToMerklePath
-
-Convert a single BRC-10 proof to a MerklePath
-
-```ts
-export function convertProofToMerklePath(txid: string, proof: TscMerkleProofApi): MerklePath 
-```
-
-<details>
-
-<summary>Function convertProofToMerklePath Details</summary>
-
-Returns
-
-corresponding MerklePath
-
-Argument Details
-
-+ **txid**
-  + transaction hash as big endian hex string
-+ **proof**
-  + transaction proof in BRC-10 string format.
-
-</details>
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: resolveOptionalEnvelopeEvidence
-
-Convert OptionalEnvelopeEvidenceApi to EnvelopeEvidenceApi.
-
-Missing data (rawTx / proofs) can be looked up if lookupMissing is provided.
-
-Any mising data will result in an Error throw.
-
-```ts
-export async function resolveOptionalEnvelopeEvidence(e: OptionalEnvelopeEvidenceApi, lookupMissing?: (txid: string) => Promise<{
-    rawTx?: string;
-    proof?: TscMerkleProofApi;
-}>): Promise<EnvelopeEvidenceApi> 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Function: validateOptionalEnvelopeEvidence
-
-```ts
-export function validateOptionalEnvelopeEvidence(e: OptionalEnvelopeEvidenceApi): EnvelopeEvidenceApi 
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
 ### Types
 
 | |
@@ -3724,6 +3853,24 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 ---
 
+#### Type: Chain
+
+```ts
+export type Chain = "main" | "test"
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Type: DojoProvidedByApi
+
+```ts
+export type DojoProvidedByApi = "you" | "dojo" | "you-and-dojo"
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Type: ProtocolID
 
 ```ts
@@ -3751,24 +3898,6 @@ Controls level of trust for inputs from user's own transactions.
 
 ```ts
 export type TrustSelf = "known"
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Type: DojoProvidedByApi
-
-```ts
-export type DojoProvidedByApi = "you" | "dojo" | "you-and-dojo"
-```
-
-Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
-
----
-#### Type: Chain
-
-```ts
-export type Chain = "main" | "test"
 ```
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
@@ -3818,6 +3947,8 @@ BabbageSDK = {
     waitForAuthentication,
 }
 ```
+
+See also: [abortAction](#function-abortaction), [createAction](#function-createaction), [createCertificate](#function-createcertificate), [createHmac](#function-createhmac), [createSignature](#function-createsignature), [decrypt](#function-decrypt), [decryptAsArray](#function-decryptasarray), [decryptAsString](#function-decryptasstring), [discoverByAttributes](#function-discoverbyattributes), [discoverByIdentityKey](#function-discoverbyidentitykey), [encrypt](#function-encrypt), [encryptAsArray](#function-encryptasarray), [encryptAsString](#function-encryptasstring), [getCertificates](#function-getcertificates), [getEnvelopeForTransaction](#function-getenvelopefortransaction), [getHeight](#function-getheight), [getInfo](#function-getinfo), [getMerkleRootForHeight](#function-getmerklerootforheight), [getNetwork](#function-getnetwork), [getPreferredCurrency](#function-getpreferredcurrency), [getPublicKey](#function-getpublickey), [getTransactionOutputs](#function-gettransactionoutputs), [getVersion](#function-getversion), [isAuthenticated](#function-isauthenticated), [listActions](#function-listactions), [proveCertificate](#function-provecertificate), [requestGroupPermission](#function-requestgrouppermission), [revealKeyLinkage](#function-revealkeylinkage), [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty), [revealKeyLinkageSpecific](#function-revealkeylinkagespecific), [signAction](#function-signaction), [submitDirectTransaction](#function-submitdirecttransaction), [unbasketOutput](#function-unbasketoutput), [verifyHmac](#function-verifyhmac), [verifySignature](#function-verifysignature), [waitForAuthentication](#function-waitforauthentication)
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
