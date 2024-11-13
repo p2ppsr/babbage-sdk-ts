@@ -69,6 +69,7 @@ export { toBEEFfromEnvelope, convertMerklePathToProof, convertProofToMerklePath,
 
 export * from './types'
 export * as Helpers from './utils/Helpers'
+export * as sdk from './sdk/index'
 
 export const BabbageSDK = {
   abortAction,
