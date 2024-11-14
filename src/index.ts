@@ -66,6 +66,8 @@ import { buildTransactionForSignActionUnlocking } from './utils/buildTransaction
 export { buildTransactionForSignActionUnlocking }
 import { toBEEFfromEnvelope, convertMerklePathToProof, convertProofToMerklePath, convertProofToMerklePathWithLookup, validateOptionalEnvelopeEvidence, resolveOptionalEnvelopeEvidence } from './utils/toBEEF'
 export { toBEEFfromEnvelope, convertMerklePathToProof, convertProofToMerklePath, convertProofToMerklePathWithLookup, validateOptionalEnvelopeEvidence, resolveOptionalEnvelopeEvidence }
+import { WalletError, WERR_BAD_REQUEST, WERR_INTERNAL, WERR_INVALID_PARAMETER, WERR_MISSING_PARAMETER, WERR_NETWORK_CHAIN, WERR_NOT_IMPLEMENTED, WERR_UNAUTHORIZED } from './sdk/index'
+export { WalletError, WERR_BAD_REQUEST, WERR_INTERNAL, WERR_INVALID_PARAMETER, WERR_MISSING_PARAMETER, WERR_NETWORK_CHAIN, WERR_NOT_IMPLEMENTED, WERR_UNAUTHORIZED }
 
 export * from './types'
 export * as Helpers from './utils/Helpers'

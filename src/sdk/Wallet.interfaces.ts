@@ -266,16 +266,15 @@ export interface WalletActionInput {
 
 export interface WalletActionOutput {
   satoshis: SatoshiValue
-  lockingScript?: HexString
   spendable: boolean
-  customInstructions?: string
-
-  tags: OutputTagStringUnder300Characters[]
-
   outputIndex: PositiveIntegerOrZero
   outputDescription: DescriptionString5to50Characters
 
+  lockingScript?: HexString
+  customInstructions?: string
+
   basket: BasketStringUnder300Characters
+  tags: OutputTagStringUnder300Characters[]
 }
 
 export interface WalletOutput {
