@@ -280,7 +280,7 @@ export interface WalletActionOutput {
 export interface WalletOutput {
   satoshis: SatoshiValue
   lockingScript?: HexString
-  spendable: true
+  spendable: boolean
   customInstructions?: string
 
   tags?: OutputTagStringUnder300Characters[]
