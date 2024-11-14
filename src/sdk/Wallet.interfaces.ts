@@ -278,15 +278,15 @@ export interface WalletActionOutput {
 }
 
 export interface WalletOutput {
+  outpoint: OutpointString
   satoshis: SatoshiValue
-  lockingScript?: HexString
   spendable: boolean
+
+  basket?: string
   customInstructions?: string
+  lockingScript?: HexString
 
   tags?: OutputTagStringUnder300Characters[]
-
-  outpoint: OutpointString
-
   labels?: LabelStringUnder300Characters[]
 }
 
@@ -374,15 +374,28 @@ export interface InternalizeActionResult {
    * @param {PositiveIntegerDefault10Max10000} [limit] - Optional limit on the number of outputs to return.
    * @param {PositiveIntegerOrZero} [offset] - Number of outputs to skip before starting to return results.
    * @param {BooleanDefaultTrue} [seekPermission] — Whether to seek permission from the user for this operation if required. Default true, will return an error rather than proceed if set to false.
+   * 
+   * Extensions:
+   * @param {BooleanDefaultFalse} [includeBasket] - Whether the basket associated with the output should be returned.
+   * @param {BooleanDefaultFalse} [includeSpent] - Whether to include spent outputs, that is outputs with `spendable` = false.
+   * @param {BooleanDefaultFalse} [includeLockingScript] - Whether each output includes the `lockingscript`. Equivalent to `include` = `'locking scripts'`.
+   * @param {BooleanDefaultFalse} [includeTransaction] - Whether to include BEEF result with just raw transactions. Equivalent to `include` = `'entire transactions'`
+   * @param {BooleanDefaultFalse} [includeBEEF] - Whether to include BEEF result with raw transactions and transaction proof data.
+   * 
  */
 export interface ListOutputsArgs {
-  basket: BasketStringUnder300Characters
+  basket?: BasketStringUnder300Characters
   tags?: OutputTagStringUnder300Characters[]
   tagQueryMode?: 'all' | 'any'
-  include?: 'locking scripts' | 'entire transactions'
+  includeSpent?: BooleanDefaultFalse
   includeCustomInstructions?: BooleanDefaultFalse
+  includeBasket?: BooleanDefaultFalse
   includeTags?: BooleanDefaultFalse
   includeLabels?: BooleanDefaultFalse
+  include?: 'locking scripts' | 'entire transactions'
+  includeLockingScript?: BooleanDefaultFalse
+  includeTransaction?: BooleanDefaultFalse
+  includeBEEF?: BooleanDefaultFalse
   limit?: PositiveIntegerDefault10Max10000
   offset?: PositiveIntegerOrZero
   seekPermission?: BooleanDefaultTrue
