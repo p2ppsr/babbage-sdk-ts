@@ -587,6 +587,10 @@ export interface CreateActionOptions {
     * without creating a new transaction.
     */
    sendWith?: string[]
+   /**
+    * optional. When set to false, the wallet will avoid randomizing the order of outputs within the transaction.
+    */
+   randomizeOutputs?: boolean
 }
 
 export interface CreateActionParams {

@@ -155,18 +155,18 @@ export interface CreateActionResult {
 /**
    * @param {DescriptionString5to50Characters} description - A human-readable description of the action represented by this transaction.
    * @param {BEEF} [inputBEEF] - BEEF data associated with the set of input transactions from which UTXOs will be consumed.
-   * @param {Array<Object>} [inputs] - An optional array of input objects used in the transaction.
-   * @param {Array<Object>} [outputs] - An optional array of output objects for the transaction.
+   * @param {CreateActionInput[]} [inputs] - An optional array of input objects used in the transaction.
+   * @param {CreateActionOutput[]} [outputs] - An optional array of output objects for the transaction.
    * @param {PositiveIntegerOrZero} [lockTime] - Optional lock time for the transaction.
    * @param {PositiveInteger} [version] - Optional transaction version specifier.
    * @param {LabelStringUnder300Characters[]} [labels] - Optional labels providing additional categorization for the transaction.
-   * @param {Object} [options] - Optional settings modifying transaction processing behavior.
+   * @param {CreateActionOptions} [options] - Optional settings modifying transaction processing behavior.
  */
 export interface CreateActionArgs {
   description: DescriptionString5to50Characters
   inputBEEF?: BEEF
-  inputs?: Array<CreateActionInput>
-  outputs?: Array<CreateActionOutput>
+  inputs?: CreateActionInput[]
+  outputs?: CreateActionOutput[]
   lockTime?: PositiveIntegerOrZero
   version?: PositiveIntegerOrZero
   labels?: LabelStringUnder300Characters[]
