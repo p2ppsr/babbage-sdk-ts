@@ -140,8 +140,10 @@ export interface SendWithResult {
 }
 
 export interface SignableTransaction {
-  tx: AtomicBEEF
   reference: Base64String
+  inputBeef: BEEF
+  tx: Byte[]
+  amount: number
 }
 
 export interface CreateActionResult {
