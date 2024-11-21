@@ -89,7 +89,7 @@ export interface ValidCreateActionOutput {
 }
 
 export function validateSatoshis (satoshis: number): number {
-  if (Number.isInteger(satoshis) || satoshis < 0 || satoshis > 21e14)
+  if (!Number.isInteger(satoshis) || satoshis < 0 || satoshis > 21e14)
     throw new WERR_INVALID_PARAMETER('satoshis', 'positive and less than 21e14.')
   return satoshis
 }
@@ -176,6 +176,9 @@ export function validateCreateActionArgs(args: sdk.CreateActionArgs) : ValidCrea
     vargs.isNewTx = (vargs.inputs.length > 0) || (vargs.outputs.length > 0)
     vargs.isSignAction = vargs.isNewTx && (vargs.options.signAndProcess === false || vargs.inputs.some(i => i.unlockingScript === undefined))
     vargs.isDelayed = vargs.options.acceptDelayedBroadcast
+
+    if (!vargs.isSendWidth && !vargs.isNewTx)
+      throw new WERR_INVALID_PARAMETER('args', 'either at least one input or output, or a sendWith.')
     return vargs
 }
 

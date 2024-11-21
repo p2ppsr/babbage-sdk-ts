@@ -17,7 +17,7 @@ export class WERR_INTERNAL extends WalletError { constructor (message?: string) 
  * 
  * This is an example of an error object with a custom property `parameter` and templated `message`.
  */
-export class WERR_INVALID_PARAMETER extends WalletError { constructor (public parameter: string, mustBe?: string) { super('WERR_INVALID_PARAMETER', `The ${parameter} parameter must be ${mustBe ?? 'valid'}.`) } }
+export class WERR_INVALID_PARAMETER extends WalletError { constructor (public parameter: string, mustBe?: string) { super('WERR_INVALID_PARAMETER', `The ${parameter} parameter must be ${mustBe ?? 'valid.'}`) } }
 
 /**
  * The required ${parameter} parameter is missing.
