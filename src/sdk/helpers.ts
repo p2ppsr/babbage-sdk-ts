@@ -182,3 +182,50 @@ export function validateCreateActionArgs(args: sdk.CreateActionArgs) : ValidCrea
     return vargs
 }
 
+export interface ValidSignActionOptions {
+  acceptDelayedBroadcast: sdk.BooleanDefaultTrue
+  returnTXIDOnly: sdk.BooleanDefaultFalse
+  noSend: sdk.BooleanDefaultFalse
+  sendWith: sdk.TXIDHexString[]
+}
+
+/**
+ * Set all default true/false booleans to true or false if undefined.
+ * Set all possibly undefined numbers to their default values.
+ * Set all possibly undefined arrays to empty arrays.
+ * Convert string outpoints to `{ txid: string, vout: number }`
+ */
+export function validateSignActionOptions(options?: sdk.SignActionOptions) : ValidSignActionOptions {
+  const o = options || {}
+  const vo: ValidSignActionOptions = {
+    acceptDelayedBroadcast: defaultTrue(o.acceptDelayedBroadcast),
+    returnTXIDOnly: defaultFalse(o.returnTXIDOnly),
+    noSend: defaultFalse(o.noSend),
+    sendWith: defaultEmpty(o.sendWith)
+  }
+  return vo
+}
+
+export interface ValidSignActionArgs {
+  spends: Record<sdk.PositiveIntegerOrZero, sdk.SignActionSpend>
+  reference: sdk.Base64String
+  options: sdk.ValidSignActionOptions
+  // true if a batch of transactions is included for processing.
+  isSendWidth: boolean
+  // true if options.acceptDelayedBroadcast is true
+  isDelayed: boolean
+}
+
+export function validateSignActionArgs(args: sdk.SignActionArgs) : ValidSignActionArgs {
+    const vargs: ValidSignActionArgs = {
+      spends: args.spends,
+      reference: args.reference,
+      options: validateSignActionOptions(args.options),
+      isSendWidth: false,
+      isDelayed: false
+    }
+    vargs.isSendWidth = vargs.options.sendWith.length > 0
+    vargs.isDelayed = vargs.options.acceptDelayedBroadcast
+
+    return vargs
+}

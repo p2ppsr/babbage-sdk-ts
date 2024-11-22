@@ -3,7 +3,7 @@ import { WalletError } from "./WalletError"
 /**
  * Not implemented.
  */
-export class WERR_NOT_IMPLEMENTED extends WalletError { constructor () { super('WERR_NOT_IMPLEMENTED', 'Not implemented.') } }
+export class WERR_NOT_IMPLEMENTED extends WalletError { constructor (message?: string) { super('WERR_NOT_IMPLEMENTED', message ?? 'Not implemented.') } }
 
 /**
  * An internal error has occurred.
