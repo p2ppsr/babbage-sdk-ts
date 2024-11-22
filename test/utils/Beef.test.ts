@@ -31,6 +31,7 @@ describe('Beef tests', () => {
 
         const tx = Transaction.fromHex(txs[0])
         beef.mergeTransaction(tx)
+        beef.sortTxs()
         expect(beef.toLogString()).toBe(log2)
 
         {
@@ -54,8 +55,8 @@ describe('Beef tests', () => {
           expect(btx.rawTx).toBe(undefined)
         }
 
-        const missing = beef.sortTxs()
-        expect(missing.length).toBe(0)
+        const r = beef.sortTxs()
+        expect(r.missingInputs.length).toBe(0)
         expect(beef.toLogString()).toBe(log2)
 
         {
@@ -70,8 +71,8 @@ describe('Beef tests', () => {
         {
           const beef = new Beef()
           beef.mergeTransaction(Transaction.fromHex(txs[0]))
-          const missing = beef.sortTxs()
-          expect(missing).toEqual(['bd4a39c6dce3bdd982be3c67eb04b83934fd431f8bcb64f9da4413c91c634d07'])
+          const r = beef.sortTxs()
+          expect(r.missingInputs).toEqual(['bd4a39c6dce3bdd982be3c67eb04b83934fd431f8bcb64f9da4413c91c634d07'])
           const beef0 = Beef.fromString(beefs[0])
           beef.mergeBump(beef0.bumps[0])
           beef.mergeRawTx(beef0.txs[0].rawTx!)
@@ -91,7 +92,7 @@ describe('Beef tests', () => {
         }
     })
 
-    test('4_all merkleRoots equal', async () => {
+    test('1_all merkleRoots equal', async () => {
         {
           const beef = Beef.fromString(beefs[0])
           expect(beef.isValid()).toBe(true)
@@ -105,7 +106,7 @@ describe('Beef tests', () => {
         }
     })
 
-    test('4_allowTxidOnly', async () => {
+    test('2_allowTxidOnly', async () => {
         {
           const beef = Beef.fromString(beefs[0])
           expect(beef.isValid()).toBe(true)
@@ -115,7 +116,7 @@ describe('Beef tests', () => {
         }
     })
 
-    test('4_removeExistingTxid', async () => {
+    test('3_removeExistingTxid', async () => {
         {
           const beef = Beef.fromString(beefs[0])
           expect(beef.isValid()).toBe(true)
@@ -155,7 +156,7 @@ describe('Beef tests', () => {
         }
     })
 
-    test('4_mergeBeef', async () => {
+    test('5_mergeBeef', async () => {
         {
           const beef = Beef.fromString(beefs[0])
           const beefB = Beef.fromString(beefs[0])
@@ -191,7 +192,7 @@ describe('Beef tests', () => {
         }
     })
 
-    test('4_BeefParty', async () => {
+    test('6_BeefParty', async () => {
 
       const bp = new BeefParty(['b', 'c'])
       expect(bp.isParty('a')).toBe(false)
@@ -213,10 +214,10 @@ describe('Beef tests', () => {
         const v = bp.getTrimmedBeefForParty('a').toLogString()
         expect(v).toBe(`BEEF with 0 BUMPS and 2 Transactions, isValid false
   TX 0
-    txid: 4
+    txid: 3
     txidOnly
   TX 1
-    txid: 3
+    txid: 4
     txidOnly
 `)
       }
@@ -224,10 +225,10 @@ describe('Beef tests', () => {
         const v = bp.getTrimmedBeefForParty('b').toLogString()
         expect(v).toBe(`BEEF with 0 BUMPS and 2 Transactions, isValid false
   TX 0
-    txid: 2
+    txid: 1
     txidOnly
   TX 1
-    txid: 1
+    txid: 2
     txidOnly
 `)
       }
@@ -235,10 +236,10 @@ describe('Beef tests', () => {
         const v = bp.getTrimmedBeefForParty('c').toLogString()
         expect(v).toBe(`BEEF with 0 BUMPS and 2 Transactions, isValid false
   TX 0
-    txid: 4
+    txid: 1
     txidOnly
   TX 1
-    txid: 1
+    txid: 4
     txidOnly
 `)
       }
