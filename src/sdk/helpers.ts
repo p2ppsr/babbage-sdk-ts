@@ -18,6 +18,18 @@ function validateOptionalStringLength(s: string | undefined, name: string, min?:
     return validateOptionalStringLength(s, name, min, max)
 }
 
+function validateInteger(v: number | undefined, name: string, defaultValue: number, min?: number, max?: number): number {
+  if (v === undefined) return defaultValue
+  if (!Number.isInteger(v))
+    throw new WERR_INVALID_PARAMETER(name, 'an integer')
+  v = Number(v)
+  if (min !== undefined && v < min)
+      throw new WERR_INVALID_PARAMETER(name, `at least ${min} length.`)
+  if (max !== undefined && v > max)
+      throw new WERR_INVALID_PARAMETER(name, `no more than ${max} length.`)
+  return v
+}
+
 function validateStringLength(s: string, name: string, min?: number, max?: number): string {
     if (min !== undefined && s.length < min)
         throw new WERR_INVALID_PARAMETER(name, `at least ${min} length.`)
@@ -226,6 +238,112 @@ export function validateSignActionArgs(args: sdk.SignActionArgs) : ValidSignActi
     }
     vargs.isSendWidth = vargs.options.sendWith.length > 0
     vargs.isDelayed = vargs.options.acceptDelayedBroadcast
+
+    return vargs
+}
+
+export interface ValidListOutputsArgs {
+  basket: sdk.BasketStringUnder300Characters
+  tags: sdk.OutputTagStringUnder300Characters[]
+  tagQueryMode: 'all' | 'any'
+  includeLockingScripts: boolean,
+  includeTransactions: boolean,
+  includeCustomInstructions: sdk.BooleanDefaultFalse
+  includeTags: sdk.BooleanDefaultFalse
+  includeLabels: sdk.BooleanDefaultFalse
+  limit: sdk.PositiveIntegerDefault10Max10000
+  offset: sdk.PositiveIntegerOrZero
+  seekPermission: sdk.BooleanDefaultTrue
+}
+
+/**
+   * @param {BasketStringUnder300Characters} args.basket - Required. The associated basket name whose outputs should be listed.
+   * @param {OutputTagStringUnder300Characters[]} [args.tags] - Optional. Filter outputs based on these tags.
+   * @param {'all' | 'any'} [args.tagQueryMode] - Optional. Filter mode, defining whether all or any of the tags must match. By default, any tag can match.
+   * @param {'locking scripts' | 'entire transactions'} [args.include] - Optional. Whether to include locking scripts (with each output) or entire transactions (as aggregated BEEF, at the top level) in the result. By default, unless specified, neither are returned.
+   * @param {BooleanDefaultFalse} [args.includeEntireTransactions] - Optional. Whether to include the entire transaction(s) in the result.
+   * @param {BooleanDefaultFalse} [args.includeCustomInstructions] - Optional. Whether custom instructions should be returned in the result.
+   * @param {BooleanDefaultFalse} [args.includeTags] - Optional. Whether the tags associated with the output should be returned.
+   * @param {BooleanDefaultFalse} [args.includeLabels] - Optional. Whether the labels associated with the transaction containing the output should be returned.
+   * @param {PositiveIntegerDefault10Max10000} [args.limit] - Optional limit on the number of outputs to return.
+   * @param {PositiveIntegerOrZero} [args.offset] - Optional. Number of outputs to skip before starting to return results.
+   * @param {BooleanDefaultTrue} [args.seekPermission] — Optional. Whether to seek permission from the user for this operation if required. Default true, will return an error rather than proceed if set to false.
+ */
+export function validateListOutputsArgs(args: sdk.ListOutputsArgs) : ValidListOutputsArgs {
+    let tagQueryMode: 'any' | 'all'
+    if (args.tagQueryMode === undefined || args.tagQueryMode === 'any')
+      tagQueryMode = 'any'
+    else if (args.tagQueryMode === 'all')
+      tagQueryMode = 'all'
+    else
+      throw new WERR_INVALID_PARAMETER('tagQueryMode', `undefined, 'any', or 'all'`)
+
+    const vargs: ValidListOutputsArgs = {
+      basket: validateStringLength(args.basket, 'basket', 0, 300),
+      tags: (args.tags || []).map(t => validateStringLength(t, 'tag', 0, 300)),
+      tagQueryMode,
+      includeLockingScripts: args.include === 'locking scripts',
+      includeTransactions: args.include === 'entire transactions',
+      includeCustomInstructions: defaultFalse(args.includeCustomInstructions),
+      includeTags: defaultFalse(args.includeTags),
+      includeLabels: defaultFalse(args.includeLabels),
+      limit: validateInteger(args.limit, 'limit', 10, 1, 10000),
+      offset: validateInteger(args.offset, 'offset', 0, 0, undefined),
+      seekPermission: defaultTrue(args.seekPermission)
+    }
+
+    return vargs
+}
+
+export interface ValidListActionsArgs {
+  labels: sdk.LabelStringUnder300Characters[]
+  labelQueryMode: 'any' | 'all'
+  includeLabels: sdk.BooleanDefaultFalse
+  includeInputs: sdk.BooleanDefaultFalse
+  includeInputSourceLockingScripts: sdk.BooleanDefaultFalse
+  includeInputUnlockingScripts: sdk.BooleanDefaultFalse
+  includeOutputs: sdk.BooleanDefaultFalse
+  includeOutputLockingScripts: sdk.BooleanDefaultFalse
+  limit: sdk.PositiveIntegerDefault10Max10000
+  offset: sdk.PositiveIntegerOrZero
+  seekPermission: sdk.BooleanDefaultTrue
+}
+
+/**
+   * @param {sdk.LabelStringUnder300Characters[]} args.labels - An array of labels used to filter actions.
+   * @param {'any' | 'all'} [args.labelQueryMode] - Optional. Specifies how to match labels (default is any which matches any of the labels).
+   * @param {sdk.BooleanDefaultFalse} [args.includeLabels] - Optional. Whether to include transaction labels in the result set.
+   * @param {sdk.BooleanDefaultFalse} [args.includeInputs] - Optional. Whether to include input details in the result set.
+   * @param {sdk.BooleanDefaultFalse} [args.includeInputSourceLockingScripts] - Optional. Whether to include input source locking scripts in the result set.
+   * @param {sdk.BooleanDefaultFalse} [args.includeInputUnlockingScripts] - Optional. Whether to include input unlocking scripts in the result set.
+   * @param {sdk.BooleanDefaultFalse} [args.includeOutputs] - Optional. Whether to include output details in the result set.
+   * @param {sdk.BooleanDefaultFalse} [args.includeOutputLockingScripts] - Optional. Whether to include output locking scripts in the result set.
+   * @param {sdk.PositiveIntegerDefault10Max10000} [args.limit] - Optional. The maximum number of transactions to retrieve.
+   * @param {sdk.PositiveIntegerOrZero} [args.offset] - Optional. Number of transactions to skip before starting to return the results.
+   * @param {sdk.BooleanDefaultTrue} [args.seekPermission] — Optional. Whether to seek permission from the user for this operation if required. Default true, will return an error rather than proceed if set to false.
+ */
+export function validateListActionsArgs(args: sdk.ListActionsArgs) : ValidListActionsArgs {
+    let labelQueryMode: 'any' | 'all'
+    if (args.labelQueryMode === undefined || args.labelQueryMode === 'any')
+      labelQueryMode = 'any'
+    else if (args.labelQueryMode === 'all')
+      labelQueryMode = 'all'
+    else
+      throw new WERR_INVALID_PARAMETER('labelQueryMode', `undefined, 'any', or 'all'`)
+
+    const vargs: ValidListActionsArgs = {
+      labels: (args.labels || []).map(t => validateStringLength(t, 'label', 0, 300)),
+      labelQueryMode,
+      includeLabels: defaultFalse(args.includeLabels),
+      includeInputs: defaultFalse(args.includeInputs),
+      includeInputSourceLockingScripts: defaultFalse(args.includeInputSourceLockingScripts),
+      includeInputUnlockingScripts: defaultFalse(args.includeInputUnlockingScripts),
+      includeOutputs: defaultFalse(args.includeOutputs),
+      includeOutputLockingScripts: defaultFalse(args.includeOutputLockingScripts),
+      limit: validateInteger(args.limit, 'limit', 10, 1, 10000),
+      offset: validateInteger(args.offset, 'offset', 0, 0, undefined),
+      seekPermission: defaultTrue(args.seekPermission)
+    }
 
     return vargs
 }
