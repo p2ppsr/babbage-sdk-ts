@@ -140,10 +140,8 @@ export interface SendWithResult {
 }
 
 export interface SignableTransaction {
+  tx: AtomicBEEF
   reference: Base64String
-  inputBeef: BEEF
-  tx: Byte[]
-  amount: number
 }
 
 export interface CreateActionResult {
@@ -234,11 +232,11 @@ export interface AbortActionResult {
    * @param {LabelStringUnder300Characters[]} labels - An array of labels used to filter actions.
    * @param {'any' | 'all'} [labelQueryMode] - Specifies how to match labels (default is any which matches any of the labels).
    * @param {BooleanDefaultFalse} [includeLabels] - Whether to include transaction labels in the result set.
-   * @param {boolean} [includeInputs] - Whether to include input details in the result set.
-   * @param {boolean} [includeInputSourceLockingScripts] - Whether to include input source locking scripts in the result set.
-   * @param {boolean} [includeInputUnlockingScripts] - Whether to include input unlocking scripts in the result set.
-   * @param {boolean} [includeOutputs] - Whether to include output details in the result set.
-   * @param {boolean} [includeOutputLockingScripts] - Whether to include output locking scripts in the result set.
+   * @param {BooleanDefaultFalse} [includeInputs] - Whether to include input details in the result set.
+   * @param {BooleanDefaultFalse} [includeInputSourceLockingScripts] - Whether to include input source locking scripts in the result set.
+   * @param {BooleanDefaultFalse} [includeInputUnlockingScripts] - Whether to include input unlocking scripts in the result set.
+   * @param {BooleanDefaultFalse} [includeOutputs] - Whether to include output details in the result set.
+   * @param {BooleanDefaultFalse} [includeOutputLockingScripts] - Whether to include output locking scripts in the result set.
    * @param {PositiveIntegerDefault10Max10000} [limit] - The maximum number of transactions to retrieve.
    * @param {PositiveIntegerOrZero} [offset] - Number of transactions to skip before starting to return the results.
    * @param {BooleanDefaultTrue} [seekPermission] — Whether to seek permission from the user for this operation if required. Default true, will return an error rather than proceed if set to false.
@@ -268,27 +266,28 @@ export interface WalletActionInput {
 
 export interface WalletActionOutput {
   satoshis: SatoshiValue
+  lockingScript?: HexString
   spendable: boolean
+  customInstructions?: string
+
+  tags: OutputTagStringUnder300Characters[]
+
   outputIndex: PositiveIntegerOrZero
   outputDescription: DescriptionString5to50Characters
 
-  lockingScript?: HexString
-  customInstructions?: string
-
   basket: BasketStringUnder300Characters
-  tags: OutputTagStringUnder300Characters[]
 }
 
 export interface WalletOutput {
-  outpoint: OutpointString
   satoshis: SatoshiValue
-  spendable: boolean
-
-  basket?: string
-  customInstructions?: string
   lockingScript?: HexString
+  spendable: boolean
+  customInstructions?: string
 
   tags?: OutputTagStringUnder300Characters[]
+
+  outpoint: OutpointString
+
   labels?: LabelStringUnder300Characters[]
 }
 
@@ -376,28 +375,15 @@ export interface InternalizeActionResult {
    * @param {PositiveIntegerDefault10Max10000} [limit] - Optional limit on the number of outputs to return.
    * @param {PositiveIntegerOrZero} [offset] - Number of outputs to skip before starting to return results.
    * @param {BooleanDefaultTrue} [seekPermission] — Whether to seek permission from the user for this operation if required. Default true, will return an error rather than proceed if set to false.
-   * 
-   * Extensions:
-   * @param {BooleanDefaultFalse} [includeBasket] - Whether the basket associated with the output should be returned.
-   * @param {BooleanDefaultFalse} [includeSpent] - Whether to include spent outputs, that is outputs with `spendable` = false.
-   * @param {BooleanDefaultFalse} [includeLockingScript] - Whether each output includes the `lockingscript`. Equivalent to `include` = `'locking scripts'`.
-   * @param {BooleanDefaultFalse} [includeTransaction] - Whether to include BEEF result with just raw transactions. Equivalent to `include` = `'entire transactions'`
-   * @param {BooleanDefaultFalse} [includeBEEF] - Whether to include BEEF result with raw transactions and transaction proof data.
-   * 
  */
 export interface ListOutputsArgs {
-  basket?: BasketStringUnder300Characters
+  basket: BasketStringUnder300Characters
   tags?: OutputTagStringUnder300Characters[]
   tagQueryMode?: 'all' | 'any'
-  includeSpent?: BooleanDefaultFalse
+  include?: 'locking scripts' | 'entire transactions'
   includeCustomInstructions?: BooleanDefaultFalse
-  includeBasket?: BooleanDefaultFalse
   includeTags?: BooleanDefaultFalse
   includeLabels?: BooleanDefaultFalse
-  include?: 'locking scripts' | 'entire transactions'
-  includeLockingScript?: BooleanDefaultFalse
-  includeTransaction?: BooleanDefaultFalse
-  includeBEEF?: BooleanDefaultFalse
   limit?: PositiveIntegerDefault10Max10000
   offset?: PositiveIntegerOrZero
   seekPermission?: BooleanDefaultTrue
