@@ -74,23 +74,6 @@ export function validateCreateActionInput(i: sdk.CreateActionInput): ValidCreate
     return vi
 }
 
-/**
-   * @param {HexString} lockingScript - The locking script that dictates how the output can later be spent.
-   * @param {SatoshiValue} satoshis - Number of Satoshis that constitute this output.
-   * @param {DescriptionString5to50Characters} outputDescription - Description of what this output represents.
-   * @param {BasketStringUnder300Characters} [basket] - Name of the basket where this UTXO will be held, if tracking is desired.
-   * @param {string} [customInstructions] - Custom instructions attached onto this UTXO, often utilized within application logic to provide necessary unlocking context or track token histories.
-   * @param {OutputTagStringUnder300Characters[]} [tags] - Tags assigned to the output for sorting or filtering.
-export interface CreateActionOutput {
-  lockingScript: HexString
-  satoshis: SatoshiValue
-  outputDescription: DescriptionString5to50Characters
-  basket?: BasketStringUnder300Characters
-  customInstructions?: string
-  tags?: OutputTagStringUnder300Characters[]
-}
- */
-
 export interface ValidCreateActionOutput {
   lockingScript: sdk.HexString
   satoshis: sdk.SatoshiValue
@@ -118,18 +101,6 @@ export function validateCreateActionOutput(o: sdk.CreateActionOutput): ValidCrea
     return vo
 }
 
-export interface ValidCreateActionOptions {
-  signAndProcess: boolean
-  acceptDelayedBroadcast: boolean
-  trustSelf?: TrustSelf
-  knownTxids: sdk.TXIDHexString[]
-  returnTXIDOnly: boolean
-  noSend: boolean
-  noSendChange: OutPoint[]
-  sendWith: sdk.TXIDHexString[]
-  randomizeOutputs: boolean
-}
-
 /**
  * Set all default true/false booleans to true or false if undefined.
  * Set all possibly undefined numbers to their default values.
@@ -151,7 +122,42 @@ export function validateCreateActionOptions(options?: sdk.CreateActionOptions) :
   return vo
 }
 
-export interface ValidCreateActionArgs {
+export interface ValidProcessActionOptions {
+  acceptDelayedBroadcast: sdk.BooleanDefaultTrue
+  returnTXIDOnly: sdk.BooleanDefaultFalse
+  noSend: sdk.BooleanDefaultFalse
+  sendWith: sdk.TXIDHexString[]
+}
+
+export interface ValidCreateActionOptions extends ValidProcessActionOptions {
+  signAndProcess: boolean
+  trustSelf?: TrustSelf
+  knownTxids: sdk.TXIDHexString[]
+  noSendChange: OutPoint[]
+  randomizeOutputs: boolean
+}
+
+export interface ValidSignActionOptions extends ValidProcessActionOptions {
+  acceptDelayedBroadcast: boolean
+  returnTXIDOnly: boolean
+  noSend: boolean
+  sendWith: sdk.TXIDHexString[]
+}
+
+export interface ValidProcessActionArgs {
+  options: sdk.ValidProcessActionOptions
+  // true if a batch of transactions is included for processing.
+  isSendWidth: boolean
+  // true if there is a new transaction (not no inputs and no outputs)
+  isNewTx: boolean
+  // true if any new transaction should NOT be sent to the network
+  isNoSend: boolean
+  // true if options.acceptDelayedBroadcast is true
+  isDelayed: boolean
+  log?: string
+}
+
+export interface ValidCreateActionArgs extends ValidProcessActionArgs {
   description: sdk.DescriptionString5to50Characters
   inputBEEF?: sdk.BEEF
   inputs: sdk.ValidCreateActionInput[]
@@ -159,15 +165,17 @@ export interface ValidCreateActionArgs {
   lockTime: number
   version: number
   labels: string[]
+
   options: ValidCreateActionOptions
-  // true if a batch of transactions is included for processing.
-  isSendWidth: boolean
-  // true if there is a new transaction (not no inputs and no outputs)
-  isNewTx: boolean
   // true if transaction creation completion will require a `signAction` call.
   isSignAction: boolean
-  // true if options.acceptDelayedBroadcast is true
-  isDelayed: boolean
+}
+
+export interface ValidSignActionArgs extends ValidProcessActionArgs {
+  spends: Record<sdk.PositiveIntegerOrZero, sdk.SignActionSpend>
+  reference: sdk.Base64String
+
+  options: sdk.ValidSignActionOptions
 }
 
 export function validateCreateActionArgs(args: sdk.CreateActionArgs) : ValidCreateActionArgs {
@@ -180,25 +188,20 @@ export function validateCreateActionArgs(args: sdk.CreateActionArgs) : ValidCrea
       labels: defaultEmpty(args.labels),
       options: validateCreateActionOptions(args.options),
       isSendWidth: false,
+      isDelayed: false,
+      isNoSend: false,
       isNewTx: false,
       isSignAction: false,
-      isDelayed: false
     }
     vargs.isSendWidth = vargs.options.sendWith.length > 0
     vargs.isNewTx = (vargs.inputs.length > 0) || (vargs.outputs.length > 0)
     vargs.isSignAction = vargs.isNewTx && (vargs.options.signAndProcess === false || vargs.inputs.some(i => i.unlockingScript === undefined))
     vargs.isDelayed = vargs.options.acceptDelayedBroadcast
+    vargs.isNoSend = vargs.options.noSend
 
     if (!vargs.isSendWidth && !vargs.isNewTx)
       throw new WERR_INVALID_PARAMETER('args', 'either at least one input or output, or a sendWith.')
     return vargs
-}
-
-export interface ValidSignActionOptions {
-  acceptDelayedBroadcast: sdk.BooleanDefaultTrue
-  returnTXIDOnly: sdk.BooleanDefaultFalse
-  noSend: sdk.BooleanDefaultFalse
-  sendWith: sdk.TXIDHexString[]
 }
 
 /**
@@ -218,26 +221,19 @@ export function validateSignActionOptions(options?: sdk.SignActionOptions) : Val
   return vo
 }
 
-export interface ValidSignActionArgs {
-  spends: Record<sdk.PositiveIntegerOrZero, sdk.SignActionSpend>
-  reference: sdk.Base64String
-  options: sdk.ValidSignActionOptions
-  // true if a batch of transactions is included for processing.
-  isSendWidth: boolean
-  // true if options.acceptDelayedBroadcast is true
-  isDelayed: boolean
-}
-
 export function validateSignActionArgs(args: sdk.SignActionArgs) : ValidSignActionArgs {
     const vargs: ValidSignActionArgs = {
       spends: args.spends,
       reference: args.reference,
       options: validateSignActionOptions(args.options),
       isSendWidth: false,
-      isDelayed: false
+      isDelayed: false,
+      isNoSend: false,
+      isNewTx: true
     }
     vargs.isSendWidth = vargs.options.sendWith.length > 0
     vargs.isDelayed = vargs.options.acceptDelayedBroadcast
+    vargs.isNoSend = vargs.options.noSend
 
     return vargs
 }
@@ -255,6 +251,7 @@ export interface ValidListOutputsArgs {
   offset: sdk.PositiveIntegerOrZero
   seekPermission: sdk.BooleanDefaultTrue
   knownTxids: string[]
+  log?: string
 }
 
 /**
@@ -309,6 +306,7 @@ export interface ValidListActionsArgs {
   limit: sdk.PositiveIntegerDefault10Max10000
   offset: sdk.PositiveIntegerOrZero
   seekPermission: sdk.BooleanDefaultTrue
+  log?: string
 }
 
 /**
