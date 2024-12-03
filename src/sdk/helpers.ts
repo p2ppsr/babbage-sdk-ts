@@ -1,4 +1,4 @@
-import { sdk, WERR_INVALID_PARAMETER } from "..";
+import { Beef, sdk, WERR_INVALID_PARAMETER } from "..";
 import { OutPoint, TrustSelf } from "../types";
 
 export function parseWalletOutpoint(outpoint: string): { txid: string; vout: number; } {
@@ -147,7 +147,7 @@ export interface ValidSignActionOptions extends ValidProcessActionOptions {
 export interface ValidProcessActionArgs {
   options: sdk.ValidProcessActionOptions
   // true if a batch of transactions is included for processing.
-  isSendWidth: boolean
+  isSendWith: boolean
   // true if there is a new transaction (not no inputs and no outputs)
   isNewTx: boolean
   // true if any new transaction should NOT be sent to the network
@@ -181,26 +181,28 @@ export interface ValidSignActionArgs extends ValidProcessActionArgs {
 export function validateCreateActionArgs(args: sdk.CreateActionArgs) : ValidCreateActionArgs {
     const vargs: ValidCreateActionArgs = {
       description: validateStringLength(args.description, 'description', 5, 50),
+      inputBEEF: args.inputBEEF,
       inputs: defaultEmpty(args.inputs).map(i => validateCreateActionInput(i)),
       outputs: defaultEmpty(args.outputs).map(o => validateCreateActionOutput(o)),
       lockTime: defaultZero(args.lockTime),
       version: defaultOne(args.version),
       labels: defaultEmpty(args.labels),
       options: validateCreateActionOptions(args.options),
-      isSendWidth: false,
+      isSendWith: false,
       isDelayed: false,
       isNoSend: false,
       isNewTx: false,
       isSignAction: false,
     }
-    vargs.isSendWidth = vargs.options.sendWith.length > 0
+    vargs.isSendWith = vargs.options.sendWith.length > 0
     vargs.isNewTx = (vargs.inputs.length > 0) || (vargs.outputs.length > 0)
     vargs.isSignAction = vargs.isNewTx && (vargs.options.signAndProcess === false || vargs.inputs.some(i => i.unlockingScript === undefined))
     vargs.isDelayed = vargs.options.acceptDelayedBroadcast
     vargs.isNoSend = vargs.options.noSend
 
-    if (!vargs.isSendWidth && !vargs.isNewTx)
+    if (!vargs.isSendWith && !vargs.isNewTx)
       throw new WERR_INVALID_PARAMETER('args', 'either at least one input or output, or a sendWith.')
+
     return vargs
 }
 
@@ -226,12 +228,12 @@ export function validateSignActionArgs(args: sdk.SignActionArgs) : ValidSignActi
       spends: args.spends,
       reference: args.reference,
       options: validateSignActionOptions(args.options),
-      isSendWidth: false,
+      isSendWith: false,
       isDelayed: false,
       isNoSend: false,
       isNewTx: true
     }
-    vargs.isSendWidth = vargs.options.sendWith.length > 0
+    vargs.isSendWith = vargs.options.sendWith.length > 0
     vargs.isDelayed = vargs.options.acceptDelayedBroadcast
     vargs.isNoSend = vargs.options.noSend
 

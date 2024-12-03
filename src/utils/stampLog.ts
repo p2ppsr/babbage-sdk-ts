@@ -1,12 +1,14 @@
 /**
  * If a log is being kept, add a time stamped line.
- * @param log  Optional time stamped log to extend
+ * @param log  Optional time stamped log to extend, or an object with a log property to update
  * @param lineToAdd Content to add to line.
  * @returns undefined or log extended by time stamped `lineToAdd` and new line.
  */
-export function stampLog(log: string | undefined, lineToAdd: string): string | undefined {
+export function stampLog(log: string | undefined | { log?: string }, lineToAdd: string): string | undefined {
+    const add = `${new Date().toISOString()} ${lineToAdd}\n`
+    if (typeof log === 'object') return log.log = log.log + add
     if (typeof log !== 'string') return undefined
-    return log + `${new Date().toISOString()} ${lineToAdd}\n`
+    return log + add
 }
 
 /**
