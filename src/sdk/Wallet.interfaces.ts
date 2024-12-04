@@ -249,8 +249,8 @@ export interface CreateActionOutput {
    * @param {TXIDHexString[]} [knownTxids] - Optional. When working with large chained transactions using `noSend` and `sendWith` options, include TXIDs of inputs that may be assumed to be valid even if not already known by this wallet.
    * @param {BooleanDefaultFalse} [returnTXIDOnly] - Optional. If true, only a TXID will be returned instead of a transaction.
    * @param {BooleanDefaultFalse} [noSend] - Optional. If true, the transaction will be constructed but not sent to the network. Supports the creation of chained batches of transactions using the `sendWith` option.
-   * @param {Array<OutPoint>} [noSendChange] - Optional. Valid when `noSend` is true. May contain `noSendChange` outpoints previously returned by prior `noSend` actions in the same batch of chained actions.
-   * @param {Array<TXIDHexString>} [sendWith] - Optional. Sends a batch of actions previously created as `noSend` actions to the network; either synchronously if `acceptDelayedBroadcast` is true or by a background process.
+   * @param {OutPoint[]} [noSendChange] - Optional. Valid when `noSend` is true. May contain `noSendChange` outpoints previously returned by prior `noSend` actions in the same batch of chained actions.
+   * @param {TXIDHexString[]} [sendWith] - Optional. Sends a batch of actions previously created as `noSend` actions to the network; either synchronously if `acceptDelayedBroadcast` is true or by a background process.
    * @param {BooleanDefaultTrue} [randomizeOutputs] — optional. When set to false, the wallet will avoid randomizing the order of outputs within the transaction.
  */
 export interface CreateActionOptions {
@@ -279,7 +279,7 @@ export interface CreateActionResult {
   txid?: TXIDHexString
   tx?: AtomicBEEF
   noSendChange?: OutpointString[]
-  sendWithResults?: Array<SendWithResult>
+  sendWithResults?: SendWithResult[]
   signableTransaction?: SignableTransaction
 }
 
@@ -319,7 +319,7 @@ export interface SignActionSpend {
    * @param {TXIDHexString[]} [knownTxids] - Optional. When working with large chained transactions using `noSend` and `sendWith` options, include TXIDs of inputs that may be assumed to be valid even if not already known by this wallet.
    * @param {BooleanDefaultFalse} [returnTXIDOnly] - Optional. If true, only a TXID will be returned instead of a transaction.
    * @param {BooleanDefaultFalse} [noSend] - Optional. If true, the transaction will be constructed but not sent to the network. Supports the creation of chained batches of transactions using the `sendWith` option.
-   * @param {Array<TXIDHexString>} [sendWith] - Optional. Sends a batch of actions previously created as `noSend` actions to the network; either synchronously if `acceptDelayedBroadcast` is true or by a background process.
+   * @param {TXIDHexString[]} [sendWith] - Optional. Sends a batch of actions previously created as `noSend` actions to the network; either synchronously if `acceptDelayedBroadcast` is true or by a background process.
  */
 export interface SignActionOptions {
   acceptDelayedBroadcast?: BooleanDefaultTrue
@@ -345,7 +345,7 @@ export interface SignActionArgs {
 export interface SignActionResult {
   txid?: TXIDHexString
   tx?: AtomicBEEF
-  sendWithResults?: Array<SendWithResult>
+  sendWithResults?: SendWithResult[]
 }
 
 /**
@@ -431,13 +431,13 @@ export interface WalletAction {
   labels?: LabelStringUnder300Bytes[]
   version: PositiveIntegerOrZero
   lockTime: PositiveIntegerOrZero
-  inputs?: Array<WalletActionInput>
-  outputs?: Array<WalletActionOutput>
+  inputs?: WalletActionInput[]
+  outputs?: WalletActionOutput[]
 }
 
 export interface ListActionsResult {
   totalActions: PositiveIntegerOrZero
-  actions: Array<WalletAction>
+  actions: WalletAction[]
 }
 
 /**
@@ -477,14 +477,14 @@ export interface InternalizeOutput {
 
 /**
    * @param {BEEF} tx - Atomic BEEF-formatted transaction to internalize.
-   * @param {Array<Object>} outputs - Metadata about outputs, processed differently based on payment or insertion types.
+   * @param {Object[]} outputs - Metadata about outputs, processed differently based on payment or insertion types.
    * @param {DescriptionString5to50Bytes} description - Human-readable description of the transaction being internalized.
    * @param {LabelStringUnder300Bytes[]} [labels] - Optional labels associated with this transaction.
    * @param {BooleanDefaultTrue} [seekPermission] — Whether to seek permission from the user for this operation if required. Default true, will return an error rather than proceed if set to false.
  */
 export interface InternalizeActionArgs {
   tx: AtomicBEEF
-  outputs: Array<InternalizeOutput>
+  outputs: InternalizeOutput[]
   description: DescriptionString5to50Bytes
   labels?: LabelStringUnder300Bytes[]
   seekPermission?: BooleanDefaultTrue
@@ -523,7 +523,7 @@ export interface ListOutputsArgs {
 export interface ListOutputsResult {
   totalOutputs: PositiveIntegerOrZero
   BEEF?: BEEF
-  outputs: Array<WalletOutput>
+  outputs: WalletOutput[]
 }
 
 export interface RelinquishOutputArgs {
@@ -769,7 +769,7 @@ export interface ListCertificatesArgs {
 
 export interface ListCertificatesResult {
   totalCertificates: PositiveIntegerOrZero
-  certificates: Array<WalletCertificate>
+  certificates: WalletCertificate[]
 }
 
 /**
@@ -850,7 +850,7 @@ export interface DiscoverByIdentityKeyArgs {
  */
 export interface DiscoverCertificatesResult {
   totalCertificates: PositiveIntegerOrZero
-  certificates: Array<IdentityCertificate>
+  certificates: IdentityCertificate[]
 }
 
 /**
