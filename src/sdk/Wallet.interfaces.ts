@@ -877,6 +877,13 @@ export interface WalletErrorObject extends Error {
 }
 
 /**
+ * 
+ */
+export interface GetPublicKeyResult {
+  publicKey: PubKeyHex
+}
+
+/**
  * The WalletCryptoObject interface defines a wallet cryptographic capabilities including:
  * key derivation, encryption, decryption, hmac creation and verification, signature generation and verification
  *
@@ -898,7 +905,7 @@ export interface WalletCryptoObject {
   getPublicKey: (
     args: GetPublicKeyArgs,
     originator?: OriginatorDomainNameStringUnder250Bytes
-  ) => Promise<{ publicKey: PubKeyHex }>
+  ) => Promise<GetPublicKeyResult>
 
   /**
    * Reveals the key linkage between ourselves and a counterparty, to a particular verifier, across all interactions with the counterparty.
