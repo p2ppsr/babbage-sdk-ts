@@ -329,9 +329,9 @@ export interface SignActionOptions {
 }
 
 /**
-   * @param {Record<PositiveIntegerOrZero, Object>} spends - Map of input indexes to the corresponding unlocking script and optional sequence number.
+   * @param {Record<PositiveIntegerOrZero, SignActionSpend>} spends - Map of input indexes to the corresponding unlocking script and optional sequence number.
    * @param {Base64String} reference - Reference number returned from the call to `createAction`.
-   * @param {Object} [options] - Optional settings modifying transaction processing behavior.
+   * @param {SignActionOptions} [options] - Optional settings modifying transaction processing behavior.
  */
 export interface SignActionArgs {
   spends: Record<PositiveIntegerOrZero, SignActionSpend>
@@ -465,8 +465,8 @@ export interface BasketInsertion {
 /**
    * @param {PositiveIntegerOrZero} outputIndex - Index of the output within the transaction.
    * @param {'payment' | 'insert'} protocol - Specifies whether the output is a payment (to be received into the wallet balance) or an insert operation (into a particular basket).
-   * @param {Object} [paymentRemittance] - Remittance data, structured accordingly for the payment operation.
-   * @param {Object} [insertionRemittance] - Remittance data, structured accordingly for the insertion operation.
+   * @param {WalletPayment} [paymentRemittance] - Optional. Remittance data, structured accordingly for the payment operation.
+   * @param {BasketInsertion} [insertionRemittance] - Optional. Remittance data, structured accordingly for the insertion operation.
  */
 export interface InternalizeOutput {
   outputIndex: PositiveIntegerOrZero
@@ -477,7 +477,7 @@ export interface InternalizeOutput {
 
 /**
    * @param {BEEF} tx - Atomic BEEF-formatted transaction to internalize.
-   * @param {Object[]} outputs - Metadata about outputs, processed differently based on payment or insertion types.
+   * @param {InternalizeOutput[]} outputs - Metadata about outputs, processed differently based on payment or insertion types.
    * @param {DescriptionString5to50Bytes} description - Human-readable description of the transaction being internalized.
    * @param {LabelStringUnder300Bytes[]} [labels] - Optional labels associated with this transaction.
    * @param {BooleanDefaultTrue} [seekPermission] — Whether to seek permission from the user for this operation if required. Default true, will return an error rather than proceed if set to false.
@@ -868,32 +868,32 @@ export interface DiscoverByAttributesArgs {
 
 /**
  * Every method of the `Wallet` interface has a return value of the form `Promise<object>`.
- * When errors occur, an exception object may be thrown which must conform to the `WalletError` interface.
+ * When errors occur, an exception object may be thrown which must conform to the `WalletErrorObject` interface.
  * Serialization layers can rely on the `isError` property being unique to error objects.
- * Deserialization should rethrow `WalletError` conforming objects.
+ * Deserialization should rethrow `WalletErrorObject` conforming objects.
  */
-export interface WalletErrorApi extends Error {
+export interface WalletErrorObject extends Error {
   isError: true
 }
 
 /**
- * The WalletCryptoApi interface defines a wallet cryptographic capabilities including:
+ * The WalletCryptoObject interface defines a wallet cryptographic capabilities including:
  * key derivation, encryption, decryption, hmac creation and verification, signature generation and verification
  *
  * Error Handling
  * 
  * Every method of the `Wallet` interface has a return value of the form `Promise<object>`.
- * When an error occurs, an exception object may be thrown which must conform to the `WalletError` interface.
+ * When an error occurs, an exception object may be thrown which must conform to the `WalletErrorObject` interface.
  * Serialization layers can rely on the `isError` property being unique to error objects to
- * deserialize and rethrow `WalletError` conforming objects.
+ * deserialize and rethrow `WalletErrorObject` conforming objects.
  */
-export interface WalletCryptoApi {
+export interface WalletCryptoObject {
   /**
    * Retrieves a derived or identity public key based on the requested protocol, key ID, counterparty, and other factors.
    *
    * @param {GetPublicKeyArgs} args - Arguments to specify which public key to retrieve.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {Promise<Object>} Resolves to an object containing the public key, or an error response.
+   * @returns {{ publicKey: PubKeyHex }} Resolves to an object containing the public key, or an error response.
    */
   getPublicKey: (
     args: GetPublicKeyArgs,
@@ -905,7 +905,7 @@ export interface WalletCryptoApi {
    *
    * @param {RevealCounterpartyKeyLinkageArgs} args - Contains information about counterparty, verifier, and whether the operation is privileged.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {Promise<Object>} Resolves to the key linkage, or an error response.
+   * @returns {RevealSpecificKeyLinkageResult} Resolves to the key linkage, or an error response.
    */
   revealCounterpartyKeyLinkage: (
     args: RevealCounterpartyKeyLinkageArgs,
@@ -917,7 +917,7 @@ export interface WalletCryptoApi {
    *
    * @param {RevealSpecificKeyLinkageArgs} args - The object defining the counterparty, verifier, protocol, and keyID for which linkage should be revealed.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {Promise<Object>} The promise returns the requested linkage information, or an error object.
+   * @returns {RevealSpecificKeyLinkageResult} The promise returns the requested linkage information, or an error object.
    */
   revealSpecificKeyLinkage: (
     args: RevealSpecificKeyLinkageArgs,
@@ -929,7 +929,7 @@ export interface WalletCryptoApi {
    *
    * @param {WalletEncryptArgs} args - Information needed for encryption, including the plaintext, protocol ID, and key ID.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {Promise<Object>} Resolves to the encrypted ciphertext bytes or an error if encryption fails.
+   * @returns {WalletEncryptResult} Resolves to the encrypted ciphertext bytes or an error if encryption fails.
    */
   encrypt: (
     args: WalletEncryptArgs,
@@ -941,7 +941,7 @@ export interface WalletCryptoApi {
    *
    * @param {WalletDecryptArgs} args - Contains the ciphertext, protocol ID, and key ID required to decrypt the data.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {Promise<Object>} Resolves to the decryption result, containing the plaintext data or an error.
+   * @returns {WalletDecryptResult} Resolves to the decryption result, containing the plaintext data or an error.
    */
   decrypt: (
     args: WalletDecryptArgs,
@@ -953,7 +953,7 @@ export interface WalletCryptoApi {
    *
    * @param {Object} args - Arguments containing the data, protocol ID, and key ID to generate the HMAC from.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {Promise<Object>} Resolves to an object containing the generated HMAC bytes, or an error if the creation fails.
+   * @returns {CreateHmacResult} Resolves to an object containing the generated HMAC bytes, or an error if the creation fails.
    */
   createHmac: (
     args: CreateHmacArgs,
@@ -1007,11 +1007,11 @@ export interface WalletCryptoApi {
  * Error Handling
  * 
  * Every method of the `Wallet` interface has a return value of the form `Promise<object>`.
- * When an error occurs, an exception object may be thrown which must conform to the `WalletError` interface.
+ * When an error occurs, an exception object may be thrown which must conform to the `WalletErrorObject` interface.
  * Serialization layers can rely on the `isError` property being unique to error objects to
- * deserialize and rethrow `WalletError` conforming objects.
+ * deserialize and rethrow `WalletErrorObject` conforming objects.
  */
-export interface WalletApi extends WalletCryptoApi {
+export interface Wallet extends WalletCryptoObject {
   /**
    * Creates a new Bitcoin transaction based on the provided inputs, outputs, labels, locks, and other options.
    *
