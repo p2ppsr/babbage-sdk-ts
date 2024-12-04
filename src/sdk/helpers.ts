@@ -1,4 +1,4 @@
-import { Beef, sdk, WERR_INVALID_PARAMETER } from "..";
+import { sdk, WERR_INVALID_PARAMETER } from "..";
 import { OutPoint, TrustSelf } from "../types";
 
 export function parseWalletOutpoint(outpoint: string): { txid: string; vout: number; } {
@@ -55,7 +55,7 @@ function validateHexString(s: string, name: string): string {
 
 export interface ValidCreateActionInput {
   outpoint: OutPoint
-  inputDescription: sdk.DescriptionString5to50Characters
+  inputDescription: sdk.DescriptionString5to50Bytes
   sequenceNumber: sdk.PositiveIntegerOrZero
   unlockingScript?: sdk.HexString
   unlockingScriptLength?: sdk.PositiveInteger
@@ -77,10 +77,10 @@ export function validateCreateActionInput(i: sdk.CreateActionInput): ValidCreate
 export interface ValidCreateActionOutput {
   lockingScript: sdk.HexString
   satoshis: sdk.SatoshiValue
-  outputDescription: sdk.DescriptionString5to50Characters
-  basket?: sdk.BasketStringUnder300Characters
+  outputDescription: sdk.DescriptionString5to50Bytes
+  basket?: sdk.BasketStringUnder300Bytes
   customInstructions?: string
-  tags: sdk.OutputTagStringUnder300Characters[]
+  tags: sdk.OutputTagStringUnder300Bytes[]
 }
 
 export function validateSatoshis (satoshis: number): number {
@@ -158,7 +158,7 @@ export interface ValidProcessActionArgs {
 }
 
 export interface ValidCreateActionArgs extends ValidProcessActionArgs {
-  description: sdk.DescriptionString5to50Characters
+  description: sdk.DescriptionString5to50Bytes
   inputBEEF?: sdk.BEEF
   inputs: sdk.ValidCreateActionInput[]
   outputs: sdk.ValidCreateActionOutput[]
@@ -241,8 +241,8 @@ export function validateSignActionArgs(args: sdk.SignActionArgs) : ValidSignActi
 }
 
 export interface ValidListOutputsArgs {
-  basket: sdk.BasketStringUnder300Characters
-  tags: sdk.OutputTagStringUnder300Characters[]
+  basket: sdk.BasketStringUnder300Bytes
+  tags: sdk.OutputTagStringUnder300Bytes[]
   tagQueryMode: 'all' | 'any'
   includeLockingScripts: boolean,
   includeTransactions: boolean,
@@ -257,8 +257,8 @@ export interface ValidListOutputsArgs {
 }
 
 /**
-   * @param {BasketStringUnder300Characters} args.basket - Required. The associated basket name whose outputs should be listed.
-   * @param {OutputTagStringUnder300Characters[]} [args.tags] - Optional. Filter outputs based on these tags.
+   * @param {BasketStringUnder300Bytes} args.basket - Required. The associated basket name whose outputs should be listed.
+   * @param {OutputTagStringUnder300Bytes[]} [args.tags] - Optional. Filter outputs based on these tags.
    * @param {'all' | 'any'} [args.tagQueryMode] - Optional. Filter mode, defining whether all or any of the tags must match. By default, any tag can match.
    * @param {'locking scripts' | 'entire transactions'} [args.include] - Optional. Whether to include locking scripts (with each output) or entire transactions (as aggregated BEEF, at the top level) in the result. By default, unless specified, neither are returned.
    * @param {BooleanDefaultFalse} [args.includeEntireTransactions] - Optional. Whether to include the entire transaction(s) in the result.
@@ -297,7 +297,7 @@ export function validateListOutputsArgs(args: sdk.ListOutputsArgs) : ValidListOu
 }
 
 export interface ValidListActionsArgs {
-  labels: sdk.LabelStringUnder300Characters[]
+  labels: sdk.LabelStringUnder300Bytes[]
   labelQueryMode: 'any' | 'all'
   includeLabels: sdk.BooleanDefaultFalse
   includeInputs: sdk.BooleanDefaultFalse
@@ -312,7 +312,7 @@ export interface ValidListActionsArgs {
 }
 
 /**
-   * @param {sdk.LabelStringUnder300Characters[]} args.labels - An array of labels used to filter actions.
+   * @param {sdk.LabelStringUnder300Bytes[]} args.labels - An array of labels used to filter actions.
    * @param {'any' | 'all'} [args.labelQueryMode] - Optional. Specifies how to match labels (default is any which matches any of the labels).
    * @param {sdk.BooleanDefaultFalse} [args.includeLabels] - Optional. Whether to include transaction labels in the result set.
    * @param {sdk.BooleanDefaultFalse} [args.includeInputs] - Optional. Whether to include input details in the result set.

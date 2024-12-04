@@ -1,3 +1,5 @@
+import { WalletErrorObject } from "./Wallet.interfaces"
+
 /**
  * Derived class constructors should use the derived class name as the value for `name`,
  * and an internationalizable constant string for `message`.
