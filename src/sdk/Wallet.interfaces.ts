@@ -662,7 +662,7 @@ export interface VerifyHmacArgs extends WalletEncryptionArgs {
 }
 
 export interface VerifyHmacResult {
-  valid: true
+  valid: boolean
 }
 
 /**
@@ -900,7 +900,7 @@ export interface WalletCryptoObject {
    *
    * @param {GetPublicKeyArgs} args - Arguments to specify which public key to retrieve.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {{ publicKey: PubKeyHex }} Resolves to an object containing the public key, or an error response.
+   * @returns {Promise<GetPublicKeyResult>}} Resolves to an object containing the public key, or an error response.
    */
   getPublicKey: (
     args: GetPublicKeyArgs,
@@ -912,7 +912,7 @@ export interface WalletCryptoObject {
    *
    * @param {RevealCounterpartyKeyLinkageArgs} args - Contains information about counterparty, verifier, and whether the operation is privileged.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {RevealSpecificKeyLinkageResult} Resolves to the key linkage, or an error response.
+   * @returns {Promise<RevealSpecificKeyLinkageResult>} Resolves to the key linkage, or an error response.
    */
   revealCounterpartyKeyLinkage: (
     args: RevealCounterpartyKeyLinkageArgs,
@@ -924,7 +924,7 @@ export interface WalletCryptoObject {
    *
    * @param {RevealSpecificKeyLinkageArgs} args - The object defining the counterparty, verifier, protocol, and keyID for which linkage should be revealed.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {RevealSpecificKeyLinkageResult} The promise returns the requested linkage information, or an error object.
+   * @returns {Promise<RevealSpecificKeyLinkageResult>} The promise returns the requested linkage information, or an error object.
    */
   revealSpecificKeyLinkage: (
     args: RevealSpecificKeyLinkageArgs,
@@ -936,7 +936,7 @@ export interface WalletCryptoObject {
    *
    * @param {WalletEncryptArgs} args - Information needed for encryption, including the plaintext, protocol ID, and key ID.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {WalletEncryptResult} Resolves to the encrypted ciphertext bytes or an error if encryption fails.
+   * @returns {Promise<WalletEncryptResult>} Resolves to the encrypted ciphertext bytes or an error if encryption fails.
    */
   encrypt: (
     args: WalletEncryptArgs,
@@ -948,7 +948,7 @@ export interface WalletCryptoObject {
    *
    * @param {WalletDecryptArgs} args - Contains the ciphertext, protocol ID, and key ID required to decrypt the data.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {WalletDecryptResult} Resolves to the decryption result, containing the plaintext data or an error.
+   * @returns {Promise<WalletDecryptResult>} Resolves to the decryption result, containing the plaintext data or an error.
    */
   decrypt: (
     args: WalletDecryptArgs,
@@ -958,9 +958,9 @@ export interface WalletCryptoObject {
   /**
    * Creates an HMAC (Hash-based Message Authentication Code) based on the provided data, protocol, key ID, counterparty, and other factors.
    *
-   * @param {Object} args - Arguments containing the data, protocol ID, and key ID to generate the HMAC from.
+   * @param {CreateHmacArgs} args - Arguments containing the data, protocol ID, and key ID to generate the HMAC from.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {CreateHmacResult} Resolves to an object containing the generated HMAC bytes, or an error if the creation fails.
+   * @returns {Promise<CreateHmacResult>} Resolves to an object containing the generated HMAC bytes, or an error if the creation fails.
    */
   createHmac: (
     args: CreateHmacArgs,
@@ -972,19 +972,19 @@ export interface WalletCryptoObject {
    *
    * @param {VerifyHmacArgs} args - Arguments containing the HMAC data, protocol ID, and key ID needed for verification.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {Promise<Object>} Resolves to an object confirming whether the HMAC was valid or an error.
+   * @returns {Promise<VerifyHmacResult>} Resolves to an object confirming whether the HMAC was valid or an error.
    */
   verifyHmac: (
     args: VerifyHmacArgs,
     originator?: OriginatorDomainNameStringUnder250Bytes
-  ) => Promise<{ valid: true }>
+  ) => Promise<VerifyHmacResult>
 
   /**
    * Creates a digital signature for the provided data or hash using a specific protocol, key, and optionally considering privilege and counterparty.
    *
    * @param {CreateSignatureArgs} args - Arguments to specify data, protocol, key ID, and privilege for creating the signature.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {Promise<Object>} The promise will resolve to an object containing the DER-encoded ECDSA signature, or an error on failure.
+   * @returns {Promise<CreateSignatureResult>} The promise will resolve to an object containing the DER-encoded ECDSA signature, or an error on failure.
    */
   createSignature: (
     args: CreateSignatureArgs,
@@ -996,7 +996,7 @@ export interface WalletCryptoObject {
    *
    * @param {VerifySignatureArgs} args - Arguments specifying the data, signature, protocol, and key ID.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {Promise<Object>} The promise resolves to a boolean object indicating whether the signature was valid or an error message.
+   * @returns {Promise<VerifySignatureResult>} The promise resolves to a boolean object indicating whether the signature was valid or an error message.
    */
   verifySignature: (
     args: VerifySignatureArgs,
@@ -1058,7 +1058,7 @@ export interface Wallet extends WalletCryptoObject {
   /**
    * Lists all transactions matching the specified labels.
    *
-   * @param {Object} args - Arguments to specify how to filter or retrieve transactions.
+   * @param {ListActionsArgs} args - Arguments to specify how to filter or retrieve transactions.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
    * @returns {Promise<ListActionsResult>} The promise resolves to an object containing actions, their metadata, inputs, and outputs if applicable, or an error object.
    */
@@ -1084,7 +1084,7 @@ export interface Wallet extends WalletCryptoObject {
    *
    * @param {ListOutputsArgs} args - Arguments detailing the query for listing spendable outputs.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {Promise<Object>} The promise returns an output listing or an error object.
+   * @returns {Promise<ListOutputsResult>} The promise returns an output listing or an error object.
    */
   listOutputs: (
     args: ListOutputsArgs,
@@ -1094,11 +1094,11 @@ export interface Wallet extends WalletCryptoObject {
   /**
    * Relinquish an output out of a basket, removing it from tracking without spending it.
    *
-   * @param {Object} args - Arguments identifying the output in the basket.
+   * @param {RelinquishOutputArgs} args - Arguments identifying the output in the basket.
    * @param {BasketStringUnder300Bytes} args.basket - The associated basket name where the output should be removed.
    * @param {OutpointString} args.outpoint - The output that should be removed from the basket.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {Promise<Object>} The promise returns an indication of successful removal or an error object.
+   * @returns {Promise<RelinquishOutputResult>} The promise returns an indication of successful removal or an error object.
    */
   relinquishOutput: (
     args: RelinquishOutputArgs,
@@ -1146,7 +1146,7 @@ export interface Wallet extends WalletCryptoObject {
    *
    * @param {RelinquishCertificateArgs} args - Contains the type of certificate, certifier, and serial number for relinquishment.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {Promise<Object>} The promise resolves to an indication of successful relinquishment or an error object.
+   * @returns {Promise<RelinquishCertificateResult>} The promise resolves to an indication of successful relinquishment or an error object.
    */
   relinquishCertificate: (
     args: RelinquishCertificateArgs,
@@ -1158,7 +1158,7 @@ export interface Wallet extends WalletCryptoObject {
    *
    * @param {DiscoverByIdentityKeyArgs} args - Arguments for requesting the discovery based on the identity key.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
-   * @returns {Promise<Object>} The promise resolves to the list of certificates discovered or an error object.
+   * @returns {Promise<DiscoverCertificatesResult>} The promise resolves to the list of certificates discovered or an error object.
    */
   discoverByIdentityKey: (
     args: DiscoverByIdentityKeyArgs,
@@ -1180,7 +1180,7 @@ export interface Wallet extends WalletCryptoObject {
   /**
    * Checks the authentication status of the user.
    *
-   * @param {Object} args - Empty object, as no parameters are needed.
+   * @param {{}} args - Empty object, as no parameters are needed.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
    * @returns {Promise<AuthenticatedResult>} The promise resolves to an object indicating whether the user is authenticated or an error response.
    */
@@ -1192,7 +1192,7 @@ export interface Wallet extends WalletCryptoObject {
   /**
    * Continuously waits until the user is authenticated, returning the result once confirmed.
    *
-   * @param {Object} args - Not used, pass an empty object.
+   * @param {{}} args - Not used, pass an empty object.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
    * @returns {Promise<AuthenticatedResult>} The final result indicating that the user is authenticated or an error object.
    */
@@ -1204,7 +1204,7 @@ export interface Wallet extends WalletCryptoObject {
   /**
    * Retrieves the current height of the blockchain.
    *
-   * @param {Object} args - Empty object as no other parameters are necessary.
+   * @param {{}} args - Empty object as no other parameters are necessary.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
    * @returns {Promise<Object>} Resolves to an object indicating the current height or an error on failure.
    */
@@ -1228,7 +1228,7 @@ export interface Wallet extends WalletCryptoObject {
   /**
    * Retrieves the Bitcoin network the client is using (mainnet or testnet).
    *
-   * @param {Object} args - No arguments required, pass an empty object.
+   * @param {{}} args - No arguments required, pass an empty object.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
    * @returns {Promise<GetNetworkResult>} The promise resolves to an object indicating whether the client is using the mainnet or testnet.
    */
@@ -1240,7 +1240,7 @@ export interface Wallet extends WalletCryptoObject {
   /**
    * Retrieves the current version string of the wallet.
    *
-   * @param {Object} args - Empty argument object.
+   * @param {{}} args - Empty argument object.
    * @param {OriginatorDomainNameStringUnder250Bytes} [originator] - Fully-qualified domain name (FQDN) of the application that originated the request.
    * @returns {Promise<GetVersionResult>} Resolves to an object containing the version string of the wallet, or an error.
    */
