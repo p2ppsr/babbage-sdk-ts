@@ -14,9 +14,9 @@ import { WalletErrorObject } from "./Wallet.interfaces"
  * identifier after the 'WERR_' prefix. e.g. 'WERR_FOO_' as the prefix for Foo package error
  * classes.
  */
-export class WalletError extends Error {
+export class WalletError extends Error implements WalletErrorObject {
   // Facilitates detection of Error objects from non-error return values.
-  isError = true
+  isError: true = true
 
   constructor(name: string, message: string, stack?: string, public details?: Record<string, string>) {
     super(message)
