@@ -25,6 +25,18 @@ export class WalletError extends Error {
   }
 
   /**
+     * Error class compatible accessor for  `code`.
+     */
+  get code (): string { return this.name }
+  set code (v: string) { this.name = v }
+
+  /**
+     * Error class compatible accessor for `description`.
+     */
+  get description (): string { return this.message }
+  set description (v: string) { this.message = v }
+
+  /**
    * Recovers all public fields from WalletError derived error classes and relevant Error derived errors.
    * 
    * Critical client data fields are preserved across HTTP DojoExpress / DojoExpressClient encoding.
