@@ -1,3 +1,4 @@
+import { Utils } from "@bsv/sdk";
 import { sdk, WERR_INVALID_PARAMETER } from "..";
 import { OutPoint, TrustSelf } from "../types";
 
@@ -18,8 +19,24 @@ function validateOptionalStringLength(s: string | undefined, name: string, min?:
     return validateOptionalStringLength(s, name, min, max)
 }
 
-function validateInteger(v: number | undefined, name: string, defaultValue: number, min?: number, max?: number): number {
-  if (v === undefined) return defaultValue
+export function validateSatoshis(v: number | undefined, name: string, min?: number): number {
+  if (v === undefined || !Number.isInteger(v) || v < 0 || v > 21e14)
+    throw new WERR_INVALID_PARAMETER(name, 'a valid number of satoshis')
+  if (min !== undefined && v < min)
+      throw new WERR_INVALID_PARAMETER(name, `at least ${min} satoshis.`)
+  return v
+}
+
+export function validateOptionalInteger(v: number | undefined, name: string, min?: number, max?: number): number | undefined {
+  if (v === undefined) return undefined
+  return validateInteger(v, name, undefined, min, max)
+}
+
+export function validateInteger(v: number | undefined, name: string, defaultValue?: number, min?: number, max?: number): number {
+  if (v === undefined) {
+    if (defaultValue !== undefined) return defaultValue
+    throw new WERR_INVALID_PARAMETER(name, 'a valid integer')
+  }
   if (!Number.isInteger(v))
     throw new WERR_INVALID_PARAMETER(name, 'an integer')
   v = Number(v)
@@ -30,12 +47,13 @@ function validateInteger(v: number | undefined, name: string, defaultValue: numb
   return v
 }
 
-function validateStringLength(s: string, name: string, min?: number, max?: number): string {
-    if (min !== undefined && s.length < min)
-        throw new WERR_INVALID_PARAMETER(name, `at least ${min} length.`)
-    if (max !== undefined && s.length > max)
-        throw new WERR_INVALID_PARAMETER(name, `no more than ${max} length.`)
-    return s
+export function validateStringLength(s: string, name: string, min?: number, max?: number): string {
+  const bytes = Utils.toArray(s, 'utf8').length
+  if (min !== undefined && bytes < min)
+    throw new WERR_INVALID_PARAMETER(name, `at least ${min} length.`)
+  if (max !== undefined && bytes > max)
+    throw new WERR_INVALID_PARAMETER(name, `no more than ${max} length.`)
+  return s
 }
 
 function validateOptionalHexString(s: string | undefined, name: string): string | undefined {
@@ -83,16 +101,10 @@ export interface ValidCreateActionOutput {
   tags: sdk.OutputTagStringUnder300Bytes[]
 }
 
-export function validateSatoshis (satoshis: number): number {
-  if (!Number.isInteger(satoshis) || satoshis < 0 || satoshis > 21e14)
-    throw new WERR_INVALID_PARAMETER('satoshis', 'positive and less than 21e14.')
-  return satoshis
-}
-
 export function validateCreateActionOutput(o: sdk.CreateActionOutput): ValidCreateActionOutput {
     const vo: ValidCreateActionOutput = {
         lockingScript: validateHexString(o.lockingScript, 'lockingScript'),
-        satoshis: validateSatoshis(o.satoshis),
+        satoshis: validateSatoshis(o.satoshis, 'satoshis'),
         outputDescription: validateStringLength(o.outputDescription, 'outputDescription', 5, 50),
         basket: validateOptionalStringLength(o.basket, 'basket', 0, 300),
         customInstructions: o.customInstructions,
