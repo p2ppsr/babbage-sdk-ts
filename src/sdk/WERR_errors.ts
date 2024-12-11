@@ -1,3 +1,4 @@
+import { WalletNetwork } from "@bsv/sdk"
 import { WalletError } from "./WalletError"
 
 /**
@@ -54,5 +55,22 @@ export class WERR_INSUFFICIENT_FUNDS extends WalletError {
      */
     constructor(public totalSatoshisNeeded: number, public moreSatoshisNeeded: number) {
         super('WERR_INSUFFICIENT_FUNDS', `Insufficient funds in the available inputs to cover the cost of the required outputs and the transaction fee (${moreSatoshisNeeded} more satoshis are needed, for a total of ${totalSatoshisNeeded}), plus whatever would be required in order to pay the fee to unlock and spend the outputs used to provide the additional satoshis.`)
+    }
+}
+
+export class WERR_INVALID_PUBLIC_KEY extends WalletError {
+    /**
+     * @param key The invalid public key that caused the error.
+     * @param environment Optional environment flag to control whether the key is included in the message.
+     */
+    constructor(public key: string, network: WalletNetwork = 'mainnet') {
+        const message =
+            network === 'mainnet'
+                ? `The provided public key "${key}" is invalid or malformed.`
+                : `The provided public key is invalid or malformed.`
+        super(
+            'WERR_INVALID_PUBLIC_KEY',
+            message,
+        )
     }
 }
