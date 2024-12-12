@@ -76,19 +76,23 @@ export interface ValidCreateActionInput {
   inputDescription: sdk.DescriptionString5to50Bytes
   sequenceNumber: sdk.PositiveIntegerOrZero
   unlockingScript?: sdk.HexString
-  unlockingScriptLength?: sdk.PositiveInteger
+  unlockingScriptLength: sdk.PositiveInteger
 }
 
 export function validateCreateActionInput(i: sdk.CreateActionInput): ValidCreateActionInput {
+    if (i.unlockingScript === undefined && i.unlockingScriptLength === undefined)
+        throw new WERR_INVALID_PARAMETER('unlockingScript, unlockingScriptLength', `at least one valid value.`)
+    const unlockingScript = validateOptionalHexString(i.unlockingScript, 'unlockingScript')
+    const unlockingScriptLength = i.unlockingScriptLength || unlockingScript!.length / 2
+    if (unlockingScript && unlockingScriptLength !== unlockingScript.length / 2)
+        throw new WERR_INVALID_PARAMETER('unlockingScriptLength', `length unlockingScript if both valid.`)
     const vi: ValidCreateActionInput = {
         outpoint: parseWalletOutpoint(i.outpoint),
         inputDescription: validateStringLength(i.inputDescription, 'inputDescription', 5, 50),
-        unlockingScript: validateOptionalHexString(i.unlockingScript, 'unlockingScript'),
-        unlockingScriptLength: i.unlockingScriptLength,
+        unlockingScript,
+        unlockingScriptLength,
         sequenceNumber: default0xffffffff(i.sequenceNumber)
     }
-    if (vi.unlockingScript === undefined && vi.unlockingScriptLength === undefined)
-        throw new WERR_INVALID_PARAMETER('unlockingScript, unlockingScriptLength', `at least one valid value.`)
     return vi
 }
 
