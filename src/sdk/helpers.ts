@@ -350,7 +350,7 @@ export function validateListActionsArgs(args: sdk.ListActionsArgs) : ValidListAc
       throw new WERR_INVALID_PARAMETER('labelQueryMode', `undefined, 'any', or 'all'`)
 
     const vargs: ValidListActionsArgs = {
-      labels: (args.labels || []).map(t => validateStringLength(t, 'label', 0, 300)),
+      labels: (args.labels || []).map(t => validateStringLength(t, 'label', 1, 300)),
       labelQueryMode,
       includeLabels: defaultFalse(args.includeLabels),
       includeInputs: defaultFalse(args.includeInputs),
@@ -362,6 +362,9 @@ export function validateListActionsArgs(args: sdk.ListActionsArgs) : ValidListAc
       offset: validateInteger(args.offset, 'offset', 0, 0, undefined),
       seekPermission: defaultTrue(args.seekPermission)
     }
+
+    if (vargs.labels.length < 1)
+      throw new WERR_INVALID_PARAMETER('labels', 'at least one label')
 
     return vargs
 }
