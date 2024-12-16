@@ -265,9 +265,11 @@ export interface CreateActionOptions {
   randomizeOutputs?: BooleanDefaultTrue
 }
 
+export type SendWithResultStatus = 'unproven' | 'sending' | 'failed'
+
 export interface SendWithResult {
   txid: TXIDHexString
-  status: 'unproven' | 'sending' | 'failed'
+  status: SendWithResultStatus
 }
 
 export interface SignableTransaction {
