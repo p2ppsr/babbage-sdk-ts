@@ -358,7 +358,7 @@ export interface AbortActionArgs {
 }
 
 export interface AbortActionResult {
-  aborted: true
+  aborted: boolean
 }
 
 /**

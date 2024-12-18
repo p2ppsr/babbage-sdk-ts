@@ -56,9 +56,55 @@ export function validateStringLength(s: string, name: string, min?: number, max?
   return s
 }
 
+function validateOptionalBasket(s?: string): string | undefined {
+  if (s === undefined) return undefined
+  return validateBasket(s)
+}
+
+function validateBasket(s: string): string {
+  return validateIdentifier(s, 'basket', 1, 300)
+}
+
+function validateLabel(s: string): string {
+  return validateIdentifier(s, 'label', 1, 300)
+}
+
+function validateTag(s: string): string {
+  return validateIdentifier(s, 'tag', 1, 300)
+}
+
+function validateIdentifier(s: string, name: string, min?: number, max?: number): string {
+  s = s.trim().toLowerCase()
+  const bytes = Utils.toArray(s, 'utf8').length
+  if (min !== undefined && bytes < min)
+    throw new WERR_INVALID_PARAMETER(name, `at least ${min} length.`)
+  if (max !== undefined && bytes > max)
+    throw new WERR_INVALID_PARAMETER(name, `no more than ${max} length.`)
+  return s
+}
+
 function validateOptionalHexString(s: string | undefined, name: string): string | undefined {
     if (s === undefined) return undefined
     return validateHexString(s, name)
+}
+
+function validateBase64String(s: string, name: string, min?: number, max?: number): string {
+    // Remove any whitespace and check if the string length is valid for Base64
+    s = s.trim();
+    const base64Regex = /^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?$/;
+    const paddingCount = (s.match(/=+$/) || [])[0]?.length || 0;
+    
+    if (paddingCount > 2 || (s.length % 4 !== 0 && paddingCount !== 0) || !base64Regex.test(s)) {
+      throw new WERR_INVALID_PARAMETER(name, `balid base64 string`)
+    }
+    
+    const bytes = Utils.toArray(s, 'base64').length
+    if (min !== undefined && bytes < min)
+      throw new WERR_INVALID_PARAMETER(name, `at least ${min} length.`)
+    if (max !== undefined && bytes > max)
+      throw new WERR_INVALID_PARAMETER(name, `no more than ${max} length.`)
+
+    return s
 }
 
 function validateHexString(s: string, name: string): string {
@@ -69,7 +115,6 @@ function validateHexString(s: string, name: string): string {
         throw new WERR_INVALID_PARAMETER(name, `hexadecimal string.`)
     return s
 }
-
 
 export interface ValidCreateActionInput {
   outpoint: OutPoint
@@ -110,9 +155,9 @@ export function validateCreateActionOutput(o: sdk.CreateActionOutput): ValidCrea
         lockingScript: validateHexString(o.lockingScript, 'lockingScript'),
         satoshis: validateSatoshis(o.satoshis, 'satoshis'),
         outputDescription: validateStringLength(o.outputDescription, 'outputDescription', 5, 50),
-        basket: validateOptionalStringLength(o.basket, 'basket', 0, 300),
+        basket: validateOptionalBasket(o.basket),
         customInstructions: o.customInstructions,
-        tags: defaultEmpty(o.tags).map(t => validateStringLength(t, 'tags', 0, 300))
+        tags: defaultEmpty(o.tags).map(t => validateTag(t))
     }
     return vo
 }
@@ -202,7 +247,7 @@ export function validateCreateActionArgs(args: sdk.CreateActionArgs) : ValidCrea
       outputs: defaultEmpty(args.outputs).map(o => validateCreateActionOutput(o)),
       lockTime: defaultZero(args.lockTime),
       version: defaultOne(args.version),
-      labels: defaultEmpty(args.labels),
+      labels: defaultEmpty(args.labels?.map(l => validateLabel(l))),
       options: validateCreateActionOptions(args.options),
       isSendWith: false,
       isDelayed: false,
@@ -252,6 +297,20 @@ export function validateSignActionArgs(args: sdk.SignActionArgs) : ValidSignActi
     vargs.isSendWith = vargs.options.sendWith.length > 0
     vargs.isDelayed = vargs.options.acceptDelayedBroadcast
     vargs.isNoSend = vargs.options.noSend
+
+    return vargs
+}
+
+export interface ValidAbortActionArgs {
+  reference: sdk.Base64String
+  log?: string
+}
+
+export function validateAbortActionArgs(args: sdk.AbortActionArgs) : ValidAbortActionArgs {
+    const vargs: ValidAbortActionArgs = {
+      reference: validateBase64String(args.reference, 'reference'),
+      log: ''
+    }
 
     return vargs
 }
@@ -350,7 +409,7 @@ export function validateListActionsArgs(args: sdk.ListActionsArgs) : ValidListAc
       throw new WERR_INVALID_PARAMETER('labelQueryMode', `undefined, 'any', or 'all'`)
 
     const vargs: ValidListActionsArgs = {
-      labels: (args.labels || []).map(t => validateStringLength(t, 'label', 1, 300)),
+      labels: (args.labels || []).map(t => validateLabel(t)),
       labelQueryMode,
       includeLabels: defaultFalse(args.includeLabels),
       includeInputs: defaultFalse(args.includeInputs),
