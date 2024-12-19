@@ -47,6 +47,10 @@ export function validateInteger(v: number | undefined, name: string, defaultValu
   return v
 }
 
+export function validatePositiveIntegerOrZero(v: number, name: string): number {
+  return validateInteger(v, name, 0, 0)
+}
+
 export function validateStringLength(s: string, name: string, min?: number, max?: number): string {
   const bytes = Utils.toArray(s, 'utf8').length
   if (min !== undefined && bytes < min)
@@ -107,13 +111,16 @@ function validateBase64String(s: string, name: string, min?: number, max?: numbe
     return s
 }
 
-function validateHexString(s: string, name: string): string {
-    if (s.length % 2 === 1)
-        throw new WERR_INVALID_PARAMETER(name, `even length, not ${s.length}.`)
-    const hexRegex = /^[0-9A-Fa-f]+$/;
-    if (!hexRegex.test(s))
-        throw new WERR_INVALID_PARAMETER(name, `hexadecimal string.`)
-    return s
+function validateHexString(s: string, name: string, max?: number): string {
+  s = s.trim().toUpperCase()
+  if (s.length % 2 === 1)
+    throw new WERR_INVALID_PARAMETER(name, `even length, not ${s.length}.`)
+  const hexRegex = /^[0-9A-Fa-f]+$/;
+  if (!hexRegex.test(s))
+    throw new WERR_INVALID_PARAMETER(name, `hexadecimal string.`)
+  if (max !== undefined && s.length > max)
+    throw new WERR_INVALID_PARAMETER(name, `no more than ${max} length.`)
+  return s
 }
 
 export interface ValidCreateActionInput {
@@ -309,6 +316,104 @@ export interface ValidAbortActionArgs {
 export function validateAbortActionArgs(args: sdk.AbortActionArgs) : ValidAbortActionArgs {
     const vargs: ValidAbortActionArgs = {
       reference: validateBase64String(args.reference, 'reference'),
+      log: ''
+    }
+
+    return vargs
+}
+
+export interface ValidWalletPayment {
+  derivationPrefix: sdk.Base64String
+  derivationSuffix: sdk.Base64String
+  senderIdentityKey: sdk.PubKeyHex
+}
+
+export function validateWalletPayment(args?: sdk.WalletPayment) : ValidWalletPayment | undefined {
+  if (args === undefined) return undefined
+  const v: ValidWalletPayment = {
+    derivationPrefix: validateBase64String(args.derivationPrefix, 'derivationPrefix'),
+    derivationSuffix: validateBase64String(args.derivationSuffix, 'derivationSuffix'),
+    senderIdentityKey: validateHexString(args.senderIdentityKey, 'senderIdentityKey')
+  }
+  return v
+}
+
+export interface ValidBasketInsertion {
+  basket: sdk.BasketStringUnder300Bytes
+  customInstructions?: string
+  tags: sdk.OutputTagStringUnder300Bytes[]
+}
+
+export function validateBasketInsertion(args?: sdk.BasketInsertion) : ValidBasketInsertion | undefined {
+  if (args === undefined) return undefined
+  const v: ValidBasketInsertion = {
+    basket: validateBasket(args.basket),
+    customInstructions: validateOptionalStringLength(args.customInstructions, 'customInstructions', 0, 1000), // TODO: real max??
+    tags: defaultEmpty(args.tags).map(t => validateTag(t))
+  }
+  return v
+}
+
+export interface ValidInternalizeOutput {
+  outputIndex: sdk.PositiveIntegerOrZero
+  protocol: 'wallet payment' | 'basket insertion'
+  paymentRemittance?: ValidWalletPayment
+  insertionRemittance?: ValidBasketInsertion
+}
+
+export function validateInternalizeOutput(args: sdk.InternalizeOutput) : ValidInternalizeOutput {
+  if (args.protocol !== 'basket insertion' && args.protocol !== 'wallet payment')
+    throw new WERR_INVALID_PARAMETER('protocol', `'basket insertion' or 'wallet payment'`)
+  const v: ValidInternalizeOutput = {
+    outputIndex: validatePositiveIntegerOrZero(args.outputIndex, 'outputIndex'),
+    protocol: args.protocol,
+    paymentRemittance: validateWalletPayment(args.paymentRemittance),
+    insertionRemittance: validateBasketInsertion(args.insertionRemittance)
+  }
+  return v
+}
+
+export interface ValidInternalizeActionArgs {
+  tx: sdk.AtomicBEEF,
+  outputs: sdk.InternalizeOutput[]
+  description: sdk.DescriptionString5to50Bytes
+  labels: sdk.LabelStringUnder300Bytes[]
+  seekPermission: sdk.BooleanDefaultTrue
+  log?: string
+}
+
+export function validateInternalizeActionArgs(args: sdk.InternalizeActionArgs) : ValidInternalizeActionArgs {
+    const vargs: ValidInternalizeActionArgs = {
+      tx: args.tx,
+      outputs: args.outputs.map(o => validateInternalizeOutput(o)),
+      description: validateStringLength(args.description, 'description', 5, 50),
+      labels: (args.labels || []).map(t => validateLabel(t)),
+      seekPermission: defaultTrue(args.seekPermission),
+      log: ''
+    }
+
+    return vargs
+}
+
+export function validateOutpointString(output: string, name: string): string {
+  const s = output.split('.')
+  if (s.length !== 2 || !Number.isInteger(Number(s[1])))
+    throw new WERR_INVALID_PARAMETER(name, `txid as hex string and numeric output index joined with '.'`)
+  const txid = validateHexString(s[0], `${name} txid`, 64)
+  const vout = validatePositiveIntegerOrZero(Number(s[1]), `${name} vout`)
+  return `${txid}.${vout}`
+}
+
+export interface ValidRelinquishOutputArgs {
+  basket: sdk.BasketStringUnder300Bytes
+  output: sdk.OutpointString
+  log?: string
+}
+
+export function validateRelinquishOutputArgs(args: sdk.RelinquishOutputArgs) : ValidRelinquishOutputArgs {
+    const vargs: ValidRelinquishOutputArgs = {
+      basket: validateBasket(args.basket),
+      output: validateOutpointString(args.output, 'output'),
       log: ''
     }
 
