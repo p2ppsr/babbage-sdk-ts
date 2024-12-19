@@ -136,47 +136,48 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [AbortActionArgs](#interface-abortactionargs) | [GetInfoResult](#interface-getinforesult) | [SignActionSpend](#interface-signactionspend) |
-| [AbortActionResult](#interface-abortactionresult) | [GetNetworkResult](#interface-getnetworkresult) | [SignableTransaction](#interface-signabletransaction) |
+| [AbortActionArgs](#interface-abortactionargs) | [GetNetworkResult](#interface-getnetworkresult) | [SignableTransaction](#interface-signabletransaction) |
 | [AbortActionResult](#interface-abortactionresult) | [GetPublicKeyArgs](#interface-getpublickeyargs) | [SpecificKeyLinkageResult](#interface-specifickeylinkageresult) |
-| [AcquireCertificateArgs](#interface-acquirecertificateargs) | [GetPublicKeyResult](#interface-getpublickeyresult) | [SubmitDirectTransaction](#interface-submitdirecttransaction) |
-| [AcquireCertificateResult](#interface-acquirecertificateresult) | [GetTransactionOutputResult](#interface-gettransactionoutputresult) | [SubmitDirectTransactionOutput](#interface-submitdirecttransactionoutput) |
-| [AuthenticatedResult](#interface-authenticatedresult) | [GetVersionResult](#interface-getversionresult) | [SubmitDirectTransactionResult](#interface-submitdirecttransactionresult) |
-| [BasketInsertion](#interface-basketinsertion) | [IdentityCertificate](#interface-identitycertificate) | [TscMerkleProofApi](#interface-tscmerkleproofapi) |
-| [CertificateApi](#interface-certificateapi) | [IdentityCertifier](#interface-identitycertifier) | [ValidAbortActionArgs](#interface-validabortactionargs) |
-| [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult) | [InternalizeActionArgs](#interface-internalizeactionargs) | [ValidBasketInsertion](#interface-validbasketinsertion) |
-| [CreateActionArgs](#interface-createactionargs) | [InternalizeActionResult](#interface-internalizeactionresult) | [ValidCreateActionArgs](#interface-validcreateactionargs) |
-| [CreateActionInput](#interface-createactioninput) | [InternalizeOutput](#interface-internalizeoutput) | [ValidCreateActionInput](#interface-validcreateactioninput) |
-| [CreateActionInput](#interface-createactioninput) | [KeyLinkageResult](#interface-keylinkageresult) | [ValidCreateActionOptions](#interface-validcreateactionoptions) |
-| [CreateActionOptions](#interface-createactionoptions) | [ListActionsArgs](#interface-listactionsargs) | [ValidCreateActionOutput](#interface-validcreateactionoutput) |
-| [CreateActionOptions](#interface-createactionoptions) | [ListActionsResult](#interface-listactionsresult) | [ValidInternalizeActionArgs](#interface-validinternalizeactionargs) |
-| [CreateActionOutput](#interface-createactionoutput) | [ListActionsResult](#interface-listactionsresult) | [ValidInternalizeOutput](#interface-validinternalizeoutput) |
-| [CreateActionOutput](#interface-createactionoutput) | [ListActionsTransaction](#interface-listactionstransaction) | [ValidListActionsArgs](#interface-validlistactionsargs) |
-| [CreateActionOutputToRedeem](#interface-createactionoutputtoredeem) | [ListActionsTransactionInput](#interface-listactionstransactioninput) | [ValidListOutputsArgs](#interface-validlistoutputsargs) |
-| [CreateActionParams](#interface-createactionparams) | [ListActionsTransactionOutput](#interface-listactionstransactionoutput) | [ValidProcessActionArgs](#interface-validprocessactionargs) |
-| [CreateActionResult](#interface-createactionresult) | [ListCertificatesArgs](#interface-listcertificatesargs) | [ValidProcessActionOptions](#interface-validprocessactionoptions) |
-| [CreateActionResult](#interface-createactionresult) | [ListCertificatesResult](#interface-listcertificatesresult) | [ValidRelinquishOutputArgs](#interface-validrelinquishoutputargs) |
-| [CreateCertificateResult](#interface-createcertificateresult) | [ListOutputsArgs](#interface-listoutputsargs) | [ValidSignActionArgs](#interface-validsignactionargs) |
-| [CreateHmacArgs](#interface-createhmacargs) | [ListOutputsResult](#interface-listoutputsresult) | [ValidSignActionOptions](#interface-validsignactionoptions) |
-| [CreateHmacResult](#interface-createhmacresult) | [MapiResponseApi](#interface-mapiresponseapi) | [ValidWalletPayment](#interface-validwalletpayment) |
-| [CreateSignatureArgs](#interface-createsignatureargs) | [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi) | [VerifyHmacArgs](#interface-verifyhmacargs) |
-| [CreateSignatureResult](#interface-createsignatureresult) | [OutPoint](#interface-outpoint) | [VerifyHmacResult](#interface-verifyhmacresult) |
-| [DiscoverByAttributesArgs](#interface-discoverbyattributesargs) | [ProveCertificateArgs](#interface-provecertificateargs) | [VerifySignatureArgs](#interface-verifysignatureargs) |
-| [DiscoverByIdentityKeyArgs](#interface-discoverbyidentitykeyargs) | [ProveCertificateResult](#interface-provecertificateresult) | [VerifySignatureResult](#interface-verifysignatureresult) |
-| [DiscoverCertificatesResult](#interface-discovercertificatesresult) | [ProveCertificateResult](#interface-provecertificateresult) | [Wallet](#interface-wallet) |
-| [DojoCreateTransactionResultApi](#interface-dojocreatetransactionresultapi) | [RelinquishCertificateArgs](#interface-relinquishcertificateargs) | [WalletAction](#interface-walletaction) |
-| [DojoCreateTxOutputApi](#interface-dojocreatetxoutputapi) | [RelinquishCertificateResult](#interface-relinquishcertificateresult) | [WalletActionInput](#interface-walletactioninput) |
-| [DojoCreateTxResultInstructionsApi](#interface-dojocreatetxresultinstructionsapi) | [RelinquishOutputArgs](#interface-relinquishoutputargs) | [WalletActionOutput](#interface-walletactionoutput) |
-| [DojoCreateTxResultOutputApi](#interface-dojocreatetxresultoutputapi) | [RelinquishOutputResult](#interface-relinquishoutputresult) | [WalletCertificate](#interface-walletcertificate) |
-| [DojoCreatingTxInputsApi](#interface-dojocreatingtxinputsapi) | [RevealCounterpartyKeyLinkageArgs](#interface-revealcounterpartykeylinkageargs) | [WalletCryptoObject](#interface-walletcryptoobject) |
-| [DojoOutputToRedeemApi](#interface-dojooutputtoredeemapi) | [RevealCounterpartyKeyLinkageResult](#interface-revealcounterpartykeylinkageresult) | [WalletDecryptArgs](#interface-walletdecryptargs) |
-| [DojoSendWithResultsApi](#interface-dojosendwithresultsapi) | [RevealSpecificKeyLinkageArgs](#interface-revealspecifickeylinkageargs) | [WalletDecryptResult](#interface-walletdecryptresult) |
-| [EnvelopeApi](#interface-envelopeapi) | [RevealSpecificKeyLinkageResult](#interface-revealspecifickeylinkageresult) | [WalletEncryptArgs](#interface-walletencryptargs) |
-| [EnvelopeEvidenceApi](#interface-envelopeevidenceapi) | [SendWithResult](#interface-sendwithresult) | [WalletEncryptResult](#interface-walletencryptresult) |
-| [GetHeaderArgs](#interface-getheaderargs) | [SignActionArgs](#interface-signactionargs) | [WalletEncryptionArgs](#interface-walletencryptionargs) |
-| [GetHeaderResult](#interface-getheaderresult) | [SignActionOptions](#interface-signactionoptions) | [WalletErrorObject](#interface-walleterrorobject) |
-| [GetHeightResult](#interface-getheightresult) | [SignActionResult](#interface-signactionresult) | [WalletOutput](#interface-walletoutput) |
-| [GetInfoParams](#interface-getinfoparams) | [SignActionResult](#interface-signactionresult) | [WalletPayment](#interface-walletpayment) |
+| [AbortActionResult](#interface-abortactionresult) | [GetPublicKeyResult](#interface-getpublickeyresult) | [SubmitDirectTransaction](#interface-submitdirecttransaction) |
+| [AcquireCertificateArgs](#interface-acquirecertificateargs) | [GetTransactionOutputResult](#interface-gettransactionoutputresult) | [SubmitDirectTransactionOutput](#interface-submitdirecttransactionoutput) |
+| [AcquireCertificateResult](#interface-acquirecertificateresult) | [GetVersionResult](#interface-getversionresult) | [SubmitDirectTransactionResult](#interface-submitdirecttransactionresult) |
+| [AuthenticatedResult](#interface-authenticatedresult) | [IdentityCertificate](#interface-identitycertificate) | [TscMerkleProofApi](#interface-tscmerkleproofapi) |
+| [BasketInsertion](#interface-basketinsertion) | [IdentityCertifier](#interface-identitycertifier) | [ValidAbortActionArgs](#interface-validabortactionargs) |
+| [CertificateApi](#interface-certificateapi) | [InternalizeActionArgs](#interface-internalizeactionargs) | [ValidBasketInsertion](#interface-validbasketinsertion) |
+| [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult) | [InternalizeActionResult](#interface-internalizeactionresult) | [ValidCreateActionArgs](#interface-validcreateactionargs) |
+| [CreateActionArgs](#interface-createactionargs) | [InternalizeOutput](#interface-internalizeoutput) | [ValidCreateActionInput](#interface-validcreateactioninput) |
+| [CreateActionInput](#interface-createactioninput) | [KeyDeriverApi](#interface-keyderiverapi) | [ValidCreateActionOptions](#interface-validcreateactionoptions) |
+| [CreateActionInput](#interface-createactioninput) | [KeyLinkageResult](#interface-keylinkageresult) | [ValidCreateActionOutput](#interface-validcreateactionoutput) |
+| [CreateActionOptions](#interface-createactionoptions) | [ListActionsArgs](#interface-listactionsargs) | [ValidInternalizeActionArgs](#interface-validinternalizeactionargs) |
+| [CreateActionOptions](#interface-createactionoptions) | [ListActionsResult](#interface-listactionsresult) | [ValidInternalizeOutput](#interface-validinternalizeoutput) |
+| [CreateActionOutput](#interface-createactionoutput) | [ListActionsResult](#interface-listactionsresult) | [ValidListActionsArgs](#interface-validlistactionsargs) |
+| [CreateActionOutput](#interface-createactionoutput) | [ListActionsTransaction](#interface-listactionstransaction) | [ValidListOutputsArgs](#interface-validlistoutputsargs) |
+| [CreateActionOutputToRedeem](#interface-createactionoutputtoredeem) | [ListActionsTransactionInput](#interface-listactionstransactioninput) | [ValidProcessActionArgs](#interface-validprocessactionargs) |
+| [CreateActionParams](#interface-createactionparams) | [ListActionsTransactionOutput](#interface-listactionstransactionoutput) | [ValidProcessActionOptions](#interface-validprocessactionoptions) |
+| [CreateActionResult](#interface-createactionresult) | [ListCertificatesArgs](#interface-listcertificatesargs) | [ValidRelinquishOutputArgs](#interface-validrelinquishoutputargs) |
+| [CreateActionResult](#interface-createactionresult) | [ListCertificatesResult](#interface-listcertificatesresult) | [ValidSignActionArgs](#interface-validsignactionargs) |
+| [CreateCertificateResult](#interface-createcertificateresult) | [ListOutputsArgs](#interface-listoutputsargs) | [ValidSignActionOptions](#interface-validsignactionoptions) |
+| [CreateHmacArgs](#interface-createhmacargs) | [ListOutputsResult](#interface-listoutputsresult) | [ValidWalletPayment](#interface-validwalletpayment) |
+| [CreateHmacResult](#interface-createhmacresult) | [MapiResponseApi](#interface-mapiresponseapi) | [VerifyHmacArgs](#interface-verifyhmacargs) |
+| [CreateSignatureArgs](#interface-createsignatureargs) | [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi) | [VerifyHmacResult](#interface-verifyhmacresult) |
+| [CreateSignatureResult](#interface-createsignatureresult) | [OutPoint](#interface-outpoint) | [VerifySignatureArgs](#interface-verifysignatureargs) |
+| [DiscoverByAttributesArgs](#interface-discoverbyattributesargs) | [ProveCertificateArgs](#interface-provecertificateargs) | [VerifySignatureResult](#interface-verifysignatureresult) |
+| [DiscoverByIdentityKeyArgs](#interface-discoverbyidentitykeyargs) | [ProveCertificateResult](#interface-provecertificateresult) | [Wallet](#interface-wallet) |
+| [DiscoverCertificatesResult](#interface-discovercertificatesresult) | [ProveCertificateResult](#interface-provecertificateresult) | [WalletAction](#interface-walletaction) |
+| [DojoCreateTransactionResultApi](#interface-dojocreatetransactionresultapi) | [RelinquishCertificateArgs](#interface-relinquishcertificateargs) | [WalletActionInput](#interface-walletactioninput) |
+| [DojoCreateTxOutputApi](#interface-dojocreatetxoutputapi) | [RelinquishCertificateResult](#interface-relinquishcertificateresult) | [WalletActionOutput](#interface-walletactionoutput) |
+| [DojoCreateTxResultInstructionsApi](#interface-dojocreatetxresultinstructionsapi) | [RelinquishOutputArgs](#interface-relinquishoutputargs) | [WalletCertificate](#interface-walletcertificate) |
+| [DojoCreateTxResultOutputApi](#interface-dojocreatetxresultoutputapi) | [RelinquishOutputResult](#interface-relinquishoutputresult) | [WalletCryptoObject](#interface-walletcryptoobject) |
+| [DojoCreatingTxInputsApi](#interface-dojocreatingtxinputsapi) | [RevealCounterpartyKeyLinkageArgs](#interface-revealcounterpartykeylinkageargs) | [WalletDecryptArgs](#interface-walletdecryptargs) |
+| [DojoOutputToRedeemApi](#interface-dojooutputtoredeemapi) | [RevealCounterpartyKeyLinkageResult](#interface-revealcounterpartykeylinkageresult) | [WalletDecryptResult](#interface-walletdecryptresult) |
+| [DojoSendWithResultsApi](#interface-dojosendwithresultsapi) | [RevealSpecificKeyLinkageArgs](#interface-revealspecifickeylinkageargs) | [WalletEncryptArgs](#interface-walletencryptargs) |
+| [EnvelopeApi](#interface-envelopeapi) | [RevealSpecificKeyLinkageResult](#interface-revealspecifickeylinkageresult) | [WalletEncryptResult](#interface-walletencryptresult) |
+| [EnvelopeEvidenceApi](#interface-envelopeevidenceapi) | [SendWithResult](#interface-sendwithresult) | [WalletEncryptionArgs](#interface-walletencryptionargs) |
+| [GetHeaderArgs](#interface-getheaderargs) | [SignActionArgs](#interface-signactionargs) | [WalletErrorObject](#interface-walleterrorobject) |
+| [GetHeaderResult](#interface-getheaderresult) | [SignActionOptions](#interface-signactionoptions) | [WalletOutput](#interface-walletoutput) |
+| [GetHeightResult](#interface-getheightresult) | [SignActionResult](#interface-signactionresult) | [WalletPayment](#interface-walletpayment) |
+| [GetInfoParams](#interface-getinfoparams) | [SignActionResult](#interface-signactionresult) |  |
+| [GetInfoResult](#interface-getinforesult) | [SignActionSpend](#interface-signactionspend) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -1873,6 +1874,165 @@ export interface InternalizeOutput {
 ```
 
 See also: [BasketInsertion](#interface-basketinsertion), [PositiveIntegerOrZero](#type-positiveintegerorzero), [WalletPayment](#interface-walletpayment)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: KeyDeriverApi
+
+```ts
+export interface KeyDeriverApi {
+    rootKey: PrivateKey;
+    identityKey: string;
+    derivePublicKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty, forSelf?: boolean): PublicKey;
+    derivePrivateKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty): PrivateKey;
+    deriveSymmetricKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty): SymmetricKey;
+    revealCounterpartySecret(counterparty: Counterparty): number[];
+    revealSpecificSecret(counterparty: Counterparty, protocolID: WalletProtocol, keyID: string): number[];
+}
+```
+
+See also: [Counterparty](#type-counterparty), [WalletProtocol](#type-walletprotocol)
+
+<details>
+
+<summary>Interface KeyDeriverApi Details</summary>
+
+##### Property identityKey
+
+The identity of this key deriver which is normally the public key associated with the `rootKey`
+
+```ts
+identityKey: string
+```
+
+##### Property rootKey
+
+The root key from which all other keys are derived.
+
+```ts
+rootKey: PrivateKey
+```
+
+##### Method derivePrivateKey
+
+Derives a private key based on protocol ID, key ID, and counterparty.
+
+```ts
+derivePrivateKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty): PrivateKey
+```
+See also: [Counterparty](#type-counterparty), [WalletProtocol](#type-walletprotocol)
+
+Returns
+
+- The derived private key.
+
+Argument Details
+
++ **protocolID**
+  + The protocol ID including a security level and protocol name.
++ **keyID**
+  + The key identifier.
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
+
+##### Method derivePublicKey
+
+Derives a public key based on protocol ID, key ID, and counterparty.
+
+```ts
+derivePublicKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty, forSelf?: boolean): PublicKey
+```
+See also: [Counterparty](#type-counterparty), [WalletProtocol](#type-walletprotocol)
+
+Returns
+
+- The derived public key.
+
+Argument Details
+
++ **protocolID**
+  + The protocol ID including a security level and protocol name.
++ **keyID**
+  + The key identifier.
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
++ **forSelf**
+  + Optional. false if undefined. Whether deriving for self.
+
+##### Method deriveSymmetricKey
+
+Derives a symmetric key based on protocol ID, key ID, and counterparty.
+Note: Symmetric keys should not be derivable by everyone due to security risks.
+
+```ts
+deriveSymmetricKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty): SymmetricKey
+```
+See also: [Counterparty](#type-counterparty), [WalletProtocol](#type-walletprotocol)
+
+Returns
+
+- The derived symmetric key.
+
+Argument Details
+
++ **protocolID**
+  + The protocol ID including a security level and protocol name.
++ **keyID**
+  + The key identifier.
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
+
+Throws
+
+- Throws an error if attempting to derive a symmetric key for 'anyone'.
+
+##### Method revealCounterpartySecret
+
+Reveals the shared secret between the root key and the counterparty.
+Note: This should not be used for 'self'.
+
+```ts
+revealCounterpartySecret(counterparty: Counterparty): number[]
+```
+See also: [Counterparty](#type-counterparty)
+
+Returns
+
+- The shared secret as a number array.
+
+Argument Details
+
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
+
+Throws
+
+- Throws an error if attempting to reveal a shared secret for 'self'.
+
+##### Method revealSpecificSecret
+
+Reveals the specific key association for a given protocol ID, key ID, and counterparty.
+
+```ts
+revealSpecificSecret(counterparty: Counterparty, protocolID: WalletProtocol, keyID: string): number[]
+```
+See also: [Counterparty](#type-counterparty), [WalletProtocol](#type-walletprotocol)
+
+Returns
+
+- The specific key association as a number array.
+
+Argument Details
+
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
++ **protocolID**
+  + The protocol ID including a security level and protocol name.
++ **keyID**
+  + The key identifier.
+
+</details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -3888,24 +4048,188 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ---
 ### Classes
 
-| |
-| --- |
-| [Communicator](#class-communicator) |
-| [WERR_BAD_REQUEST](#class-werr_bad_request) |
-| [WERR_INSUFFICIENT_FUNDS](#class-werr_insufficient_funds) |
-| [WERR_INTERNAL](#class-werr_internal) |
-| [WERR_INVALID_PARAMETER](#class-werr_invalid_parameter) |
-| [WERR_INVALID_PUBLIC_KEY](#class-werr_invalid_public_key) |
-| [WERR_MISSING_PARAMETER](#class-werr_missing_parameter) |
-| [WERR_NETWORK_CHAIN](#class-werr_network_chain) |
-| [WERR_NOT_IMPLEMENTED](#class-werr_not_implemented) |
-| [WERR_UNAUTHORIZED](#class-werr_unauthorized) |
-| [WalletError](#class-walleterror) |
+| | |
+| --- | --- |
+| [CachedKeyDeriver](#class-cachedkeyderiver) | [WERR_INVALID_PUBLIC_KEY](#class-werr_invalid_public_key) |
+| [Communicator](#class-communicator) | [WERR_MISSING_PARAMETER](#class-werr_missing_parameter) |
+| [KeyDeriver](#class-keyderiver) | [WERR_NETWORK_CHAIN](#class-werr_network_chain) |
+| [WERR_BAD_REQUEST](#class-werr_bad_request) | [WERR_NOT_IMPLEMENTED](#class-werr_not_implemented) |
+| [WERR_INSUFFICIENT_FUNDS](#class-werr_insufficient_funds) | [WERR_UNAUTHORIZED](#class-werr_unauthorized) |
+| [WERR_INTERNAL](#class-werr_internal) | [WalletCrypto](#class-walletcrypto) |
+| [WERR_INVALID_PARAMETER](#class-werr_invalid_parameter) | [WalletError](#class-walleterror) |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
 
+#### Class: CachedKeyDeriver
+
+A cached version of KeyDeriver that caches the results of key derivation methods.
+This is useful for optimizing performance when the same keys are derived multiple times.
+It supports configurable cache size with sane defaults and maintains cache entries using LRU (Least Recently Used) eviction policy.
+
+```ts
+export default class CachedKeyDeriver {
+    constructor(rootKey: PrivateKey | "anyone", options?: {
+        maxCacheSize?: number;
+    }) 
+    derivePublicKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty, forSelf: boolean = false): PublicKey 
+    derivePrivateKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty): PrivateKey 
+    deriveSymmetricKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty): SymmetricKey 
+    revealCounterpartySecret(counterparty: Counterparty): number[] 
+    revealSpecificSecret(counterparty: Counterparty, protocolID: WalletProtocol, keyID: string): number[] 
+}
+```
+
+See also: [Counterparty](#type-counterparty), [WalletProtocol](#type-walletprotocol)
+
+<details>
+
+<summary>Class CachedKeyDeriver Details</summary>
+
+##### Constructor
+
+Initializes the CachedKeyDeriver instance with a root private key and optional cache settings.
+
+```ts
+constructor(rootKey: PrivateKey | "anyone", options?: {
+    maxCacheSize?: number;
+}) 
+```
+
+Argument Details
+
++ **rootKey**
+  + The root private key or the string 'anyone'.
++ **options**
+  + Optional settings for the cache.
+
+##### Method derivePrivateKey
+
+Derives a private key based on protocol ID, key ID, and counterparty.
+Caches the result for future calls with the same parameters.
+
+```ts
+derivePrivateKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty): PrivateKey 
+```
+See also: [Counterparty](#type-counterparty), [WalletProtocol](#type-walletprotocol)
+
+Returns
+
+- The derived private key.
+
+Argument Details
+
++ **protocolID**
+  + The protocol ID including a security level and protocol name.
++ **keyID**
+  + The key identifier.
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
+
+##### Method derivePublicKey
+
+Derives a public key based on protocol ID, key ID, and counterparty.
+Caches the result for future calls with the same parameters.
+
+```ts
+derivePublicKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty, forSelf: boolean = false): PublicKey 
+```
+See also: [Counterparty](#type-counterparty), [WalletProtocol](#type-walletprotocol)
+
+Returns
+
+- The derived public key.
+
+Argument Details
+
++ **protocolID**
+  + The protocol ID including a security level and protocol name.
++ **keyID**
+  + The key identifier.
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
++ **forSelf**
+  + Whether deriving for self.
+
+##### Method deriveSymmetricKey
+
+Derives a symmetric key based on protocol ID, key ID, and counterparty.
+Caches the result for future calls with the same parameters.
+
+```ts
+deriveSymmetricKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty): SymmetricKey 
+```
+See also: [Counterparty](#type-counterparty), [WalletProtocol](#type-walletprotocol)
+
+Returns
+
+- The derived symmetric key.
+
+Argument Details
+
++ **protocolID**
+  + The protocol ID including a security level and protocol name.
++ **keyID**
+  + The key identifier.
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
+
+Throws
+
+- Throws an error if attempting to derive a symmetric key for 'anyone'.
+
+##### Method revealCounterpartySecret
+
+Reveals the shared secret between the root key and the counterparty.
+Caches the result for future calls with the same parameters.
+
+```ts
+revealCounterpartySecret(counterparty: Counterparty): number[] 
+```
+See also: [Counterparty](#type-counterparty)
+
+Returns
+
+- The shared secret as a number array.
+
+Argument Details
+
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
+
+Throws
+
+- Throws an error if attempting to reveal a shared secret for 'self'.
+
+##### Method revealSpecificSecret
+
+Reveals the specific key association for a given protocol ID, key ID, and counterparty.
+Caches the result for future calls with the same parameters.
+
+```ts
+revealSpecificSecret(counterparty: Counterparty, protocolID: WalletProtocol, keyID: string): number[] 
+```
+See also: [Counterparty](#type-counterparty), [WalletProtocol](#type-walletprotocol)
+
+Returns
+
+- The specific key association as a number array.
+
+Argument Details
+
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
++ **protocolID**
+  + The protocol ID including a security level and protocol name.
++ **keyID**
+  + The key identifier.
+
+</details>
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Class: Communicator
 
 ```ts
@@ -3924,6 +4248,166 @@ export class Communicator {
     }): Promise<unknown> 
 }
 ```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Class: KeyDeriver
+
+Class responsible for deriving various types of keys using a root private key.
+It supports deriving public and private keys, symmetric keys, and revealing key linkages.
+
+```ts
+export class KeyDeriver implements KeyDeriverApi {
+    rootKey: PrivateKey;
+    identityKey: string;
+    constructor(rootKey: PrivateKey | "anyone") 
+    derivePublicKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty, forSelf: boolean = false): PublicKey 
+    derivePrivateKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty): PrivateKey 
+    deriveSymmetricKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty): SymmetricKey 
+    revealCounterpartySecret(counterparty: Counterparty): number[] 
+    revealSpecificSecret(counterparty: Counterparty, protocolID: WalletProtocol, keyID: string): number[] 
+}
+```
+
+See also: [Counterparty](#type-counterparty), [KeyDeriverApi](#interface-keyderiverapi), [WalletProtocol](#type-walletprotocol)
+
+<details>
+
+<summary>Class KeyDeriver Details</summary>
+
+##### Constructor
+
+Initializes the KeyDeriver instance with a root private key.
+
+```ts
+constructor(rootKey: PrivateKey | "anyone") 
+```
+
+Argument Details
+
++ **rootKey**
+  + The root private key or the string 'anyone'.
+
+##### Method derivePrivateKey
+
+Derives a private key based on protocol ID, key ID, and counterparty.
+
+```ts
+derivePrivateKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty): PrivateKey 
+```
+See also: [Counterparty](#type-counterparty), [WalletProtocol](#type-walletprotocol)
+
+Returns
+
+- The derived private key.
+
+Argument Details
+
++ **protocolID**
+  + The protocol ID including a security level and protocol name.
++ **keyID**
+  + The key identifier.
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
+
+##### Method derivePublicKey
+
+Derives a public key based on protocol ID, key ID, and counterparty.
+
+```ts
+derivePublicKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty, forSelf: boolean = false): PublicKey 
+```
+See also: [Counterparty](#type-counterparty), [WalletProtocol](#type-walletprotocol)
+
+Returns
+
+- The derived public key.
+
+Argument Details
+
++ **protocolID**
+  + The protocol ID including a security level and protocol name.
++ **keyID**
+  + The key identifier.
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
++ **forSelf**
+  + Whether deriving for self.
+
+##### Method deriveSymmetricKey
+
+Derives a symmetric key based on protocol ID, key ID, and counterparty.
+Note: Symmetric keys should not be derivable by everyone due to security risks.
+
+```ts
+deriveSymmetricKey(protocolID: WalletProtocol, keyID: string, counterparty: Counterparty): SymmetricKey 
+```
+See also: [Counterparty](#type-counterparty), [WalletProtocol](#type-walletprotocol)
+
+Returns
+
+- The derived symmetric key.
+
+Argument Details
+
++ **protocolID**
+  + The protocol ID including a security level and protocol name.
++ **keyID**
+  + The key identifier.
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
+
+Throws
+
+- Throws an error if attempting to derive a symmetric key for 'anyone'.
+
+##### Method revealCounterpartySecret
+
+Reveals the shared secret between the root key and the counterparty.
+Note: This should not be used for 'self'.
+
+```ts
+revealCounterpartySecret(counterparty: Counterparty): number[] 
+```
+See also: [Counterparty](#type-counterparty)
+
+Returns
+
+- The shared secret as a number array.
+
+Argument Details
+
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
+
+Throws
+
+- Throws an error if attempting to reveal a shared secret for 'self'.
+
+##### Method revealSpecificSecret
+
+Reveals the specific key association for a given protocol ID, key ID, and counterparty.
+
+```ts
+revealSpecificSecret(counterparty: Counterparty, protocolID: WalletProtocol, keyID: string): number[] 
+```
+See also: [Counterparty](#type-counterparty), [WalletProtocol](#type-walletprotocol)
+
+Returns
+
+- The specific key association as a number array.
+
+Argument Details
+
++ **counterparty**
+  + The counterparty's public key or a predefined value ('self' or 'anyone').
++ **protocolID**
+  + The protocol ID including a security level and protocol name.
++ **keyID**
+  + The key identifier.
+
+</details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -4105,6 +4589,58 @@ export class WERR_UNAUTHORIZED extends WalletError {
 ```
 
 See also: [WalletError](#class-walleterror)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Class: WalletCrypto
+
+WalletCrypto implements single-keyring wallet cryptography functions,
+operating without context about whether its configured keyring is privileged.
+
+```ts
+export class WalletCrypto implements WalletCryptoObject {
+    keyDeriver: KeyDeriverApi;
+    constructor(keyDeriver: KeyDeriverApi) 
+    async getIdentityKey(originator?: OriginatorDomainNameStringUnder250Bytes): Promise<{
+        publicKey: PubKeyHex;
+    }> 
+    async getPublicKey(args: GetPublicKeyArgs, originator?: OriginatorDomainNameStringUnder250Bytes): Promise<{
+        publicKey: PubKeyHex;
+    }> 
+    async revealCounterpartyKeyLinkage(args: RevealCounterpartyKeyLinkageArgs, originator?: OriginatorDomainNameStringUnder250Bytes): Promise<RevealCounterpartyKeyLinkageResult> 
+    async revealSpecificKeyLinkage(args: RevealSpecificKeyLinkageArgs, originator?: OriginatorDomainNameStringUnder250Bytes): Promise<RevealSpecificKeyLinkageResult> 
+    async encrypt(args: WalletEncryptArgs, originator?: OriginatorDomainNameStringUnder250Bytes): Promise<WalletEncryptResult> 
+    async decrypt(args: WalletDecryptArgs, originator?: OriginatorDomainNameStringUnder250Bytes): Promise<WalletDecryptResult> 
+    async createHmac(args: CreateHmacArgs, originator?: OriginatorDomainNameStringUnder250Bytes): Promise<CreateHmacResult> 
+    async verifyHmac(args: VerifyHmacArgs, originator?: OriginatorDomainNameStringUnder250Bytes): Promise<VerifyHmacResult> 
+    async createSignature(args: CreateSignatureArgs, originator?: OriginatorDomainNameStringUnder250Bytes): Promise<CreateSignatureResult> 
+    async verifySignature(args: VerifySignatureArgs, originator?: OriginatorDomainNameStringUnder250Bytes): Promise<VerifySignatureResult> 
+}
+```
+
+See also: [CreateHmacArgs](#interface-createhmacargs), [CreateHmacResult](#interface-createhmacresult), [CreateSignatureArgs](#interface-createsignatureargs), [CreateSignatureResult](#interface-createsignatureresult), [GetPublicKeyArgs](#interface-getpublickeyargs), [KeyDeriverApi](#interface-keyderiverapi), [OriginatorDomainNameStringUnder250Bytes](#type-originatordomainnamestringunder250bytes), [PubKeyHex](#type-pubkeyhex), [RevealCounterpartyKeyLinkageArgs](#interface-revealcounterpartykeylinkageargs), [RevealCounterpartyKeyLinkageResult](#interface-revealcounterpartykeylinkageresult), [RevealSpecificKeyLinkageArgs](#interface-revealspecifickeylinkageargs), [RevealSpecificKeyLinkageResult](#interface-revealspecifickeylinkageresult), [VerifyHmacArgs](#interface-verifyhmacargs), [VerifyHmacResult](#interface-verifyhmacresult), [VerifySignatureArgs](#interface-verifysignatureargs), [VerifySignatureResult](#interface-verifysignatureresult), [WalletCryptoObject](#interface-walletcryptoobject), [WalletDecryptArgs](#interface-walletdecryptargs), [WalletDecryptResult](#interface-walletdecryptresult), [WalletEncryptArgs](#interface-walletencryptargs), [WalletEncryptResult](#interface-walletencryptresult), [createHmac](#function-createhmac), [createSignature](#function-createsignature), [decrypt](#function-decrypt), [encrypt](#function-encrypt), [getPublicKey](#function-getpublickey), [verifyHmac](#function-verifyhmac), [verifySignature](#function-verifysignature)
+
+<details>
+
+<summary>Class WalletCrypto Details</summary>
+
+##### Method getIdentityKey
+
+Convenience method to obtain the identityKey.
+
+```ts
+async getIdentityKey(originator?: OriginatorDomainNameStringUnder250Bytes): Promise<{
+    publicKey: PubKeyHex;
+}> 
+```
+See also: [OriginatorDomainNameStringUnder250Bytes](#type-originatordomainnamestringunder250bytes), [PubKeyHex](#type-pubkeyhex)
+
+Returns
+
+`await this.getPublicKey({ identityKey: true }, originator)`
+
+</details>
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -6121,20 +6657,21 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [AcquisitionProtocol](#type-acquisitionprotocol) | [EntityNameStringMax100Bytes](#type-entitynamestringmax100bytes) | [PositiveIntegerOrZero](#type-positiveintegerorzero) |
-| [ActionStatus](#type-actionstatus) | [ErrorCodeString10To40Bytes](#type-errorcodestring10to40bytes) | [ProtocolID](#type-protocolid) |
-| [AtomicBEEF](#type-atomicbeef) | [ErrorDescriptionString20To200Bytes](#type-errordescriptionstring20to200bytes) | [ProtocolString5To400Bytes](#type-protocolstring5to400bytes) |
-| [BEEF](#type-beef) | [HexString](#type-hexstring) | [PubKeyHex](#type-pubkeyhex) |
-| [Base64String](#type-base64string) | [ISOTimestampString](#type-isotimestampstring) | [SatoshiValue](#type-satoshivalue) |
-| [BasketStringUnder300Bytes](#type-basketstringunder300bytes) | [KeyIDStringUnder800Bytes](#type-keyidstringunder800bytes) | [SendWithResultStatus](#type-sendwithresultstatus) |
-| [BooleanDefaultFalse](#type-booleandefaultfalse) | [KeyringRevealer](#type-keyringrevealer) | [TXIDHexString](#type-txidhexstring) |
-| [BooleanDefaultTrue](#type-booleandefaulttrue) | [LabelStringUnder300Bytes](#type-labelstringunder300bytes) | [TransactionStatusApi](#type-transactionstatusapi) |
+| [AcquisitionProtocol](#type-acquisitionprotocol) | [EntityNameStringMax100Bytes](#type-entitynamestringmax100bytes) | [ProtocolID](#type-protocolid) |
+| [ActionStatus](#type-actionstatus) | [ErrorCodeString10To40Bytes](#type-errorcodestring10to40bytes) | [ProtocolString5To400Bytes](#type-protocolstring5to400bytes) |
+| [AtomicBEEF](#type-atomicbeef) | [ErrorDescriptionString20To200Bytes](#type-errordescriptionstring20to200bytes) | [PubKeyHex](#type-pubkeyhex) |
+| [BEEF](#type-beef) | [HexString](#type-hexstring) | [SatoshiValue](#type-satoshivalue) |
+| [Base64String](#type-base64string) | [ISOTimestampString](#type-isotimestampstring) | [SendWithResultStatus](#type-sendwithresultstatus) |
+| [BasketStringUnder300Bytes](#type-basketstringunder300bytes) | [KeyIDStringUnder800Bytes](#type-keyidstringunder800bytes) | [TXIDHexString](#type-txidhexstring) |
+| [BooleanDefaultFalse](#type-booleandefaultfalse) | [KeyringRevealer](#type-keyringrevealer) | [TransactionStatusApi](#type-transactionstatusapi) |
+| [BooleanDefaultTrue](#type-booleandefaulttrue) | [LabelStringUnder300Bytes](#type-labelstringunder300bytes) | [TrustSelf](#type-trustself) |
 | [Byte](#type-byte) | [OriginatorDomainNameStringUnder250Bytes](#type-originatordomainnamestringunder250bytes) | [TrustSelf](#type-trustself) |
-| [CertificateFieldNameUnder50Bytes](#type-certificatefieldnameunder50bytes) | [OutpointString](#type-outpointstring) | [TrustSelf](#type-trustself) |
-| [Chain](#type-chain) | [OutputTagStringUnder300Bytes](#type-outputtagstringunder300bytes) | [VersionString7To30Bytes](#type-versionstring7to30bytes) |
-| [DescriptionString5to50Bytes](#type-descriptionstring5to50bytes) | [PositiveInteger](#type-positiveinteger) | [WalletCounterparty](#type-walletcounterparty) |
-| [DojoProvidedByApi](#type-dojoprovidedbyapi) | [PositiveIntegerDefault10Max10000](#type-positiveintegerdefault10max10000) | [WalletNetwork](#type-walletnetwork) |
-| [EntityIconURLStringMax500Bytes](#type-entityiconurlstringmax500bytes) | [PositiveIntegerMax10](#type-positiveintegermax10) | [WalletProtocol](#type-walletprotocol) |
+| [CertificateFieldNameUnder50Bytes](#type-certificatefieldnameunder50bytes) | [OutpointString](#type-outpointstring) | [VersionString7To30Bytes](#type-versionstring7to30bytes) |
+| [Chain](#type-chain) | [OutputTagStringUnder300Bytes](#type-outputtagstringunder300bytes) | [WalletCounterparty](#type-walletcounterparty) |
+| [Counterparty](#type-counterparty) | [PositiveInteger](#type-positiveinteger) | [WalletNetwork](#type-walletnetwork) |
+| [DescriptionString5to50Bytes](#type-descriptionstring5to50bytes) | [PositiveIntegerDefault10Max10000](#type-positiveintegerdefault10max10000) | [WalletProtocol](#type-walletprotocol) |
+| [DojoProvidedByApi](#type-dojoprovidedbyapi) | [PositiveIntegerMax10](#type-positiveintegermax10) |  |
+| [EntityIconURLStringMax500Bytes](#type-entityiconurlstringmax500bytes) | [PositiveIntegerOrZero](#type-positiveintegerorzero) |  |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -6239,6 +6776,17 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ```ts
 export type Chain = "main" | "test"
 ```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Type: Counterparty
+
+```ts
+export type Counterparty = PublicKey | PubKeyHex | "self" | "anyone"
+```
+
+See also: [PubKeyHex](#type-pubkeyhex)
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
