@@ -136,45 +136,47 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [AbortActionArgs](#interface-abortactionargs) | [GetHeightResult](#interface-getheightresult) | [SignActionArgs](#interface-signactionargs) |
-| [AbortActionResult](#interface-abortactionresult) | [GetInfoParams](#interface-getinfoparams) | [SignActionOptions](#interface-signactionoptions) |
-| [AbortActionResult](#interface-abortactionresult) | [GetInfoResult](#interface-getinforesult) | [SignActionResult](#interface-signactionresult) |
-| [AcquireCertificateArgs](#interface-acquirecertificateargs) | [GetNetworkResult](#interface-getnetworkresult) | [SignActionResult](#interface-signactionresult) |
-| [AcquireCertificateResult](#interface-acquirecertificateresult) | [GetPublicKeyArgs](#interface-getpublickeyargs) | [SignActionSpend](#interface-signactionspend) |
-| [AuthenticatedResult](#interface-authenticatedresult) | [GetPublicKeyResult](#interface-getpublickeyresult) | [SignableTransaction](#interface-signabletransaction) |
-| [BasketInsertion](#interface-basketinsertion) | [GetTransactionOutputResult](#interface-gettransactionoutputresult) | [SpecificKeyLinkageResult](#interface-specifickeylinkageresult) |
-| [CertificateApi](#interface-certificateapi) | [GetVersionResult](#interface-getversionresult) | [SubmitDirectTransaction](#interface-submitdirecttransaction) |
-| [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult) | [IdentityCertificate](#interface-identitycertificate) | [SubmitDirectTransactionOutput](#interface-submitdirecttransactionoutput) |
-| [CreateActionArgs](#interface-createactionargs) | [IdentityCertifier](#interface-identitycertifier) | [SubmitDirectTransactionResult](#interface-submitdirecttransactionresult) |
-| [CreateActionInput](#interface-createactioninput) | [InternalizeActionArgs](#interface-internalizeactionargs) | [TscMerkleProofApi](#interface-tscmerkleproofapi) |
-| [CreateActionInput](#interface-createactioninput) | [InternalizeActionResult](#interface-internalizeactionresult) | [ValidCreateActionArgs](#interface-validcreateactionargs) |
-| [CreateActionOptions](#interface-createactionoptions) | [InternalizeOutput](#interface-internalizeoutput) | [ValidCreateActionInput](#interface-validcreateactioninput) |
-| [CreateActionOptions](#interface-createactionoptions) | [KeyLinkageResult](#interface-keylinkageresult) | [ValidCreateActionOptions](#interface-validcreateactionoptions) |
-| [CreateActionOutput](#interface-createactionoutput) | [ListActionsArgs](#interface-listactionsargs) | [ValidCreateActionOutput](#interface-validcreateactionoutput) |
-| [CreateActionOutput](#interface-createactionoutput) | [ListActionsResult](#interface-listactionsresult) | [ValidListActionsArgs](#interface-validlistactionsargs) |
-| [CreateActionOutputToRedeem](#interface-createactionoutputtoredeem) | [ListActionsResult](#interface-listactionsresult) | [ValidListOutputsArgs](#interface-validlistoutputsargs) |
-| [CreateActionParams](#interface-createactionparams) | [ListActionsTransaction](#interface-listactionstransaction) | [ValidProcessActionArgs](#interface-validprocessactionargs) |
-| [CreateActionResult](#interface-createactionresult) | [ListActionsTransactionInput](#interface-listactionstransactioninput) | [ValidProcessActionOptions](#interface-validprocessactionoptions) |
-| [CreateActionResult](#interface-createactionresult) | [ListActionsTransactionOutput](#interface-listactionstransactionoutput) | [ValidSignActionArgs](#interface-validsignactionargs) |
-| [CreateCertificateResult](#interface-createcertificateresult) | [ListCertificatesArgs](#interface-listcertificatesargs) | [ValidSignActionOptions](#interface-validsignactionoptions) |
-| [CreateHmacArgs](#interface-createhmacargs) | [ListCertificatesResult](#interface-listcertificatesresult) | [VerifyHmacArgs](#interface-verifyhmacargs) |
-| [CreateHmacResult](#interface-createhmacresult) | [ListOutputsArgs](#interface-listoutputsargs) | [VerifyHmacResult](#interface-verifyhmacresult) |
-| [CreateSignatureArgs](#interface-createsignatureargs) | [ListOutputsResult](#interface-listoutputsresult) | [VerifySignatureArgs](#interface-verifysignatureargs) |
-| [CreateSignatureResult](#interface-createsignatureresult) | [MapiResponseApi](#interface-mapiresponseapi) | [VerifySignatureResult](#interface-verifysignatureresult) |
-| [DiscoverByAttributesArgs](#interface-discoverbyattributesargs) | [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi) | [Wallet](#interface-wallet) |
-| [DiscoverByIdentityKeyArgs](#interface-discoverbyidentitykeyargs) | [OutPoint](#interface-outpoint) | [WalletAction](#interface-walletaction) |
-| [DiscoverCertificatesResult](#interface-discovercertificatesresult) | [ProveCertificateArgs](#interface-provecertificateargs) | [WalletActionInput](#interface-walletactioninput) |
-| [DojoCreateTransactionResultApi](#interface-dojocreatetransactionresultapi) | [ProveCertificateResult](#interface-provecertificateresult) | [WalletActionOutput](#interface-walletactionoutput) |
-| [DojoCreateTxOutputApi](#interface-dojocreatetxoutputapi) | [ProveCertificateResult](#interface-provecertificateresult) | [WalletCertificate](#interface-walletcertificate) |
-| [DojoCreateTxResultInstructionsApi](#interface-dojocreatetxresultinstructionsapi) | [RelinquishCertificateArgs](#interface-relinquishcertificateargs) | [WalletCryptoObject](#interface-walletcryptoobject) |
-| [DojoCreateTxResultOutputApi](#interface-dojocreatetxresultoutputapi) | [RelinquishCertificateResult](#interface-relinquishcertificateresult) | [WalletDecryptArgs](#interface-walletdecryptargs) |
-| [DojoCreatingTxInputsApi](#interface-dojocreatingtxinputsapi) | [RelinquishOutputArgs](#interface-relinquishoutputargs) | [WalletDecryptResult](#interface-walletdecryptresult) |
-| [DojoOutputToRedeemApi](#interface-dojooutputtoredeemapi) | [RelinquishOutputResult](#interface-relinquishoutputresult) | [WalletEncryptArgs](#interface-walletencryptargs) |
-| [DojoSendWithResultsApi](#interface-dojosendwithresultsapi) | [RevealCounterpartyKeyLinkageArgs](#interface-revealcounterpartykeylinkageargs) | [WalletEncryptResult](#interface-walletencryptresult) |
-| [EnvelopeApi](#interface-envelopeapi) | [RevealCounterpartyKeyLinkageResult](#interface-revealcounterpartykeylinkageresult) | [WalletEncryptionArgs](#interface-walletencryptionargs) |
-| [EnvelopeEvidenceApi](#interface-envelopeevidenceapi) | [RevealSpecificKeyLinkageArgs](#interface-revealspecifickeylinkageargs) | [WalletErrorObject](#interface-walleterrorobject) |
-| [GetHeaderArgs](#interface-getheaderargs) | [RevealSpecificKeyLinkageResult](#interface-revealspecifickeylinkageresult) | [WalletOutput](#interface-walletoutput) |
-| [GetHeaderResult](#interface-getheaderresult) | [SendWithResult](#interface-sendwithresult) | [WalletPayment](#interface-walletpayment) |
+| [AbortActionArgs](#interface-abortactionargs) | [GetInfoResult](#interface-getinforesult) | [SignActionSpend](#interface-signactionspend) |
+| [AbortActionResult](#interface-abortactionresult) | [GetNetworkResult](#interface-getnetworkresult) | [SignableTransaction](#interface-signabletransaction) |
+| [AbortActionResult](#interface-abortactionresult) | [GetPublicKeyArgs](#interface-getpublickeyargs) | [SpecificKeyLinkageResult](#interface-specifickeylinkageresult) |
+| [AcquireCertificateArgs](#interface-acquirecertificateargs) | [GetPublicKeyResult](#interface-getpublickeyresult) | [SubmitDirectTransaction](#interface-submitdirecttransaction) |
+| [AcquireCertificateResult](#interface-acquirecertificateresult) | [GetTransactionOutputResult](#interface-gettransactionoutputresult) | [SubmitDirectTransactionOutput](#interface-submitdirecttransactionoutput) |
+| [AuthenticatedResult](#interface-authenticatedresult) | [GetVersionResult](#interface-getversionresult) | [SubmitDirectTransactionResult](#interface-submitdirecttransactionresult) |
+| [BasketInsertion](#interface-basketinsertion) | [IdentityCertificate](#interface-identitycertificate) | [TscMerkleProofApi](#interface-tscmerkleproofapi) |
+| [CertificateApi](#interface-certificateapi) | [IdentityCertifier](#interface-identitycertifier) | [ValidAbortActionArgs](#interface-validabortactionargs) |
+| [CounterpartyKeyLinkageResult](#interface-counterpartykeylinkageresult) | [InternalizeActionArgs](#interface-internalizeactionargs) | [ValidBasketInsertion](#interface-validbasketinsertion) |
+| [CreateActionArgs](#interface-createactionargs) | [InternalizeActionResult](#interface-internalizeactionresult) | [ValidCreateActionArgs](#interface-validcreateactionargs) |
+| [CreateActionInput](#interface-createactioninput) | [InternalizeOutput](#interface-internalizeoutput) | [ValidCreateActionInput](#interface-validcreateactioninput) |
+| [CreateActionInput](#interface-createactioninput) | [KeyLinkageResult](#interface-keylinkageresult) | [ValidCreateActionOptions](#interface-validcreateactionoptions) |
+| [CreateActionOptions](#interface-createactionoptions) | [ListActionsArgs](#interface-listactionsargs) | [ValidCreateActionOutput](#interface-validcreateactionoutput) |
+| [CreateActionOptions](#interface-createactionoptions) | [ListActionsResult](#interface-listactionsresult) | [ValidInternalizeActionArgs](#interface-validinternalizeactionargs) |
+| [CreateActionOutput](#interface-createactionoutput) | [ListActionsResult](#interface-listactionsresult) | [ValidInternalizeOutput](#interface-validinternalizeoutput) |
+| [CreateActionOutput](#interface-createactionoutput) | [ListActionsTransaction](#interface-listactionstransaction) | [ValidListActionsArgs](#interface-validlistactionsargs) |
+| [CreateActionOutputToRedeem](#interface-createactionoutputtoredeem) | [ListActionsTransactionInput](#interface-listactionstransactioninput) | [ValidListOutputsArgs](#interface-validlistoutputsargs) |
+| [CreateActionParams](#interface-createactionparams) | [ListActionsTransactionOutput](#interface-listactionstransactionoutput) | [ValidProcessActionArgs](#interface-validprocessactionargs) |
+| [CreateActionResult](#interface-createactionresult) | [ListCertificatesArgs](#interface-listcertificatesargs) | [ValidProcessActionOptions](#interface-validprocessactionoptions) |
+| [CreateActionResult](#interface-createactionresult) | [ListCertificatesResult](#interface-listcertificatesresult) | [ValidRelinquishOutputArgs](#interface-validrelinquishoutputargs) |
+| [CreateCertificateResult](#interface-createcertificateresult) | [ListOutputsArgs](#interface-listoutputsargs) | [ValidSignActionArgs](#interface-validsignactionargs) |
+| [CreateHmacArgs](#interface-createhmacargs) | [ListOutputsResult](#interface-listoutputsresult) | [ValidSignActionOptions](#interface-validsignactionoptions) |
+| [CreateHmacResult](#interface-createhmacresult) | [MapiResponseApi](#interface-mapiresponseapi) | [ValidWalletPayment](#interface-validwalletpayment) |
+| [CreateSignatureArgs](#interface-createsignatureargs) | [OptionalEnvelopeEvidenceApi](#interface-optionalenvelopeevidenceapi) | [VerifyHmacArgs](#interface-verifyhmacargs) |
+| [CreateSignatureResult](#interface-createsignatureresult) | [OutPoint](#interface-outpoint) | [VerifyHmacResult](#interface-verifyhmacresult) |
+| [DiscoverByAttributesArgs](#interface-discoverbyattributesargs) | [ProveCertificateArgs](#interface-provecertificateargs) | [VerifySignatureArgs](#interface-verifysignatureargs) |
+| [DiscoverByIdentityKeyArgs](#interface-discoverbyidentitykeyargs) | [ProveCertificateResult](#interface-provecertificateresult) | [VerifySignatureResult](#interface-verifysignatureresult) |
+| [DiscoverCertificatesResult](#interface-discovercertificatesresult) | [ProveCertificateResult](#interface-provecertificateresult) | [Wallet](#interface-wallet) |
+| [DojoCreateTransactionResultApi](#interface-dojocreatetransactionresultapi) | [RelinquishCertificateArgs](#interface-relinquishcertificateargs) | [WalletAction](#interface-walletaction) |
+| [DojoCreateTxOutputApi](#interface-dojocreatetxoutputapi) | [RelinquishCertificateResult](#interface-relinquishcertificateresult) | [WalletActionInput](#interface-walletactioninput) |
+| [DojoCreateTxResultInstructionsApi](#interface-dojocreatetxresultinstructionsapi) | [RelinquishOutputArgs](#interface-relinquishoutputargs) | [WalletActionOutput](#interface-walletactionoutput) |
+| [DojoCreateTxResultOutputApi](#interface-dojocreatetxresultoutputapi) | [RelinquishOutputResult](#interface-relinquishoutputresult) | [WalletCertificate](#interface-walletcertificate) |
+| [DojoCreatingTxInputsApi](#interface-dojocreatingtxinputsapi) | [RevealCounterpartyKeyLinkageArgs](#interface-revealcounterpartykeylinkageargs) | [WalletCryptoObject](#interface-walletcryptoobject) |
+| [DojoOutputToRedeemApi](#interface-dojooutputtoredeemapi) | [RevealCounterpartyKeyLinkageResult](#interface-revealcounterpartykeylinkageresult) | [WalletDecryptArgs](#interface-walletdecryptargs) |
+| [DojoSendWithResultsApi](#interface-dojosendwithresultsapi) | [RevealSpecificKeyLinkageArgs](#interface-revealspecifickeylinkageargs) | [WalletDecryptResult](#interface-walletdecryptresult) |
+| [EnvelopeApi](#interface-envelopeapi) | [RevealSpecificKeyLinkageResult](#interface-revealspecifickeylinkageresult) | [WalletEncryptArgs](#interface-walletencryptargs) |
+| [EnvelopeEvidenceApi](#interface-envelopeevidenceapi) | [SendWithResult](#interface-sendwithresult) | [WalletEncryptResult](#interface-walletencryptresult) |
+| [GetHeaderArgs](#interface-getheaderargs) | [SignActionArgs](#interface-signactionargs) | [WalletEncryptionArgs](#interface-walletencryptionargs) |
+| [GetHeaderResult](#interface-getheaderresult) | [SignActionOptions](#interface-signactionoptions) | [WalletErrorObject](#interface-walleterrorobject) |
+| [GetHeightResult](#interface-getheightresult) | [SignActionResult](#interface-signactionresult) | [WalletOutput](#interface-walletoutput) |
+| [GetInfoParams](#interface-getinfoparams) | [SignActionResult](#interface-signactionresult) | [WalletPayment](#interface-walletpayment) |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -209,7 +211,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 ```ts
 export interface AbortActionResult {
-    aborted: true;
+    aborted: boolean;
 }
 ```
 
@@ -3015,6 +3017,35 @@ txOrId: string | Buffer
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Interface: ValidAbortActionArgs
+
+```ts
+export interface ValidAbortActionArgs {
+    reference: sdk.Base64String;
+    log?: string;
+}
+```
+
+See also: [Base64String](#type-base64string)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: ValidBasketInsertion
+
+```ts
+export interface ValidBasketInsertion {
+    basket: sdk.BasketStringUnder300Bytes;
+    customInstructions?: string;
+    tags: sdk.OutputTagStringUnder300Bytes[];
+}
+```
+
+See also: [BasketStringUnder300Bytes](#type-basketstringunder300bytes), [OutputTagStringUnder300Bytes](#type-outputtagstringunder300bytes)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Interface: ValidCreateActionArgs
 
 ```ts
@@ -3084,6 +3115,40 @@ export interface ValidCreateActionOutput {
 ```
 
 See also: [BasketStringUnder300Bytes](#type-basketstringunder300bytes), [DescriptionString5to50Bytes](#type-descriptionstring5to50bytes), [HexString](#type-hexstring), [OutputTagStringUnder300Bytes](#type-outputtagstringunder300bytes), [SatoshiValue](#type-satoshivalue)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: ValidInternalizeActionArgs
+
+```ts
+export interface ValidInternalizeActionArgs {
+    tx: sdk.AtomicBEEF;
+    outputs: sdk.InternalizeOutput[];
+    description: sdk.DescriptionString5to50Bytes;
+    labels: sdk.LabelStringUnder300Bytes[];
+    seekPermission: sdk.BooleanDefaultTrue;
+    log?: string;
+}
+```
+
+See also: [AtomicBEEF](#type-atomicbeef), [BooleanDefaultTrue](#type-booleandefaulttrue), [DescriptionString5to50Bytes](#type-descriptionstring5to50bytes), [InternalizeOutput](#interface-internalizeoutput), [LabelStringUnder300Bytes](#type-labelstringunder300bytes)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: ValidInternalizeOutput
+
+```ts
+export interface ValidInternalizeOutput {
+    outputIndex: sdk.PositiveIntegerOrZero;
+    protocol: "wallet payment" | "basket insertion";
+    paymentRemittance?: ValidWalletPayment;
+    insertionRemittance?: ValidBasketInsertion;
+}
+```
+
+See also: [PositiveIntegerOrZero](#type-positiveintegerorzero), [ValidBasketInsertion](#interface-validbasketinsertion), [ValidWalletPayment](#interface-validwalletpayment)
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -3171,6 +3236,21 @@ See also: [BooleanDefaultFalse](#type-booleandefaultfalse), [BooleanDefaultTrue]
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Interface: ValidRelinquishOutputArgs
+
+```ts
+export interface ValidRelinquishOutputArgs {
+    basket: sdk.BasketStringUnder300Bytes;
+    output: sdk.OutpointString;
+    log?: string;
+}
+```
+
+See also: [BasketStringUnder300Bytes](#type-basketstringunder300bytes), [OutpointString](#type-outpointstring)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Interface: ValidSignActionArgs
 
 ```ts
@@ -3198,6 +3278,21 @@ export interface ValidSignActionOptions extends ValidProcessActionOptions {
 ```
 
 See also: [TXIDHexString](#type-txidhexstring), [ValidProcessActionOptions](#interface-validprocessactionoptions)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Interface: ValidWalletPayment
+
+```ts
+export interface ValidWalletPayment {
+    derivationPrefix: sdk.Base64String;
+    derivationSuffix: sdk.Base64String;
+    senderIdentityKey: sdk.PubKeyHex;
+}
+```
+
+See also: [Base64String](#type-base64string), [PubKeyHex](#type-pubkeyhex)
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -4086,31 +4181,33 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 
 | | | |
 | --- | --- | --- |
-| [abortAction](#function-abortaction) | [getCertificates](#function-getcertificates) | [stampLogFormat](#function-stamplogformat) |
-| [asArray](#function-asarray) | [getEnvelopeForTransaction](#function-getenvelopefortransaction) | [submitDirectTransaction](#function-submitdirecttransaction) |
-| [asBsvSdkScript](#function-asbsvsdkscript) | [getHeight](#function-getheight) | [toBEEFfromEnvelope](#function-tobeeffromenvelope) |
-| [asBsvSdkTx](#function-asbsvsdktx) | [getInfo](#function-getinfo) | [toEnvelopeFromBEEF](#function-toenvelopefrombeef) |
-| [asBuffer](#function-asbuffer) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [unbasketOutput](#function-unbasketoutput) |
-| [asString](#function-asstring) | [getNetwork](#function-getnetwork) | [validateCreateActionArgs](#function-validatecreateactionargs) |
-| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getPreferredCurrency](#function-getpreferredcurrency) | [validateCreateActionInput](#function-validatecreateactioninput) |
-| [connectToSubstrate](#function-connecttosubstrate) | [getPublicKey](#function-getpublickey) | [validateCreateActionOptions](#function-validatecreateactionoptions) |
-| [convertMerklePathToProof](#function-convertmerklepathtoproof) | [getRandomID](#function-getrandomid) | [validateCreateActionOptions](#function-validatecreateactionoptions) |
-| [convertProofToMerklePath](#function-convertprooftomerklepath) | [getTransactionOutputs](#function-gettransactionoutputs) | [validateCreateActionOutput](#function-validatecreateactionoutput) |
-| [convertProofToMerklePathWithLookup](#function-convertprooftomerklepathwithlookup) | [getVersion](#function-getversion) | [validateInteger](#function-validateinteger) |
-| [createAction](#function-createaction) | [isAuthenticated](#function-isauthenticated) | [validateListActionsArgs](#function-validatelistactionsargs) |
-| [createCertificate](#function-createcertificate) | [listActions](#function-listactions) | [validateListOutputsArgs](#function-validatelistoutputsargs) |
-| [createHmac](#function-createhmac) | [makeHttpRequest](#function-makehttprequest) | [validateOptionalEnvelopeEvidence](#function-validateoptionalenvelopeevidence) |
-| [createSignature](#function-createsignature) | [parseWalletOutpoint](#function-parsewalletoutpoint) | [validateOptionalInteger](#function-validateoptionalinteger) |
-| [decrypt](#function-decrypt) | [promiseWithTimeout](#function-promisewithtimeout) | [validateSatoshis](#function-validatesatoshis) |
-| [decryptAsArray](#function-decryptasarray) | [proveCertificate](#function-provecertificate) | [validateSignActionArgs](#function-validatesignactionargs) |
-| [decryptAsString](#function-decryptasstring) | [requestGroupPermission](#function-requestgrouppermission) | [validateSignActionOptions](#function-validatesignactionoptions) |
-| [discoverByAttributes](#function-discoverbyattributes) | [resolveOptionalEnvelopeEvidence](#function-resolveoptionalenvelopeevidence) | [validateStringLength](#function-validatestringlength) |
-| [discoverByIdentityKey](#function-discoverbyidentitykey) | [revealKeyLinkage](#function-revealkeylinkage) | [verifyHmac](#function-verifyhmac) |
-| [doubleSha256BE](#function-doublesha256be) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) | [verifySignature](#function-verifysignature) |
-| [doubleSha256HashLE](#function-doublesha256hashle) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) | [verifyTruthy](#function-verifytruthy) |
-| [encrypt](#function-encrypt) | [sha256Hash](#function-sha256hash) | [waitForAuthentication](#function-waitforauthentication) |
-| [encryptAsArray](#function-encryptasarray) | [signAction](#function-signaction) |  |
-| [encryptAsString](#function-encryptasstring) | [stampLog](#function-stamplog) |  |
+| [abortAction](#function-abortaction) | [getHeight](#function-getheight) | [unbasketOutput](#function-unbasketoutput) |
+| [asArray](#function-asarray) | [getInfo](#function-getinfo) | [validateAbortActionArgs](#function-validateabortactionargs) |
+| [asBsvSdkScript](#function-asbsvsdkscript) | [getMerkleRootForHeight](#function-getmerklerootforheight) | [validateBasketInsertion](#function-validatebasketinsertion) |
+| [asBsvSdkTx](#function-asbsvsdktx) | [getNetwork](#function-getnetwork) | [validateCreateActionArgs](#function-validatecreateactionargs) |
+| [asBuffer](#function-asbuffer) | [getPreferredCurrency](#function-getpreferredcurrency) | [validateCreateActionInput](#function-validatecreateactioninput) |
+| [asString](#function-asstring) | [getPublicKey](#function-getpublickey) | [validateCreateActionOptions](#function-validatecreateactionoptions) |
+| [buildTransactionForSignActionUnlocking](#function-buildtransactionforsignactionunlocking) | [getRandomID](#function-getrandomid) | [validateCreateActionOptions](#function-validatecreateactionoptions) |
+| [connectToSubstrate](#function-connecttosubstrate) | [getTransactionOutputs](#function-gettransactionoutputs) | [validateCreateActionOutput](#function-validatecreateactionoutput) |
+| [convertMerklePathToProof](#function-convertmerklepathtoproof) | [getVersion](#function-getversion) | [validateInteger](#function-validateinteger) |
+| [convertProofToMerklePath](#function-convertprooftomerklepath) | [isAuthenticated](#function-isauthenticated) | [validateInternalizeActionArgs](#function-validateinternalizeactionargs) |
+| [convertProofToMerklePathWithLookup](#function-convertprooftomerklepathwithlookup) | [listActions](#function-listactions) | [validateInternalizeOutput](#function-validateinternalizeoutput) |
+| [createAction](#function-createaction) | [makeHttpRequest](#function-makehttprequest) | [validateListActionsArgs](#function-validatelistactionsargs) |
+| [createCertificate](#function-createcertificate) | [parseWalletOutpoint](#function-parsewalletoutpoint) | [validateListOutputsArgs](#function-validatelistoutputsargs) |
+| [createHmac](#function-createhmac) | [promiseWithTimeout](#function-promisewithtimeout) | [validateOptionalEnvelopeEvidence](#function-validateoptionalenvelopeevidence) |
+| [createSignature](#function-createsignature) | [proveCertificate](#function-provecertificate) | [validateOptionalInteger](#function-validateoptionalinteger) |
+| [decrypt](#function-decrypt) | [requestGroupPermission](#function-requestgrouppermission) | [validateOutpointString](#function-validateoutpointstring) |
+| [decryptAsArray](#function-decryptasarray) | [resolveOptionalEnvelopeEvidence](#function-resolveoptionalenvelopeevidence) | [validatePositiveIntegerOrZero](#function-validatepositiveintegerorzero) |
+| [decryptAsString](#function-decryptasstring) | [revealKeyLinkage](#function-revealkeylinkage) | [validateRelinquishOutputArgs](#function-validaterelinquishoutputargs) |
+| [discoverByAttributes](#function-discoverbyattributes) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) | [validateSatoshis](#function-validatesatoshis) |
+| [discoverByIdentityKey](#function-discoverbyidentitykey) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) | [validateSignActionArgs](#function-validatesignactionargs) |
+| [doubleSha256BE](#function-doublesha256be) | [sha256Hash](#function-sha256hash) | [validateSignActionOptions](#function-validatesignactionoptions) |
+| [doubleSha256HashLE](#function-doublesha256hashle) | [signAction](#function-signaction) | [validateStringLength](#function-validatestringlength) |
+| [encrypt](#function-encrypt) | [stampLog](#function-stamplog) | [validateWalletPayment](#function-validatewalletpayment) |
+| [encryptAsArray](#function-encryptasarray) | [stampLogFormat](#function-stamplogformat) | [verifyHmac](#function-verifyhmac) |
+| [encryptAsString](#function-encryptasstring) | [submitDirectTransaction](#function-submitdirecttransaction) | [verifySignature](#function-verifysignature) |
+| [getCertificates](#function-getcertificates) | [toBEEFfromEnvelope](#function-tobeeffromenvelope) | [verifyTruthy](#function-verifytruthy) |
+| [getEnvelopeForTransaction](#function-getenvelopefortransaction) | [toEnvelopeFromBEEF](#function-toenvelopefrombeef) | [waitForAuthentication](#function-waitforauthentication) |
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -5615,6 +5712,28 @@ Argument Details
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: validateAbortActionArgs
+
+```ts
+export function validateAbortActionArgs(args: sdk.AbortActionArgs): ValidAbortActionArgs 
+```
+
+See also: [AbortActionArgs](#interface-abortactionargs), [ValidAbortActionArgs](#interface-validabortactionargs)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: validateBasketInsertion
+
+```ts
+export function validateBasketInsertion(args?: sdk.BasketInsertion): ValidBasketInsertion | undefined 
+```
+
+See also: [BasketInsertion](#interface-basketinsertion), [ValidBasketInsertion](#interface-validbasketinsertion)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: validateCreateActionArgs
 
 ```ts
@@ -5680,6 +5799,28 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ```ts
 export function validateInteger(v: number | undefined, name: string, defaultValue?: number, min?: number, max?: number): number 
 ```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: validateInternalizeActionArgs
+
+```ts
+export function validateInternalizeActionArgs(args: sdk.InternalizeActionArgs): ValidInternalizeActionArgs 
+```
+
+See also: [InternalizeActionArgs](#interface-internalizeactionargs), [ValidInternalizeActionArgs](#interface-validinternalizeactionargs)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: validateInternalizeOutput
+
+```ts
+export function validateInternalizeOutput(args: sdk.InternalizeOutput): ValidInternalizeOutput 
+```
+
+See also: [InternalizeOutput](#interface-internalizeoutput), [ValidInternalizeOutput](#interface-validinternalizeoutput)
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
@@ -5788,6 +5929,35 @@ export function validateOptionalInteger(v: number | undefined, name: string, min
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
+#### Function: validateOutpointString
+
+```ts
+export function validateOutpointString(output: string, name: string): string 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: validatePositiveIntegerOrZero
+
+```ts
+export function validatePositiveIntegerOrZero(v: number, name: string): number 
+```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: validateRelinquishOutputArgs
+
+```ts
+export function validateRelinquishOutputArgs(args: sdk.RelinquishOutputArgs): ValidRelinquishOutputArgs 
+```
+
+See also: [RelinquishOutputArgs](#interface-relinquishoutputargs), [ValidRelinquishOutputArgs](#interface-validrelinquishoutputargs)
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
 #### Function: validateSatoshis
 
 ```ts
@@ -5829,6 +5999,17 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 ```ts
 export function validateStringLength(s: string, name: string, min?: number, max?: number): string 
 ```
+
+Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
+
+---
+#### Function: validateWalletPayment
+
+```ts
+export function validateWalletPayment(args?: sdk.WalletPayment): ValidWalletPayment | undefined 
+```
+
+See also: [ValidWalletPayment](#interface-validwalletpayment), [WalletPayment](#interface-walletpayment)
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
