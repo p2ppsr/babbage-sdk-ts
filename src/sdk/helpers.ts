@@ -87,37 +87,46 @@ function validateIdentifier(s: string, name: string, min?: number, max?: number)
   return s
 }
 
-function validateOptionalHexString(s: string | undefined, name: string): string | undefined {
-    if (s === undefined) return undefined
-    return validateHexString(s, name)
-}
-
 function validateBase64String(s: string, name: string, min?: number, max?: number): string {
-    // Remove any whitespace and check if the string length is valid for Base64
-    s = s.trim();
-    const base64Regex = /^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?$/;
-    const paddingCount = (s.match(/=+$/) || [])[0]?.length || 0;
-    
-    if (paddingCount > 2 || (s.length % 4 !== 0 && paddingCount !== 0) || !base64Regex.test(s)) {
-      throw new WERR_INVALID_PARAMETER(name, `balid base64 string`)
-    }
-    
-    const bytes = Utils.toArray(s, 'base64').length
-    if (min !== undefined && bytes < min)
-      throw new WERR_INVALID_PARAMETER(name, `at least ${min} length.`)
-    if (max !== undefined && bytes > max)
-      throw new WERR_INVALID_PARAMETER(name, `no more than ${max} length.`)
+  // Remove any whitespace and check if the string length is valid for Base64
+  s = s.trim();
+  const base64Regex = /^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?$/;
+  const paddingCount = (s.match(/=+$/) || [])[0]?.length || 0;
 
-    return s
+  if (paddingCount > 2 || (s.length % 4 !== 0 && paddingCount !== 0) || !base64Regex.test(s)) {
+    throw new WERR_INVALID_PARAMETER(name, `balid base64 string`)
+  }
+
+  const bytes = Utils.toArray(s, 'base64').length
+  if (min !== undefined && bytes < min)
+    throw new WERR_INVALID_PARAMETER(name, `at least ${min} length.`)
+  if (max !== undefined && bytes > max)
+    throw new WERR_INVALID_PARAMETER(name, `no more than ${max} length.`)
+
+  return s
 }
 
-function validateHexString(s: string, name: string, max?: number): string {
+function validateOptionalHexString(s: string | undefined, name: string, min?: number, max?: number): string | undefined {
+    if (s === undefined) return undefined
+    return validateHexString(s, name, min, max)
+}
+
+/**
+ * @param s 
+ * @param name 
+ * @param min if valid, string length minimum (not bytes)
+ * @param max if valid, string length maximum (not bytes)
+ * @returns 
+ */
+function validateHexString(s: string, name: string, min?: number, max?: number): string {
   s = s.trim().toUpperCase()
   if (s.length % 2 === 1)
     throw new WERR_INVALID_PARAMETER(name, `even length, not ${s.length}.`)
   const hexRegex = /^[0-9A-Fa-f]+$/;
   if (!hexRegex.test(s))
     throw new WERR_INVALID_PARAMETER(name, `hexadecimal string.`)
+  if (min !== undefined && s.length < min)
+    throw new WERR_INVALID_PARAMETER(name, `at least ${min} length.`)
   if (max !== undefined && s.length > max)
     throw new WERR_INVALID_PARAMETER(name, `no more than ${max} length.`)
   return s
@@ -399,7 +408,7 @@ export function validateOutpointString(output: string, name: string): string {
   const s = output.split('.')
   if (s.length !== 2 || !Number.isInteger(Number(s[1])))
     throw new WERR_INVALID_PARAMETER(name, `txid as hex string and numeric output index joined with '.'`)
-  const txid = validateHexString(s[0], `${name} txid`, 64)
+  const txid = validateHexString(s[0], `${name} txid`, undefined, 64)
   const vout = validatePositiveIntegerOrZero(Number(s[1]), `${name} vout`)
   return `${txid}.${vout}`
 }
@@ -417,6 +426,29 @@ export function validateRelinquishOutputArgs(args: sdk.RelinquishOutputArgs) : V
       log: ''
     }
 
+    return vargs
+}
+
+export interface ValidListCertificatesArgs {
+  certifiers: sdk.PubKeyHex[]
+  types: sdk.Base64String[]
+  limit: sdk.PositiveIntegerDefault10Max10000
+  offset: sdk.PositiveIntegerOrZero
+  privileged: sdk.BooleanDefaultFalse
+  privilegedReason?: sdk.DescriptionString5to50Bytes
+  log?: string
+}
+
+export function validateListCertificatesArgs(args: sdk.ListCertificatesArgs) : ValidListCertificatesArgs {
+    const vargs: ValidListCertificatesArgs = {
+      certifiers: defaultEmpty(args.certifiers.map(c => validateHexString(c, 'certifiers'))),
+      types: defaultEmpty(args.types.map(t => validateBase64String(t, 'types'))),
+      limit: validateInteger(args.limit, 'limit', 10, 1, 10000),
+      offset: validatePositiveIntegerOrZero(defaultZero(args.offset), 'offset'),
+      privileged: defaultFalse(args.privileged),
+      privilegedReason: validateOptionalStringLength(args.privilegedReason, 'privilegedReason', 5, 50),
+      log: ''
+    }
     return vargs
 }
 
