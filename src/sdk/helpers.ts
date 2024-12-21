@@ -87,6 +87,11 @@ function validateIdentifier(s: string, name: string, min?: number, max?: number)
   return s
 }
 
+function validateOptionalBase64String(s: string | undefined, name: string, min?: number, max?: number): string | undefined {
+  if (s === undefined) return undefined
+  return validateBase64String(s, name, min, max)
+}
+
 function validateBase64String(s: string, name: string, min?: number, max?: number): string {
   // Remove any whitespace and check if the string length is valid for Base64
   s = s.trim();
@@ -404,8 +409,13 @@ export function validateInternalizeActionArgs(args: sdk.InternalizeActionArgs) :
     return vargs
 }
 
-export function validateOutpointString(output: string, name: string): string {
-  const s = output.split('.')
+export function validateOptionalOutpointString(outpoint: string | undefined, name: string): string | undefined {
+  if (outpoint === undefined) return undefined
+  return validateOutpointString(outpoint, name)
+}
+
+export function validateOutpointString(outpoint: string, name: string): string {
+  const s = outpoint.split('.')
   if (s.length !== 2 || !Number.isInteger(Number(s[1])))
     throw new WERR_INVALID_PARAMETER(name, `txid as hex string and numeric output index joined with '.'`)
   const txid = validateHexString(s[0], `${name} txid`, undefined, 64)
@@ -450,6 +460,69 @@ export function validateListCertificatesArgs(args: sdk.ListCertificatesArgs) : V
       log: ''
     }
     return vargs
+}
+
+export interface ValidAcquireCertificateArgs {
+  type: sdk.Base64String
+  certifier: sdk.PubKeyHex
+  acquisitionProtocol: sdk.AcquisitionProtocol
+  fields: Record<sdk.CertificateFieldNameUnder50Bytes, string>
+  serialNumber?: sdk.Base64String
+  revocationOutpoint?: sdk.OutpointString
+  signature?: sdk.HexString
+  certifierUrl?: string
+  keyringRevealer?: sdk.KeyringRevealer
+  keyringForSubject?: Record<sdk.CertificateFieldNameUnder50Bytes, sdk.Base64String>
+  privileged?: sdk.BooleanDefaultFalse
+  privilegedReason?: sdk.DescriptionString5to50Bytes
+  log?: string
+}
+
+function validateCertificateFields(fields: Record<sdk.CertificateFieldNameUnder50Bytes, string>):
+Record<sdk.CertificateFieldNameUnder50Bytes, string>
+{
+  for (const fieldName of Object.keys(fields)) {
+    validateStringLength(fieldName, 'field name')
+  }
+  return fields
+}
+
+function validateOptionalKeyringRevealer(kr: sdk.KeyringRevealer | undefined, name: string) : sdk.KeyringRevealer | undefined
+{
+  if (kr === undefined) return undefined
+  if (kr === 'certifier') return kr
+  return validateHexString(kr, name)
+}
+
+function validateOptionalKeyringForSubject(kr: Record<sdk.CertificateFieldNameUnder50Bytes, sdk.Base64String> | undefined, name: string) : Record<sdk.CertificateFieldNameUnder50Bytes, sdk.Base64String> | undefined
+{
+  if (kr === undefined) return undefined
+  for (const fn of Object.keys(kr)) {
+    validateStringLength(fn, `${name} field name`, 1, 50);
+    validateBase64String(kr[fn], `${name} field value`)
+  }
+  return kr
+}
+
+export function validateAcquireCertificateArgs(args: sdk.AcquireCertificateArgs) : ValidAcquireCertificateArgs {
+  const vargs: ValidAcquireCertificateArgs = {
+    type: validateBase64String(args.type, 'type'),
+    certifier: validateHexString(args.certifier, 'certifier'),
+    acquisitionProtocol: args.acquisitionProtocol,
+    fields: validateCertificateFields(args.fields),
+    serialNumber: validateOptionalBase64String(args.serialNumber, 'serialNumber'),
+    revocationOutpoint: validateOptionalOutpointString(args.revocationOutpoint, 'revocationOutpoint'),
+    signature: validateOptionalHexString(args.signature, 'signature'),
+    certifierUrl: args.certifierUrl,
+    keyringRevealer: validateOptionalKeyringRevealer(args.keyringRevealer, 'keyringRevealer'),
+    keyringForSubject: validateOptionalKeyringForSubject(args.keyringForSubject, 'keyringForSubject'),
+    privileged: defaultFalse(args.privileged),
+    privilegedReason: validateOptionalStringLength(args.privilegedReason, 'privilegedReason', 5, 50),
+    log: ''
+  }
+  if (vargs.privileged && !vargs.privilegedReason)
+    throw new sdk.WERR_INVALID_PARAMETER('privilegedReason', `valid when 'privileged' is true `)
+  return vargs
 }
 
 export interface ValidListOutputsArgs {
@@ -564,3 +637,4 @@ export function validateListActionsArgs(args: sdk.ListActionsArgs) : ValidListAc
 
     return vargs
 }
+
