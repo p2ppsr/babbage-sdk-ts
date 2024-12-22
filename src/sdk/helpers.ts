@@ -396,6 +396,16 @@ export interface ValidInternalizeActionArgs {
   log?: string
 }
 
+export function validateOrignator(s?: string) : string | undefined {
+  if (s === undefined) return undefined
+  s = s.trim().toLowerCase()
+  validateStringLength(s, 'originator', 1, 250)
+  const sps = s.split('.')
+  for (const sp of sps) {
+    validateStringLength(sp, 'originator part', 1, 63)
+  }
+}
+
 export function validateInternalizeActionArgs(args: sdk.InternalizeActionArgs) : ValidInternalizeActionArgs {
     const vargs: ValidInternalizeActionArgs = {
       tx: args.tx,
