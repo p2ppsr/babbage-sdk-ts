@@ -4775,7 +4775,7 @@ Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](
 | [createAction](#function-createaction) | [promiseWithTimeout](#function-promisewithtimeout) | [validateOptionalEnvelopeEvidence](#function-validateoptionalenvelopeevidence) |
 | [createCertificate](#function-createcertificate) | [proveCertificate](#function-provecertificate) | [validateOptionalInteger](#function-validateoptionalinteger) |
 | [createHmac](#function-createhmac) | [requestGroupPermission](#function-requestgrouppermission) | [validateOptionalOutpointString](#function-validateoptionaloutpointstring) |
-| [createSignature](#function-createsignature) | [resolveOptionalEnvelopeEvidence](#function-resolveoptionalenvelopeevidence) | [validateOrignator](#function-validateorignator) |
+| [createSignature](#function-createsignature) | [resolveOptionalEnvelopeEvidence](#function-resolveoptionalenvelopeevidence) | [validateOriginator](#function-validateoriginator) |
 | [decrypt](#function-decrypt) | [revealKeyLinkage](#function-revealkeylinkage) | [validateOutpointString](#function-validateoutpointstring) |
 | [decryptAsArray](#function-decryptasarray) | [revealKeyLinkageCounterparty](#function-revealkeylinkagecounterparty) | [validatePositiveIntegerOrZero](#function-validatepositiveintegerorzero) |
 | [decryptAsString](#function-decryptasstring) | [revealKeyLinkageSpecific](#function-revealkeylinkagespecific) | [validateRelinquishOutputArgs](#function-validaterelinquishoutputargs) |
@@ -6542,10 +6542,10 @@ export function validateOptionalOutpointString(outpoint: string | undefined, nam
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
 
 ---
-#### Function: validateOrignator
+#### Function: validateOriginator
 
 ```ts
-export function validateOrignator(s?: string): string | undefined 
+export function validateOriginator(s?: string): string | undefined 
 ```
 
 Links: [API](#api), [Interfaces](#interfaces), [Classes](#classes), [Functions](#functions), [Types](#types), [Variables](#variables)
