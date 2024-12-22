@@ -396,7 +396,7 @@ export interface ValidInternalizeActionArgs {
   log?: string
 }
 
-export function validateOrignator(s?: string) : string | undefined {
+export function validateOriginator(s?: string) : string | undefined {
   if (s === undefined) return undefined
   s = s.trim().toLowerCase()
   validateStringLength(s, 'originator', 1, 250)
