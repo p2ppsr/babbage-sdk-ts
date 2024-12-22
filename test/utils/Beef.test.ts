@@ -11,7 +11,8 @@ describe('Beef tests', () => {
           case 1631619: return root === "b3975a6b69b5ce7fa200649d879f79a11f4d95c054cfe024570be7d60306ecf6"
           default: throw new Error(`unknown height ${height}`)
         }
-      }
+      },
+      currentHeight: async () : Promise<number> => { return 1631619 }
     }
 
     test('0_mergeTransaction', async () => {
