@@ -1,4 +1,4 @@
-import { Utils } from "@bsv/sdk";
+import { Certificate, Utils } from "@bsv/sdk";
 import { sdk, WERR_INVALID_PARAMETER } from "..";
 import { OutPoint, TrustSelf } from "../types";
 
@@ -514,7 +514,13 @@ function validateOptionalKeyringForSubject(kr: Record<sdk.CertificateFieldNameUn
   return kr
 }
 
-export function validateAcquireCertificateArgs(args: sdk.AcquireCertificateArgs) : ValidAcquireCertificateArgs {
+/**
+ * 
+ * @param args
+ * @param subject Must be valid for "direct" `acquisitionProtocol`. public key of the certificate subject.
+ * @returns 
+ */
+export async function validateAcquireCertificateArgs(args: sdk.AcquireCertificateArgs, subject?: sdk.PubKeyHex) : Promise<ValidAcquireCertificateArgs> {
   const vargs: ValidAcquireCertificateArgs = {
     type: validateBase64String(args.type, 'type'),
     certifier: validateHexString(args.certifier, 'certifier'),
@@ -532,6 +538,24 @@ export function validateAcquireCertificateArgs(args: sdk.AcquireCertificateArgs)
   }
   if (vargs.privileged && !vargs.privilegedReason)
     throw new sdk.WERR_INVALID_PARAMETER('privilegedReason', `valid when 'privileged' is true `)
+  if (vargs.acquisitionProtocol === 'direct') {
+    if (!vargs.serialNumber) throw new sdk.WERR_INVALID_PARAMETER('serialNumber', 'valid when acquisitionProtocol is "direct"')
+    if (!vargs.signature) throw new sdk.WERR_INVALID_PARAMETER('signature', 'valid when acquisitionProtocol is "direct"')
+    if (!vargs.revocationOutpoint) throw new sdk.WERR_INVALID_PARAMETER('revocationOutpoint', 'valid when acquisitionProtocol is "direct"')
+    if (!subject) throw new sdk.WERR_INVALID_PARAMETER('subject', 'valid for "direct" acquisition mode')
+    // Verify signature:
+    const cert = new Certificate(
+      vargs.type,
+      vargs.serialNumber!,
+      subject,
+      vargs.certifier,
+      vargs.revocationOutpoint!,
+      vargs.fields,
+      vargs.signature
+    )
+    const sigOk = await cert.verify()
+    if (!sigOk) throw new sdk.WERR_INVALID_PARAMETER('signature, subject', `valid signature for subject ${subject}`)
+  }
   return vargs
 }
 
