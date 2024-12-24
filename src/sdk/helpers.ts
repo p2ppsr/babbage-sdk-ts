@@ -568,6 +568,11 @@ export interface ValidAcquireDirectCertificateArgs {
   fields: Record<sdk.CertificateFieldNameUnder50Bytes, string>
   signature: sdk.HexString
 
+  /**
+   * validated to an empty string, must be provided by wallet and must
+   * match expectations of keyringForSubject
+   */
+  subject: sdk.PubKeyHex
 
   keyringRevealer: sdk.KeyringRevealer
   keyringForSubject: Record<sdk.CertificateFieldNameUnder50Bytes, sdk.Base64String>
@@ -598,6 +603,7 @@ export async function validateAcquireDirectCertificateArgs(args: sdk.AcquireCert
     keyringForSubject: validateKeyringForSubject(args.keyringForSubject, 'keyringForSubject'),
     privileged: defaultFalse(args.privileged),
     privilegedReason: validateOptionalStringLength(args.privilegedReason, 'privilegedReason', 5, 50),
+    subject: '',
     log: ''
   }
   return vargs
