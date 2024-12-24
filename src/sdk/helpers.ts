@@ -449,6 +449,24 @@ export function validateRelinquishOutputArgs(args: sdk.RelinquishOutputArgs) : V
     return vargs
 }
 
+export interface ValidRelinquishCertificateArgs {
+  type: sdk.Base64String
+  serialNumber: sdk.Base64String
+  certifier: sdk.PubKeyHex
+  log?: string
+}
+
+export function validateRelinquishCertificateArgs(args: sdk.RelinquishCertificateArgs) : ValidRelinquishCertificateArgs {
+    const vargs: ValidRelinquishCertificateArgs = {
+      type: validateBase64String(args.type, 'type'),
+      serialNumber: validateBase64String(args.serialNumber, 'serialNumber'),
+      certifier: validateHexString(args.certifier, 'certifier'),
+      log: ''
+    }
+
+    return vargs
+}
+
 export interface ValidListCertificatesArgs {
   certifiers: sdk.PubKeyHex[]
   types: sdk.Base64String[]
@@ -497,7 +515,7 @@ function validateCertificateFields(fields: Record<sdk.CertificateFieldNameUnder5
 Record<sdk.CertificateFieldNameUnder50Bytes, string>
 {
   for (const fieldName of Object.keys(fields)) {
-    validateStringLength(fieldName, 'field name')
+    validateStringLength(fieldName, 'field name', 1, 50)
   }
   return fields
 }
@@ -583,7 +601,7 @@ export interface ValidAcquireDirectCertificateArgs {
   log?: string
 }
 
-export async function validateAcquireDirectCertificateArgs(args: sdk.AcquireCertificateArgs) : Promise<ValidAcquireDirectCertificateArgs> {
+export function validateAcquireDirectCertificateArgs(args: sdk.AcquireCertificateArgs) : ValidAcquireDirectCertificateArgs {
   if (args.acquisitionProtocol !== 'direct') throw new sdk.WERR_INTERNAL('Only acquire direct certificate requests allowed here.')
   if (!args.serialNumber) throw new sdk.WERR_INVALID_PARAMETER('serialNumber', 'valid when acquisitionProtocol is "direct"')
   if (!args.signature) throw new sdk.WERR_INVALID_PARAMETER('signature', 'valid when acquisitionProtocol is "direct"')
@@ -604,6 +622,42 @@ export async function validateAcquireDirectCertificateArgs(args: sdk.AcquireCert
     privileged: defaultFalse(args.privileged),
     privilegedReason: validateOptionalStringLength(args.privilegedReason, 'privilegedReason', 5, 50),
     subject: '',
+    log: ''
+  }
+  return vargs
+}
+
+export interface ValidProveCertificateArgs {
+  type: sdk.Base64String
+  serialNumber: sdk.Base64String
+  certifier: sdk.PubKeyHex
+  subject: sdk.PubKeyHex
+  revocationOutpoint: sdk.OutpointString
+  signature: sdk.HexString
+  
+  fieldsToReveal: sdk.CertificateFieldNameUnder50Bytes[]
+  verifier: sdk.PubKeyHex
+  privileged: boolean
+  privilegedReason?: sdk.DescriptionString5to50Bytes
+  log?: string
+}
+
+export function validateProveCertificateArgs(args: sdk.ProveCertificateArgs)
+: ValidProveCertificateArgs
+{
+  if (args.privileged && !args.privilegedReason) throw new sdk.WERR_INVALID_PARAMETER('privilegedReason', `valid when 'privileged' is true `)
+
+  const vargs: ValidProveCertificateArgs = {
+    type: validateBase64String(args.certificate.type, 'certificate.type'),
+    serialNumber: validateBase64String(args.certificate.serialNumber, 'certificate.serialNumber'),
+    certifier: validateHexString(args.certificate.certifier, 'certificate.certifier'),
+    subject: validateHexString(args.certificate.subject, 'certificate.subject'),
+    revocationOutpoint: validateOutpointString(args.certificate.revocationOutpoint, 'certificate.revocationOutpoint'),
+    signature: validateHexString(args.certificate.signature, 'certificate.signature'),
+    fieldsToReveal: defaultEmpty(args.fieldsToReveal).map(fieldName => validateStringLength(`fieldsToReveal ${fieldName}`, 'valid field name', 1, 50)),
+    verifier: validateHexString(args.verifier, 'verifier'),
+    privileged: defaultFalse(args.privileged),
+    privilegedReason: validateOptionalStringLength(args.privilegedReason, 'privilegedReason', 5, 50),
     log: ''
   }
   return vargs
