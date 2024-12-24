@@ -598,8 +598,8 @@ export function validateListOutputsArgs(args: sdk.ListOutputsArgs) : ValidListOu
       throw new WERR_INVALID_PARAMETER('tagQueryMode', `undefined, 'any', or 'all'`)
 
     const vargs: ValidListOutputsArgs = {
-      basket: validateStringLength(args.basket, 'basket', 0, 300),
-      tags: (args.tags || []).map(t => validateStringLength(t, 'tag', 0, 300)),
+      basket: validateStringLength(args.basket, 'basket', 1, 300),
+      tags: (args.tags || []).map(t => validateStringLength(t, 'tag', 1, 300)),
       tagQueryMode,
       includeLockingScripts: args.include === 'locking scripts',
       includeTransactions: args.include === 'entire transactions',
