@@ -791,6 +791,8 @@ export interface ProveCertificateArgs {
 
 export interface ProveCertificateResult {
   keyringForVerifier: Record<CertificateFieldNameUnder50Bytes, Base64String>
+  certificate: WalletCertificate
+  verifier: PubKeyHex
 }
 
 /**
