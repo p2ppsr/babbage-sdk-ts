@@ -473,18 +473,23 @@ export function validateListCertificatesArgs(args: sdk.ListCertificatesArgs) : V
 }
 
 export interface ValidAcquireCertificateArgs {
-  type: sdk.Base64String
-  certifier: sdk.PubKeyHex
   acquisitionProtocol: sdk.AcquisitionProtocol
-  fields: Record<sdk.CertificateFieldNameUnder50Bytes, string>
+
+  type: sdk.Base64String
   serialNumber?: sdk.Base64String
+  certifier: sdk.PubKeyHex
   revocationOutpoint?: sdk.OutpointString
+  fields: Record<sdk.CertificateFieldNameUnder50Bytes, string>
   signature?: sdk.HexString
+
   certifierUrl?: string
+
   keyringRevealer?: sdk.KeyringRevealer
   keyringForSubject?: Record<sdk.CertificateFieldNameUnder50Bytes, sdk.Base64String>
-  privileged?: sdk.BooleanDefaultFalse
+
+  privileged: boolean
   privilegedReason?: sdk.DescriptionString5to50Bytes
+
   log?: string
 }
 
@@ -497,21 +502,30 @@ Record<sdk.CertificateFieldNameUnder50Bytes, string>
   return fields
 }
 
-function validateOptionalKeyringRevealer(kr: sdk.KeyringRevealer | undefined, name: string) : sdk.KeyringRevealer | undefined
+function validateKeyringRevealer(kr: sdk.KeyringRevealer, name: string) : sdk.KeyringRevealer
 {
-  if (kr === undefined) return undefined
   if (kr === 'certifier') return kr
   return validateHexString(kr, name)
 }
 
-function validateOptionalKeyringForSubject(kr: Record<sdk.CertificateFieldNameUnder50Bytes, sdk.Base64String> | undefined, name: string) : Record<sdk.CertificateFieldNameUnder50Bytes, sdk.Base64String> | undefined
+function validateOptionalKeyringRevealer(kr: sdk.KeyringRevealer | undefined, name: string) : sdk.KeyringRevealer | undefined
 {
   if (kr === undefined) return undefined
+  return validateKeyringRevealer(kr, name)
+}
+
+function validateKeyringForSubject(kr: Record<sdk.CertificateFieldNameUnder50Bytes, sdk.Base64String>, name: string) : Record<sdk.CertificateFieldNameUnder50Bytes, sdk.Base64String>
+{
   for (const fn of Object.keys(kr)) {
     validateStringLength(fn, `${name} field name`, 1, 50);
     validateBase64String(kr[fn], `${name} field value`)
   }
   return kr
+}
+
+function validateOptionalKeyringForSubject(kr: Record<sdk.CertificateFieldNameUnder50Bytes, sdk.Base64String> | undefined, name: string) : Record<sdk.CertificateFieldNameUnder50Bytes, sdk.Base64String> | undefined {
+  if (kr === undefined) return undefined
+  return validateKeyringForSubject(kr, name)
 }
 
 /**
@@ -520,14 +534,14 @@ function validateOptionalKeyringForSubject(kr: Record<sdk.CertificateFieldNameUn
  * @param subject Must be valid for "direct" `acquisitionProtocol`. public key of the certificate subject.
  * @returns 
  */
-export async function validateAcquireCertificateArgs(args: sdk.AcquireCertificateArgs, subject?: sdk.PubKeyHex) : Promise<ValidAcquireCertificateArgs> {
+export async function validateAcquireCertificateArgs(args: sdk.AcquireCertificateArgs) : Promise<ValidAcquireCertificateArgs> {
   const vargs: ValidAcquireCertificateArgs = {
-    type: validateBase64String(args.type, 'type'),
-    certifier: validateHexString(args.certifier, 'certifier'),
     acquisitionProtocol: args.acquisitionProtocol,
-    fields: validateCertificateFields(args.fields),
+    type: validateBase64String(args.type, 'type'),
     serialNumber: validateOptionalBase64String(args.serialNumber, 'serialNumber'),
+    certifier: validateHexString(args.certifier, 'certifier'),
     revocationOutpoint: validateOptionalOutpointString(args.revocationOutpoint, 'revocationOutpoint'),
+    fields: validateCertificateFields(args.fields),
     signature: validateOptionalHexString(args.signature, 'signature'),
     certifierUrl: args.certifierUrl,
     keyringRevealer: validateOptionalKeyringRevealer(args.keyringRevealer, 'keyringRevealer'),
@@ -542,19 +556,49 @@ export async function validateAcquireCertificateArgs(args: sdk.AcquireCertificat
     if (!vargs.serialNumber) throw new sdk.WERR_INVALID_PARAMETER('serialNumber', 'valid when acquisitionProtocol is "direct"')
     if (!vargs.signature) throw new sdk.WERR_INVALID_PARAMETER('signature', 'valid when acquisitionProtocol is "direct"')
     if (!vargs.revocationOutpoint) throw new sdk.WERR_INVALID_PARAMETER('revocationOutpoint', 'valid when acquisitionProtocol is "direct"')
-    if (!subject) throw new sdk.WERR_INVALID_PARAMETER('subject', 'valid for "direct" acquisition mode')
-    // Verify signature:
-    const cert = new Certificate(
-      vargs.type,
-      vargs.serialNumber!,
-      subject,
-      vargs.certifier,
-      vargs.revocationOutpoint!,
-      vargs.fields,
-      vargs.signature
-    )
-    const sigOk = await cert.verify()
-    if (!sigOk) throw new sdk.WERR_INVALID_PARAMETER('signature, subject', `valid signature for subject ${subject}`)
+  }
+  return vargs
+}
+
+export interface ValidAcquireDirectCertificateArgs {
+  type: sdk.Base64String
+  serialNumber: sdk.Base64String
+  certifier: sdk.PubKeyHex
+  revocationOutpoint: sdk.OutpointString
+  fields: Record<sdk.CertificateFieldNameUnder50Bytes, string>
+  signature: sdk.HexString
+
+
+  keyringRevealer: sdk.KeyringRevealer
+  keyringForSubject: Record<sdk.CertificateFieldNameUnder50Bytes, sdk.Base64String>
+
+  privileged: boolean
+  privilegedReason?: sdk.DescriptionString5to50Bytes
+
+  log?: string
+}
+
+export async function validateAcquireDirectCertificateArgs(args: sdk.AcquireCertificateArgs) : Promise<ValidAcquireDirectCertificateArgs> {
+  if (args.acquisitionProtocol !== 'direct') throw new sdk.WERR_INTERNAL('Only acquire direct certificate requests allowed here.')
+  if (!args.serialNumber) throw new sdk.WERR_INVALID_PARAMETER('serialNumber', 'valid when acquisitionProtocol is "direct"')
+  if (!args.signature) throw new sdk.WERR_INVALID_PARAMETER('signature', 'valid when acquisitionProtocol is "direct"')
+  if (!args.revocationOutpoint) throw new sdk.WERR_INVALID_PARAMETER('revocationOutpoint', 'valid when acquisitionProtocol is "direct"')
+  if (!args.keyringRevealer) throw new sdk.WERR_INVALID_PARAMETER('keyringRevealer', 'valid when acquisitionProtocol is "direct"')
+  if (!args.keyringForSubject) throw new sdk.WERR_INVALID_PARAMETER('keyringForSubject', 'valid when acquisitionProtocol is "direct"')
+  if (args.privileged && !args.privilegedReason) throw new sdk.WERR_INVALID_PARAMETER('privilegedReason', `valid when 'privileged' is true `)
+
+  const vargs: ValidAcquireDirectCertificateArgs = {
+    type: validateBase64String(args.type, 'type'),
+    serialNumber: validateBase64String(args.serialNumber, 'serialNumber'),
+    certifier: validateHexString(args.certifier, 'certifier'),
+    revocationOutpoint: validateOutpointString(args.revocationOutpoint, 'revocationOutpoint'),
+    fields: validateCertificateFields(args.fields),
+    signature: validateHexString(args.signature, 'signature'),
+    keyringRevealer: validateKeyringRevealer(args.keyringRevealer, 'keyringRevealer'),
+    keyringForSubject: validateKeyringForSubject(args.keyringForSubject, 'keyringForSubject'),
+    privileged: defaultFalse(args.privileged),
+    privilegedReason: validateOptionalStringLength(args.privilegedReason, 'privilegedReason', 5, 50),
+    log: ''
   }
   return vargs
 }

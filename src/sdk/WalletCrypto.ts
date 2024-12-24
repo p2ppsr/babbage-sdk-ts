@@ -1,7 +1,28 @@
-import { KeyDeriverApi } from './KeyDeriver'
-import { Hash, ECDSA, BigNumber, Signature, Schnorr, PublicKey, Point } from '@bsv/sdk'
+import { KeyDeriver, KeyDeriverApi } from './KeyDeriver'
+import { Hash, ECDSA, BigNumber, Signature, Schnorr, PublicKey, Point, PrivateKey } from '@bsv/sdk'
 import { WERR_INVALID_PARAMETER } from './WERR_errors'
-import { CreateHmacArgs, CreateHmacResult, CreateSignatureArgs, CreateSignatureResult, GetPublicKeyArgs, OriginatorDomainNameStringUnder250Bytes, PubKeyHex, RevealCounterpartyKeyLinkageArgs, RevealCounterpartyKeyLinkageResult, RevealSpecificKeyLinkageArgs, RevealSpecificKeyLinkageResult, VerifyHmacArgs, VerifyHmacResult, VerifySignatureArgs, VerifySignatureResult, WalletCryptoObject, WalletDecryptArgs, WalletDecryptResult, WalletEncryptArgs, WalletEncryptResult } from './Wallet.interfaces'
+import {
+  CreateHmacArgs,
+  CreateHmacResult,
+  CreateSignatureArgs,
+  CreateSignatureResult,
+  GetPublicKeyArgs,
+  OriginatorDomainNameStringUnder250Bytes,
+  PubKeyHex,
+  RevealCounterpartyKeyLinkageArgs,
+  RevealCounterpartyKeyLinkageResult,
+  RevealSpecificKeyLinkageArgs,
+  RevealSpecificKeyLinkageResult,
+  VerifyHmacArgs,
+  VerifyHmacResult,
+  VerifySignatureArgs,
+  VerifySignatureResult,
+  WalletCryptoObject,
+  WalletDecryptArgs,
+  WalletDecryptResult,
+  WalletEncryptArgs,
+  WalletEncryptResult
+} from './Wallet.interfaces'
 
 const privilegedError = new WERR_INVALID_PARAMETER('args.privileged', 'false or undefined. Wallet is a single-keyring wallet, operating without context about whether its configured keyring is privileged.')
 
@@ -12,7 +33,9 @@ const privilegedError = new WERR_INVALID_PARAMETER('args.privileged', 'false or 
 export class WalletCrypto implements WalletCryptoObject {
   keyDeriver: KeyDeriverApi
 
-  constructor(keyDeriver: KeyDeriverApi) {
+  constructor(keyDeriver: KeyDeriverApi | PrivateKey) {
+    if (keyDeriver instanceof PrivateKey)
+      keyDeriver = new KeyDeriver(keyDeriver)
     this.keyDeriver = keyDeriver
   }
 
