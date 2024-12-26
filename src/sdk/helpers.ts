@@ -663,6 +663,57 @@ export function validateProveCertificateArgs(args: sdk.ProveCertificateArgs)
   return vargs
 }
 
+export interface ValidDiscoverByIdentityKeyArgs {
+  identityKey: sdk.PubKeyHex
+  limit: sdk.PositiveIntegerDefault10Max10000
+  offset: sdk.PositiveIntegerOrZero
+  seekPermission: boolean
+  log?: string
+}
+
+export function validateDiscoverByIdentityKeyArgs(args: sdk.DiscoverByIdentityKeyArgs)
+: ValidDiscoverByIdentityKeyArgs
+{
+  const vargs: ValidDiscoverByIdentityKeyArgs = {
+    identityKey: validateHexString(args.identityKey, 'identityKey', 66, 66),
+    limit: validateInteger(args.limit, 'limit', 10, 1, 10000),
+    offset: validatePositiveIntegerOrZero(defaultZero(args.offset), 'offset'),
+    seekPermission: defaultFalse(args.seekPermission),
+    log: ''
+  }
+  return vargs
+}
+
+export interface ValidDiscoverByAttributesArgs {
+  attributes: Record<sdk.CertificateFieldNameUnder50Bytes, string>
+  limit: sdk.PositiveIntegerDefault10Max10000
+  offset: sdk.PositiveIntegerOrZero
+  seekPermission: boolean
+  log?: string
+}
+
+function validateAttributes(attributes: Record<sdk.CertificateFieldNameUnder50Bytes, string>):
+Record<sdk.CertificateFieldNameUnder50Bytes, string>
+{
+  for (const fieldName of Object.keys(attributes)) {
+    validateStringLength(fieldName, `field name ${fieldName}`, 1, 50)
+  }
+  return attributes
+}
+
+export function validateDiscoverByAttributesArgs(args: sdk.DiscoverByAttributesArgs)
+: ValidDiscoverByAttributesArgs
+{
+  const vargs: ValidDiscoverByAttributesArgs = {
+    attributes: validateAttributes(args.attributes),
+    limit: validateInteger(args.limit, 'limit', 10, 1, 10000),
+    offset: validatePositiveIntegerOrZero(defaultZero(args.offset), 'offset'),
+    seekPermission: defaultFalse(args.seekPermission),
+    log: ''
+  }
+  return vargs
+}
+
 export interface ValidListOutputsArgs {
   basket: sdk.BasketStringUnder300Bytes
   tags: sdk.OutputTagStringUnder300Bytes[]
