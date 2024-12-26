@@ -628,12 +628,12 @@ export function validateAcquireDirectCertificateArgs(args: sdk.AcquireCertificat
 }
 
 export interface ValidProveCertificateArgs {
-  type: sdk.Base64String
-  serialNumber: sdk.Base64String
-  certifier: sdk.PubKeyHex
-  subject: sdk.PubKeyHex
-  revocationOutpoint: sdk.OutpointString
-  signature: sdk.HexString
+  type?: sdk.Base64String
+  serialNumber?: sdk.Base64String
+  certifier?: sdk.PubKeyHex
+  subject?: sdk.PubKeyHex
+  revocationOutpoint?: sdk.OutpointString
+  signature?: sdk.HexString
   
   fieldsToReveal: sdk.CertificateFieldNameUnder50Bytes[]
   verifier: sdk.PubKeyHex
@@ -648,12 +648,12 @@ export function validateProveCertificateArgs(args: sdk.ProveCertificateArgs)
   if (args.privileged && !args.privilegedReason) throw new sdk.WERR_INVALID_PARAMETER('privilegedReason', `valid when 'privileged' is true `)
 
   const vargs: ValidProveCertificateArgs = {
-    type: validateBase64String(args.certificate.type, 'certificate.type'),
-    serialNumber: validateBase64String(args.certificate.serialNumber, 'certificate.serialNumber'),
-    certifier: validateHexString(args.certificate.certifier, 'certificate.certifier'),
-    subject: validateHexString(args.certificate.subject, 'certificate.subject'),
-    revocationOutpoint: validateOutpointString(args.certificate.revocationOutpoint, 'certificate.revocationOutpoint'),
-    signature: validateHexString(args.certificate.signature, 'certificate.signature'),
+    type: validateOptionalBase64String(args.certificate.type, 'certificate.type'),
+    serialNumber: validateOptionalBase64String(args.certificate.serialNumber, 'certificate.serialNumber'),
+    certifier: validateOptionalHexString(args.certificate.certifier, 'certificate.certifier'),
+    subject: validateOptionalHexString(args.certificate.subject, 'certificate.subject'),
+    revocationOutpoint: validateOptionalOutpointString(args.certificate.revocationOutpoint, 'certificate.revocationOutpoint'),
+    signature: validateOptionalHexString(args.certificate.signature, 'certificate.signature'),
     fieldsToReveal: defaultEmpty(args.fieldsToReveal).map(fieldName => validateStringLength(`fieldsToReveal ${fieldName}`, 'valid field name', 1, 50)),
     verifier: validateHexString(args.verifier, 'verifier'),
     privileged: defaultFalse(args.privileged),
