@@ -1,7 +1,7 @@
 {
   "name": "@babbage/sdk-ts",
   "version": "0.2.75",
-  "description": "Build Babbage Apps with TypeScript",
+  "description": "Deprecated Babbage TypeScript SDK; use @bsv/sdk WalletClient for new apps",
   "main": "./out/src/index.js",
   "types": "./out/src/index.d.ts",
   "repository": {
